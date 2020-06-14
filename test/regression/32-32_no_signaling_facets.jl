@@ -2,7 +2,7 @@ using Test
 
 @testset "(32)(32) no-signaling regression" begin
 
-using BellScenarip: LocalPolytope, ConvexPolytope
+using BellScenario: LocalPolytope, ConvexPolytope
 
 # Description:
 #   Parses inequalities published at http://www.itp.tuwien.ac.at/~svozil/publ/3-3.html

@@ -2,7 +2,7 @@ using Test
 
 @testset "/src/LocalPolytope.jl" begin
 
-using BellScenarip: LocalPolytope
+using BellScenario: LocalPolytope
 
 @testset "permutation encodings are not necessary for communication protocols" begin
 
@@ -14,7 +14,7 @@ using BellScenarip: LocalPolytope
         @testset "bob output $b" for b in 1:3
             @testset "alice input = $x" for x in 1:3
                 @testset "protocol out = $num_out" for num_out in 2:2
-                    I = Math.id(y)
+                    I = QMath.id(y)
 
                     ρ_perms = map(
                         protocol -> kron(I,protocol),

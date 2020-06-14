@@ -20,7 +20,7 @@ using BellScenario: Degeneracy
     end
 
     @testset "3x3 permutation group" begin
-        transforms = Math.permutation_maps(3)
+        transforms = QMath.permutation_maps(3)
         elements = [
             [0 0 0],[0 0 1],[0 1 0],[0 1 1],
             [1 0 0],[1 0 1],[1 1 0],[1 1 1]
@@ -38,7 +38,7 @@ using BellScenario: Degeneracy
     end
 
     @testset "4x4 permutation group" begin
-        transforms = Math.permutation_maps(4)
+        transforms = QMath.permutation_maps(4)
         elements = [
             [0 0 0 0],[0 0 0 1],[0 0 1 0],[0 0 1 1],
             [0 1 0 0],[0 1 0 1],[0 1 1 0],[0 1 1 1],

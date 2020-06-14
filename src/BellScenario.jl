@@ -1,4 +1,6 @@
-module BellComm
+module BellScenario
+
+using QBase
 
 # include external modules
 include("./ConvexPolytope.jl")

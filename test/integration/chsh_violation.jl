@@ -4,7 +4,7 @@ using Test, XPORTA
 
 using BellScenario: QBase, QuantumBehavior
 
-chsh_ineqs = XPORTA.read_ieq("./test/BellComm/integration/files/22-22_no_signaling.ieq").inequalities
+chsh_ineqs = XPORTA.read_ieq("./test/integration/files/22-22_no_signaling.ieq").inequalities
 bell_states = (
     1/sqrt(2)*[1;0;0;1],
     1/sqrt(2)*[1;0;0;-1],

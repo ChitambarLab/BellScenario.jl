@@ -2,7 +2,7 @@ using Test
 
 @testset "src/ConvexPolytope.jl" begin
 
-using BellComm: ConvexPolytope
+using BellScenario: ConvexPolytope
 
 @testset "facet_constraints()" begin
     dir = "./test/integration/files/"

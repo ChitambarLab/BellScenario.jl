@@ -2,7 +2,7 @@ using Test, LinearAlgebra
 
 @testset "(22)<-1->(22) bacon & toner facet inequalities" begin
 
-using BellScenarip: LocalPolytope, ConvexPolytope, Degeneracy
+using BellScenario: LocalPolytope, ConvexPolytope, Degeneracy
 
 function bacon_toner_inequalities()
     inequalities = []

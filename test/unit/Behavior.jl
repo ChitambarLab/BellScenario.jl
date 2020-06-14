@@ -314,11 +314,11 @@ end
 @testset "conditionals()" begin
     conditionals = Behavior.conditionals((3,1),(1,3),[1;0;1;0;1;0],rep="normalized")
     @test conditionals == [1 0 0;0 1 0;1 0 0]'
-    @test conditionals isa Math.Conditionals
+    @test conditionals isa QMath.Conditionals
 
     conditionals = Behavior.conditionals((3,1),(1,3),[1;1;0;1;0;1;0],rep="normalized")
     @test conditionals == [1 0 0;0 1 0;1 0 0]'
-    @test conditionals isa Math.Conditionals
+    @test conditionals isa QMath.Conditionals
 
     @test_throws ArgumentError Behavior.conditionals((3,1),(1,3),[1;1;0;1;1;1;0],rep="normalized")
 end
