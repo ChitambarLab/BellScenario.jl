@@ -2,16 +2,27 @@ using Documenter, BellScenario
 
 makedocs(;
     modules=[BellScenario],
-    format=Documenter.HTML(),
+    format=Documenter.HTML(
+        assets  = ["assets/custom.css"],
+    ),
     pages=[
         "Home" => "index.md",
+        "Communication Scenarios" => "bell_comm_scenarios.md",
+        "Development Manual" => "development_manual.md",
+        "Local Bounds" => "local_bounds.md",
+        "Quantum Nonlocality" => "quantum_nonlocality.md",
+        "User Guide" => "user_guide.md",
+        "BellScenario.jl" => [
+            "Overview" => "BellScenario/overview.md",
+            "Types" => "BellScenario/types.md",
+        ]
     ],
-    repo="https://github.com/bdoolittle/BellScenario.jl/blob/{commit}{path}#L{line}",
+    repo="https://github.com/ChitambarLab/BellScenario.jl/blob/{commit}{path}#L{line}",
     sitename="BellScenario.jl",
     authors="Brian Doolittle",
     assets=String[],
 )
 
 deploydocs(;
-    repo="github.com/bdoolittle/BellScenario.jl",
+    repo="github.com/ChitambarLab/BellScenario.jl",
 )
