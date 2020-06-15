@@ -18,9 +18,9 @@ uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 
 [[DocStringExtensions]]
 deps = ["LibGit2", "Markdown", "Pkg", "Test"]
-git-tree-sha1 = "88bb0edb352b16608036faadcc071adda068582a"
+git-tree-sha1 = "c5714d9bcdba66389612dc4c47ed827c64112997"
 uuid = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
-version = "0.8.1"
+version = "0.8.2"
 
 [[Documenter]]
 deps = ["Base64", "Dates", "DocStringExtensions", "InteractiveUtils", "JSON", "LibGit2", "Logging", "Markdown", "REPL", "Test", "Unicode"]
@@ -75,7 +75,7 @@ uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
 [[QBase]]
 deps = ["Combinatorics", "LinearAlgebra"]
-git-tree-sha1 = "64836399e6019e95e36b8916e45c04805ec0f995"
+git-tree-sha1 = "54cdf5ce29d6cc3738086666169d1847284cdbe8"
 repo-rev = "master"
 repo-url = "https://github.com/ChitambarLab/QBase.jl.git"
 uuid = "e52e8ede-12bf-4731-8af7-b01f6064cb11"
