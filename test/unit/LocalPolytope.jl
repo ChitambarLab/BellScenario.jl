@@ -2,7 +2,7 @@ using Test, LinearAlgebra
 
 @testset "test/unit/LocalPolytope.jl" begin
 
-using BellScenario: LocalPolytope
+using BellScenario: LocalPolytope, DichotomicLocalPolytope, Behavior
 
 @testset "strategies()" begin
 

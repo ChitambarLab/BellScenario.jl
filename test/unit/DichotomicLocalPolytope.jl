@@ -2,7 +2,7 @@ using Test
 
 @testset "/src/BellScenario/DichotomicLocalPolytope.jl" begin
 
-using BellScenario: DichotomicLocalPolytope
+using BellScenario: Behavior, DichotomicLocalPolytope
 
 @testset "bipartite_no_signaling_strategies()" begin
 

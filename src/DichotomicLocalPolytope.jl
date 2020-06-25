@@ -7,7 +7,7 @@ module DichotomicLocalPolytope
 # and without auxiliary communication.
 # """
 
-using QBase: QMath
+using LinearAlgebra
 # """
 # bipartite_no_signaling_strategies(;subspace="p16"):
 #   Returns the set of strategies for dichotomic, bi-partite bell test. The
@@ -72,7 +72,7 @@ function deterministic_no_signaling_behaviors(;subspace="p16")
         end
 
         # columns of identity matrix represent xy ∈ {00, 01, 10, 11}
-        identity = QMath.id(size(s[i])[2])
+        identity = Matrix(1I,(size(s[i])[2], size(s[i])[2]))
 
         # Strategy columns represent outputs (a⊗b) for given input (x⊗y). We
         # compute the 16-dim behavior by (a⊗b)⊗(x⊗y) → P(ab|xy)

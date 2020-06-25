@@ -7,7 +7,7 @@ module LocalPolytope
 # """
 
 using QBase: QMath
-# using IterTools
+using LinearAlgebra
 
 # """
 # strategies(num_inputs, num_outputs):
@@ -24,8 +24,8 @@ using QBase: QMath
 # """
 function strategies(num_inputs, num_outputs)
 
-    inputs = QMath.id(num_inputs)
-    outputs = QMath.id(num_outputs)
+    inputs = Matrix(1I, (num_inputs, num_inputs))
+    outputs = Matrix(1I, (num_outputs, num_outputs))
 
     strategies = []
     if num_outputs > 1
@@ -63,14 +63,14 @@ end
 #              to output states.
 # """
 function communication_protocols(num_inputs,num_outputs)
-    outputs = QMath.id(num_outputs)
+    outputs = Matrix(1I, (num_outputs,num_outputs))
     protocols = []
 
     if num_inputs < num_outputs
 
         num_base = max(num_outputs,2)
 
-        inputs = QMath.id(num_inputs)
+        inputs = Matrix(1I, (num_inputs, num_inputs))
 
         min_n_array = collect(0:(num_inputs-1))
         min_num = QMath.base_n_val(min_n_array, num_base)

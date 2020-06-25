@@ -14,14 +14,14 @@ using BellScenario: LocalPolytope
         @testset "bob output $b" for b in 1:3
             @testset "alice input = $x" for x in 1:3
                 @testset "protocol out = $num_out" for num_out in 2:2
-                    I = QMath.id(y)
+                    Id = Matrix(1I, (y,y))
 
                     ρ_perms = map(
-                        protocol -> kron(I,protocol),
+                        protocol -> kron(Id,protocol),
                         LocalPolytope.strategies(x,num_out)
                     )
                     ρ_test = map(
-                        protocol -> kron(I,protocol),
+                        protocol -> kron(Id,protocol),
                         LocalPolytope.communication_protocols(x,num_out)
                     )
 
