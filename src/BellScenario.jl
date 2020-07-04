@@ -140,9 +140,23 @@ function strategy_dims(scenario::Bipartite) :: Tuple{Int, Int}
     ( A.num_out * B.num_out, A.num_in * B.num_in )
 end
 
-struct Game
-    game :: Matrix{<:Real}
+"""
+    Game(game::Matrix{T}, β::Real) <: AbstractMatrix{T}
+
+A `Game` is played by a `Matrix` and `β is the bounding or winning score of the
+game. A `Game` is matrix representation of a linear inequality. Each element is
+a linear scale factor for an element of a strategy matrix.
+
+Type parameter `T` is typically an `Int64` or `Float64`.
+"""
+struct Game{T} <: AbstractMatrix{T}
+    game :: Matrix{T}
+    Base.size(G::Game) = size(G.game)
+    Base.getindex(G::Game, I::Vararg{Int64,2}) = getindex(G.game, I...)
+    Base.setindex!(G::Game, v, I::Vararg{Int64,2}) = (G.game[I...] = v)
+
     β :: Real
+    Game(game::Matrix{T}, β::Real) where T = new{T}(game, β)
 end
 
 # include external modules
