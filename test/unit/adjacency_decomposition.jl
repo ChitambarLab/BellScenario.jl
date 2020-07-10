@@ -4,9 +4,9 @@ using Polyhedra: HalfSpace, vrep, convexhull, points
 
 @testset "./src/ConvexPolytope/adjacency_decomposition.jl" begin
 
-using BellScenario: ConvexPolytope
+using BellScenario: adjacent_facets, rotate_facet, adjacency_decomposition, LocalPolytope, PrepareAndMeasure, BellGame
 
-@testset "ConvexPolytope.rotate_facet()" begin
+@testset "rotate_facet()" begin
     @testset "simplex rotation" begin
         F = HalfSpace([-1,0,0], 0)
         G1 = HalfSpace([0,0,-1], 0)
@@ -15,85 +15,45 @@ using BellScenario: ConvexPolytope
         xbar = [1,0,0]
 
         # neighboring facet 1
-        @test ConvexPolytope.rotate_facet(F,G1,xbar) == HalfSpace([0,0,-1], 0)
-        @test ConvexPolytope.rotate_facet(F,G2,xbar) == HalfSpace([1,0,1], 1)
+        @test rotate_facet(F,G1,xbar) == HalfSpace([0,0,-1], 0)
+        @test rotate_facet(F,G2,xbar) == HalfSpace([1,0,1], 1)
+    end
+end
+
+@testset "adjacent_facets" begin
+    @testset "41-2-14 polytope" begin
+        vertices = map( v -> convert.(Int64, v), LocalPolytope.vertices((4,1),(1,4), dits=2))
+        PM = PrepareAndMeasure(4,4,2)
+
+        F = HalfSpace([1,0,0,-1,0,1,0,-1,0,0,1,-1], 1)
+        adj_facets = adjacent_facets(F, vertices, PM)
+
+        println(adj_facets)
+    end
+end
+
+@testset "adjacency_decomposition" begin
+    @testset  "41-2-14 polytope" begin
+        vertices = map( v -> convert.(Int64, v), LocalPolytope.vertices((4,1),(1,4), dits=2))
+        PM = PrepareAndMeasure(4,4,2)
+
+        BG = BellGame([1 0 0 0;0 1 0 0;0 0 1 0;0 0 0 1], 2)
+
+        facets = adjacency_decomposition(BG, vertices, PM)
+
+        println(facets)
     end
 
+    @testset "51-2-15 polytope" begin
+        vertices = map( v -> convert.(Int64, v), LocalPolytope.vertices((5,1),(1,5), dits=2))
+        PM = PrepareAndMeasure(5,5,2)
 
-    @testset "CHSH polytope" begin
-        chsh_vertices = [
-            -1 -1 -1 -1  1  1  1  1;
-            -1 -1 -1  1  1 -1  1 -1;
-            -1 -1  1 -1 -1  1 -1  1;
-            -1 -1  1  1 -1 -1 -1 -1;
-            -1  1 -1 -1  1  1 -1 -1;
-            -1  1 -1  1  1 -1 -1  1;
-            -1  1  1 -1 -1  1  1 -1;
-            -1  1  1  1 -1 -1  1  1;
-             1 -1 -1 -1 -1 -1  1  1;
-             1 -1 -1  1 -1  1  1 -1;
-             1 -1  1 -1  1 -1 -1  1;
-             1 -1  1  1  1  1 -1 -1;
-             1  1 -1 -1 -1 -1 -1 -1;
-             1  1 -1  1 -1  1 -1  1;
-             1  1  1 -1  1 -1  1 -1;
-             1  1  1  1  1  1  1  1;
-        ]
+        BG = BellGame([1 0 0 0 0;0 1 0 0 0;0 0 1 0 0;0 0 0 1 0;0 0 0 0 1], 2)
 
-        chsh_inequalities = [
-            -1 0 0 1 0 1 0 0 1;
-            -1 0 1 0 1 0 0 0 1;
-            0 -1 0 1 0 0 0 1 1;
-            0 -1 1 0 0 0 1 0 1;
-            0 1 -1 0 0 0 1 0 1;
-            0 1 0 -1 0 0 0 1 1;
-            0 1 0 1 0 0 0 -1 1;
-            0 1 1 0 0 0 -1 0 1;
-            1 0 -1 0 1 0 0 0 1;
-            1 0 0 -1 0 1 0 0 1;
-            1 0 0 1 0 -1 0 0 1;
-            1 0 1 0 -1 0 0 0 1;
-            -1 0 -1 0 -1 0 0 0 1;
-            -1 0 0 -1 0 -1 0 0 1;
-            0 -1 -1 0 0 0 -1 0 1;
-            0 -1 0 -1 0 0 0 -1 1;
-            0 0 0 0 -1 1 1 1 2;
-            0 0 0 0 1 -1 1 1 2;
-            0 0 0 0 1 1 -1 1 2;
-            0 0 0 0 1 1 1 -1 2;
-            0 0 0 0 -1 -1 -1 1 2;
-            0 0 0 0 -1 -1 1 -1 2;
-            0 0 0 0 -1 1 -1 -1 2;
-            0 0 0 0 1 -1 -1 -1 2
-        ]
+        facets = adjacency_decomposition(BG, vertices, PM)
 
-
-        ch_vertices = BellScenario.LocalPolytope.vertices((2,2),(2,2))
-        ch_ieq = traf(POI(vertices = vcat(map(v -> v', ch_vertices)...)))
-        ch_ineqs = convert.(Int,ch_ieq.inequalities)
-
-        ch_facets = [ HalfSpace(ch_ineqs[i,1:(end-1)], ch_ineqs[i,end]) for i in 1:size(ch_ineqs,1) ]
-
-
-
-        F = HalfSpace(chsh_inequalities[1,1:(end-1)], chsh_inequalities[1,end])
-
-        map( v -> F.a'*v, eachrow(chsh_vertices))
-
-        verts = [chsh_vertices[i,:] for i in 1:size(chsh_vertices,1)]
-        vert_rep = vrep(verts)
-
-        filter(v -> F.a' * v == F.β, verts)
-
-        convexhull(collect(eachrow(chsh_vertices))...)
-
-        println(chsh_inequalities)
-
-        ConvexPolytope.adjacent_facets(F, verts)
-
-        hcat(verts...)'
+        println(facets)
     end
-
 end
 
 end

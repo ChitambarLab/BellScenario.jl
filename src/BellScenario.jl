@@ -2,9 +2,11 @@ module BellScenario
 
 using QBase
 
+using Polyhedra: HalfSpace
+
 import Base: *
 
-export QBase, ConvexPolytope, Degeneracy, LocalPolytope, Behavior, QuantumBehavior, QuantumOpt, PrepareAndMeasure
+export ConvexPolytope, Degeneracy, LocalPolytope, Behavior, Symmetry #, QuantumBehavior, QuantumOpt, PrepareAndMeasure
 
 # function local_polytope()
 #
@@ -21,11 +23,13 @@ export QBase, ConvexPolytope, Degeneracy, LocalPolytope, Behavior, QuantumBehavi
 #
 # end
 
-export Scenario, BlackBox, Bipartite
+export Scenario, BlackBox, Bipartite, PrepareAndMeasure
 
-export Strategy, Game
+export Strategy, AbstractGame, Game, BellGame
 
 export strategy_dims
+
+export rotate_facet, adjacent_facets, adjacency_decomposition
 
 """
 An abstract type to represent general black-box scenarios.
@@ -75,6 +79,15 @@ struct Bipartite <: Scenario
     ) = (dits >= 1) ? new(BlackBox(A...), BlackBox(B...), dits, bidirectional) : throw(
             DomainError(dits, "communication `dits` must be ≥ 1.")
         )
+end
+
+struct PrepareAndMeasure <: Scenario
+    X :: Int
+    B :: Int
+    dits :: Int
+    PrepareAndMeasure(X::Int, B::Int, dits::Int) = (X ≥ 1 && B ≥ 1 && dits ≥ 1) ? new(X,B,dits) : throw(
+        DomainError((X, B, dits), "parameters must be ≥ 1")
+    )
 end
 
 """
@@ -140,6 +153,11 @@ function strategy_dims(scenario::Bipartite) :: Tuple{Int, Int}
     ( A.num_out * B.num_out, A.num_in * B.num_in )
 end
 
+abstract type AbstractGame{T} <: AbstractMatrix{T} end
+Base.size(G::AbstractGame) = size(G.game)
+Base.getindex(G::AbstractGame, I::Vararg{Int64,2}) = getindex(G.game, I...)
+Base.setindex!(G::AbstractGame, v, I::Vararg{Int64,2}) = (G.game[I...] = v)
+
 """
     Game(game::Matrix{T}, β::Real) <: AbstractMatrix{T}
 
@@ -149,27 +167,109 @@ a linear scale factor for an element of a strategy matrix.
 
 Type parameter `T` is typically an `Int64` or `Float64`.
 """
-struct Game{T} <: AbstractMatrix{T}
+struct Game{T} <: AbstractGame{T}
     game :: Matrix{T}
-    Base.size(G::Game) = size(G.game)
-    Base.getindex(G::Game, I::Vararg{Int64,2}) = getindex(G.game, I...)
-    Base.setindex!(G::Game, v, I::Vararg{Int64,2}) = (G.game[I...] = v)
-
     β :: Real
+    scenario :: Scenario
     Game(game::Matrix{T}, β::Real) where T = new{T}(game, β)
 end
 
+struct BellGame <: AbstractGame{Int64}
+    game :: Matrix{Int64}
+    β :: Int64
+    scenario :: Scenario
+    BellGame(game::Matrix{Int64}, β::Int64) = new(game, β)
+end
+
+"""
+    facet_to_matrix(num_in, num_out, gen_facet)
+
+transforms the vector form of a facet to the minimal matrix with non-negative
+elements.
+"""
+function facet_to_bell_game(gen_facet, scenario::Scenario) :: BellGame
+
+    bound = -1*gen_facet[1]
+
+    (num_out, num_in) = strategy_dims(scenario)
+
+    matrix = behavior_to_strategy(num_in, num_out, gen_facet[2:end])
+
+    new_matrix = zeros(num_out,num_in)
+    for col_id in 1:num_in
+        col = matrix[:,col_id]
+
+        col_min = min(col...)
+
+        new_col = col
+        if col_min != 0
+            new_col = -1*col_min .+ col
+
+            bound = bound + -1*col_min
+        end
+
+        new_matrix[:,col_id] = new_col
+    end
+
+    (bound, new_matrix)
+end
+
+# """
+# behavior_to_strategy(num_in, num_out, gen_behavior):
+#
+#     converts a behavior in the generalized representation into it's correpsonding
+#     strategy matrix.
+#
+# Inputs:
+#     num_in/out: Integer, bell scenario parameters (dimensions of strategies)
+#     gen_behavior: Col Vector, a valid behavior in the generalized representation
+#
+# Output:
+#     strategy: Matrix, the strategy isomorphic to the provided behavior.
+# """
+function behavior_to_strategy(gen_behavior, scenario::Scenario) :: Strategy
+    behavior = []
+
+    (num_out, num_in) = strategy_dims(scenario)
+
+    if length(gen_behavior) == num_in * num_out
+        behavior = gen_behavior
+    elseif length(gen_behavior) - 1 == num_in * num_out
+        behavior = gen_behavior[2:end]
+    else
+        throw(DomainError(gen_behavior, "./src/BellComm/LocalPolytope.jl: generalized behavior does not have proper dimensions"))
+    end
+
+    strategy = reshape(behavior, num_in, num_out)'
+
+    strategy
+end
+
 # include external modules
+
+
+
+
 include("./ConvexPolytope.jl")
+using .ConvexPolytope
 
 # include internal modules
 include("./LocalPolytope.jl")
+using .LocalPolytope
 include("./Behavior.jl")
+using .Behavior
 include("./Degeneracy.jl")
-include("./PrepareAndMeasure.jl")
+using .Degeneracy
+include("./Symmetry.jl")
+using .Symmetry
+#include("./PrepareAndMeasure.jl")
 include("./DichotomicLocalPolytope.jl")
-include("./QuantumBehavior.jl")
-include("./QuantumOpt.jl")
+using .DichotomicLocalPolytope
+#
+# include("./QuantumBehavior.jl")
+# include("./QuantumOpt.jl")
+
+include("./ConvexPolytope/adjacency_decomposition.jl")
 
 
 end

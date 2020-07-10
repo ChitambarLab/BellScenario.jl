@@ -5,8 +5,6 @@ module ConvexPolytope
 
 using XPORTA, LinearAlgebra
 
-include("./ConvexPolytope/adjacency_decomposition.jl")
-
 # """
 # facet_constraints(vertices, filename)
 #

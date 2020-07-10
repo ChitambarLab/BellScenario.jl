@@ -47,6 +47,24 @@ end
     @test_throws DomainError Bipartite((2,3),(4,5),dits=0)
 end
 
+@testset "PrepareAndMeasure()" begin
+    @testset "construction" begin
+        PM = PrepareAndMeasure(3,4,2)
+
+        @test PM isa Scenario
+        @test PM isa PrepareAndMeasure
+
+
+        @test PM.X == 3
+        @test PM.B == 4
+        @test PM.dits ==  2
+    end
+
+    @testset "DomainError" begin
+        @test_throws DomainError PrepareAndMeasure(0,2,2)
+    end
+end
+
 @testset "Strategy()" begin
     @testset "with scenario" begin
     probs = [1 0 0;0 1 0;0 0 1]
@@ -136,6 +154,16 @@ end
     @testset "errors" begin
         @test_throws MethodError Game([1 0 0;0 1 0;0 0 1], 1im)
     end
+end
+
+@testset "BellGame()" begin
+    BG = BellGame([1 0 0;0 1 0;0 0 1], 2)
+
+    @test BG.β == 2
+    @test BG == [1 0 0;0 1 0;0 0 1]
+
+    @test BG isa AbstractGame{Int64}
+    @test BG isa BellGame
 end
 
 end
