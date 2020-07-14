@@ -66,6 +66,14 @@ function _perm_increase_lexico_score(
             (_sort_perm_groups(game_row_tuple[1], allowed_col_perms), game_row_tuple[2]),
         game_row_tuples)
 
+
+    col_scores = map(col -> QMath.base_n_val(sort(col, rev=true), base), eachcol(game[target_row:end,:]))
+
+    # pre-sorting the game rows with mutation sort by allowed_col_perms
+    for col_id in num_cols:-1:1
+        sort!(sorted_game_row_tuples, by= tuple->col_scores[tuple[1][col_id][2]], rev=true )
+    end
+
     # find the row which maximizes the lexicographic score and has the most duplicate rows
     max_game_row = sort(
             sort(sorted_game_row_tuples, by=tuple->length(tuple[2]), rev=true),

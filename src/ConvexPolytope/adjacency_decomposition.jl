@@ -3,7 +3,7 @@ using XPORTA, Polyhedra
 using ..BellScenario: Scenario, PrepareAndMeasure, BellGame
 
 """
-    rotate_facet(F::HalfSpace, G::HalfSpace xbar::Vector{Int})
+    rotate_facet(F::HalfSpace, G::HalfSpace, xbar::Vector{Int})
 
 Performs a rotation of facet `F` relative to non-included vertex `xbar`. Returns
 the rotated `HalfSpace`. `F` is a polytope facet, `G` is a facet of `F` and `xbar`
@@ -13,12 +13,14 @@ function rotate_facet(F::HalfSpace, G::HalfSpace, xbar::Vector{Int}) :: HalfSpac
     a_rot = (F.β - F.a'*xbar)*G.a - (G.β - G.a'*xbar)*F.a
     β_rot = (F.β - F.a'*xbar)*G.β - (G.β - G.a'*xbar)*F.β
 
-    scalar = gcd(a_rot..., β_rot)
-
-    HalfSpace(Int.(a_rot/scalar), Int(β_rot/scalar))
+    HalfSpace(Int.(a_rot), Int(β_rot))
 end
 
-# assumes vertices and facets are in the normalized subspace
+"""
+    adjacent_facets(F::HalfSpace, vertices, PM::PrepareAndMeasure)
+
+assumes vertices and facets are in the normalized subspace
+"""
 function adjacent_facets(F::HalfSpace, vertices, PM::PrepareAndMeasure)
     # vertices of facet F
     F_vertices = filter(v -> (F.a' * v)[1] == F.β, vertices)
@@ -30,7 +32,7 @@ function adjacent_facets(F::HalfSpace, vertices, PM::PrepareAndMeasure)
     G_facets = [ HalfSpace(G_ineqs[i,1:(end-1)], G_ineqs[i,end]) for i in 1:size(G_ineqs,1) ]
 
     # polytope vertices not in F index 1 is farthest from F
-    xbar_vertices = sort(filter( v -> (F.a' * v)[1] != F.β, vertices), by = v -> (F.a' * v)[1])
+    xbar_vertices = sort(filter( v -> (F.a' * v)[1] != F.β, vertices), by = v -> (F.a' * v)[1], rev=true)
 
     adjacent_facets = Array{BellGame,1}(undef,0)
 
@@ -46,20 +48,25 @@ function adjacent_facets(F::HalfSpace, vertices, PM::PrepareAndMeasure)
             # rotate G about x_bar to get G'
             G_rot = rotate_facet(F, G, xbar)
 
-            # sort xbars by score against facet, greatest to least
-            sorted_xbars = sort(xbar_vertices, by = v -> (G_rot.a' * v)[1], rev=true)
-            # sorted_xbars = sort(vertices, by = v -> (G_rot.a' * v)[1], rev=true)
-
             # if max xbar is on the facet, then G_rot is a polytope facet adjacent to F
-            if (G_rot.a' * sorted_xbars[1])[1] == G_rot.β
-                gen_facet = cat([-1*G_rot.β], G_rot.a, zeros(Int64, PM.X), dims=1)
+            if (findfirst(v -> (G_rot.a'*v)[1] > G_rot.β, xbar_vertices) === nothing)
+                # check that vertex lies  on facet
+                max_id = findfirst(v -> (G_rot.a'*v)[1] == G_rot.β,xbar_vertices)
+                if max_id !== nothing#
+                    println("xbar_id : ",xbar_id)
+                    println("amx_id : ", max_id)
 
-                (bound, facet_matrix) = LocalPolytope.facet_to_matrix(PM.X, PM.B, gen_facet)
+                    scalar = gcd(G_rot.a..., G_rot.β)
 
-                canonical_facet = Symmetry.generator_facet(BellGame(convert.(Int64,facet_matrix), bound), PM)
+                    gen_facet = cat([-1*G_rot.β/scalar], G_rot.a/scalar, zeros(Int64, PM.X), dims=1)
 
-                push!(adjacent_facets, canonical_facet)
-                break
+                    (bound, facet_matrix) = LocalPolytope.facet_to_matrix(PM.X, PM.B, gen_facet)
+
+                    canonical_facet = Symmetry.generator_facet(BellGame(convert.(Int64,facet_matrix), convert(Int64,bound)), PM)
+
+                    push!(adjacent_facets, canonical_facet)
+                    break
+                end
             end
         end
     end
@@ -80,7 +87,6 @@ function adjacency_decomposition(BG_seed::BellGame, vertices, PM::PrepareAndMeas
 
     positivity_facet = zeros(Int64, (PM.B, PM.X))
     positivity_facet[1:(end-1), 1] .= 1
-
 
     positivity_game = BellGame( positivity_facet , 1)
 
@@ -106,10 +112,7 @@ function adjacency_decomposition(BG_seed::BellGame, vertices, PM::PrepareAndMeas
         new_games = filter(game -> !haskey(facet_dict, game), adj_games)
         for new_game in new_games
 
-            if new_game == positivity_game
-                println("caught a positivity game")
-                println(new_game)
-            else
+            if new_game != positivity_game
                 facet_dict[new_game] = false
             end
         end
@@ -118,7 +121,6 @@ function adjacency_decomposition(BG_seed::BellGame, vertices, PM::PrepareAndMeas
         facet_dict[target_BG] = true
 
         iteration = iteration + 1
-        println(facet_dict)
         println("iteration : ", iteration)
         println("num_facets complete : ", length(filter(isequal(true), collect(values(facet_dict)))))
         println("num facets to go: ", length(filter(isequal(false), collect(values(facet_dict)))))
