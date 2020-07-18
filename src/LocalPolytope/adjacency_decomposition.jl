@@ -1,6 +1,6 @@
 using XPORTA, Polyhedra
 
-using ..BellScenario: Scenario, PrepareAndMeasure, BellGame
+using ..BellScenario: Scenario, PrepareAndMeasure, BellGame, Symmetry, Behavior
 
 """
     rotate_facet(F::HalfSpace, G::HalfSpace, xbar::Vector{Int})
@@ -17,11 +17,14 @@ function rotate_facet(F::HalfSpace, G::HalfSpace, xbar::Vector{Int}) :: HalfSpac
 end
 
 """
-    adjacent_facets(F::HalfSpace, vertices, PM::PrepareAndMeasure)
+    adjacent_facets( vertices, F::HalfSpace, PM::PrepareAndMeasure )
 
-assumes vertices and facets are in the normalized subspace
+For the polytope represented by `vertices`, returns the canonical set of facets
+adjacent to `F` for the specified prepare and measure scenario `PM`.
+
+`F` is assumed to ba a valid facet in the normalized subspace.
 """
-function adjacent_facets(F::HalfSpace, vertices, PM::PrepareAndMeasure)
+function adjacent_facets(vertices, F::HalfSpace, PM::PrepareAndMeasure)
     # vertices of facet F
     F_vertices = filter(v -> (F.a' * v)[1] == F.β, vertices)
 
@@ -36,10 +39,7 @@ function adjacent_facets(F::HalfSpace, vertices, PM::PrepareAndMeasure)
 
     adjacent_facets = Array{BellGame,1}(undef,0)
 
-    iteration = 0
     for G in G_facets
-        iteration = iteration + 1
-        println("subfacet iteration : ", iteration, "/",length(G_facets) )
         for xbar_id in 1:length(xbar_vertices)
             # find v in P such that v is is farthest from the facet (first in above list)
             # this vertex will be called x_bar
@@ -48,33 +48,37 @@ function adjacent_facets(F::HalfSpace, vertices, PM::PrepareAndMeasure)
             # rotate G about x_bar to get G'
             G_rot = rotate_facet(F, G, xbar)
 
-            # if max xbar is on the facet, then G_rot is a polytope facet adjacent to F
+            # If no polytope vertices violate G_rot facet then it is a facet of polytope P
             if (findfirst(v -> (G_rot.a'*v)[1] > G_rot.β, xbar_vertices) === nothing)
-                # check that vertex lies  on facet
-                max_id = findfirst(v -> (G_rot.a'*v)[1] == G_rot.β,xbar_vertices)
-                if max_id !== nothing#
-                    println("xbar_id : ",xbar_id)
-                    println("amx_id : ", max_id)
 
-                    scalar = gcd(G_rot.a..., G_rot.β)
+                scalar = gcd(G_rot.a..., G_rot.β)
 
-                    gen_facet = cat([-1*G_rot.β/scalar], G_rot.a/scalar, zeros(Int64, PM.X), dims=1)
+                gen_facet = cat([-1*G_rot.β/scalar], G_rot.a/scalar, zeros(Int64, PM.X), dims=1)
 
-                    (bound, facet_matrix) = LocalPolytope.facet_to_matrix(PM.X, PM.B, gen_facet)
+                (bound, facet_matrix) = LocalPolytope.facet_to_matrix(PM.X, PM.B, gen_facet)
 
-                    canonical_facet = Symmetry.generator_facet(BellGame(convert.(Int64,facet_matrix), convert(Int64,bound)), PM)
+                canonical_facet = Symmetry.generator_facet(BellGame(convert.(Int64,facet_matrix), convert(Int64,bound)), PM)
 
-                    push!(adjacent_facets, canonical_facet)
-                    break
-                end
+                push!(adjacent_facets, canonical_facet)
+                break
             end
         end
     end
 
-    return adjacent_facets
+    # TODO: proactively handle unique facets
+    return unique(adjacent_facets)
 end
 
-function adjacency_decomposition(BG_seed::BellGame, vertices, PM::PrepareAndMeasure)
+"""
+    adjacenecy_decomposition( vertices, BG_seed::BellGame, PM::PrepareAndMeasure )
+
+Given a polytpe represented by `vertices`, returns the complete set of canonical
+facets for prepare and measure scenario `PM`. The adjacency_decomposition algorithm
+requires a seeded vertex which is supplied with the `BG_seed` argument. Facets
+are returned in the lexicographic normal form.
+"""
+function adjacency_decomposition(vertices, BG_seed::BellGame, PM::PrepareAndMeasure)
+    # TODO: accept more complicated seed facet structure to avoid guessing games etc.
 
     # canonicalize facet
     canonical_BG_seed  = Symmetry.generator_facet(BG_seed, PM)
@@ -91,13 +95,9 @@ function adjacency_decomposition(BG_seed::BellGame, vertices, PM::PrepareAndMeas
     positivity_game = BellGame( positivity_facet , 1)
 
     # loop until all facet are considered
-    iteration = 0
-    brute_count = 0
     while !all(values(facet_dict))
         # select the first uncosidered facet
         target_BG = findfirst(isequal(false), facet_dict)
-
-        println("TARGET BELL GAME : ", target_BG, ", val : ", target_BG.β)
 
         # convert Bell Game to HalfSpace (generalized -> normalized rep)
         gen_facet = cat([-1*target_BG.β],target_BG'[:], dims=1)
@@ -106,12 +106,11 @@ function adjacency_decomposition(BG_seed::BellGame, vertices, PM::PrepareAndMeas
         target_HS = HalfSpace(norm_facet[2:end], -1*norm_facet[1])
 
         # compute adjacent facets
-        adj_games = adjacent_facets(target_HS, vertices, PM)
+        adj_games = adjacent_facets(vertices, target_HS, PM)
 
         # add new facets to dictionary
         new_games = filter(game -> !haskey(facet_dict, game), adj_games)
         for new_game in new_games
-
             if new_game != positivity_game
                 facet_dict[new_game] = false
             end
@@ -119,11 +118,6 @@ function adjacency_decomposition(BG_seed::BellGame, vertices, PM::PrepareAndMeas
 
         # set current bell game to true
         facet_dict[target_BG] = true
-
-        iteration = iteration + 1
-        println("iteration : ", iteration)
-        println("num_facets complete : ", length(filter(isequal(true), collect(values(facet_dict)))))
-        println("num facets to go: ", length(filter(isequal(false), collect(values(facet_dict)))))
     end
 
     collect(keys(facet_dict))

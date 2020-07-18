@@ -15,6 +15,7 @@ makedocs(;
         "BellScenario.jl" => [
             "Overview" => "BellScenario/overview.md",
             "Types" => "BellScenario/types.md",
+            "Adjacency Decomposition" => "BellScenario/adjacency_decomposition.md",
         ]
     ],
     repo="https://github.com/ChitambarLab/BellScenario.jl/blob/{commit}{path}#L{line}",

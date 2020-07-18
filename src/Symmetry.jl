@@ -60,6 +60,7 @@ function _perm_increase_lexico_score(
 
     # tag each row and row element with an id to track permutations.
     game_row_tuples = map(dict -> (dict["row_tuple"], dict["ids"]) , values(game_row_dict))
+    # game_row_tuples = map( , )
 
     # sort each row by reverse order to maximize lexicographic contribution
     sorted_game_row_tuples = map(game_row_tuple ->

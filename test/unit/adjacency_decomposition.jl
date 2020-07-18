@@ -4,7 +4,7 @@ using Polyhedra: HalfSpace, vrep, convexhull, points
 
 @testset "./src/ConvexPolytope/adjacency_decomposition.jl" begin
 
-using BellScenario: adjacent_facets, rotate_facet, adjacency_decomposition, LocalPolytope, PrepareAndMeasure, BellGame
+using BellScenario: LocalPolytope, PrepareAndMeasure, BellGame
 
 @testset "rotate_facet()" begin
     @testset "simplex rotation" begin
@@ -14,9 +14,9 @@ using BellScenario: adjacent_facets, rotate_facet, adjacency_decomposition, Loca
 
         xbar = [1,0,0]
 
-        # neighboring facet 1
-        @test rotate_facet(F,G1,xbar) == HalfSpace([0,0,-1], 0)
-        @test rotate_facet(F,G2,xbar) == HalfSpace([1,0,1], 1)
+        # neighboring facets
+        @test LocalPolytope.rotate_facet(F,G1,xbar) == HalfSpace([0,0,-1], 0)
+        @test LocalPolytope.rotate_facet(F,G2,xbar) == HalfSpace([1,0,1], 1)
     end
 end
 
@@ -26,9 +26,15 @@ end
         PM = PrepareAndMeasure(4,4,2)
 
         F = HalfSpace([1,0,0,-1,0,1,0,-1,0,0,1,-1], 1)
-        adj_facets = adjacent_facets(F, vertices, PM)
+        adj_facets = LocalPolytope.adjacent_facets(vertices, F, PM)
 
-        println(adj_facets)
+        @test unique(adj_facets) == [
+            [1 0 0 0;1 0 0 0;1 0 0 0;0 0 0 0],
+            [1 0 0 0;1 0 0 0;0 1 0 0;0 0 1 0],
+            [2 0 0 0;1 1 1 0;0 2 0 0;0 0 1 1],
+            [1 1 0 0;1 0 1 0;0 1 1 0;0 0 0 1],
+            [2 0 0 0;1 1 1 0;0 2 0 0;0 0 2 0]
+        ]
     end
 end
 
@@ -39,9 +45,16 @@ end
 
         BG = BellGame([1 0 0 0;0 1 0 0;0 0 1 0;0 0 0 1], 2)
 
-        facets = adjacency_decomposition(BG, vertices, PM)
+        games = LocalPolytope.adjacency_decomposition(vertices, BG, PM)
 
-        println(facets)
+        # positvity not included
+        @test games == [
+            [1 0 0 0;1 0 0 0;0 1 0 0;0 0 1 0],
+            [1 0 0 0;0 1 0 0;0 0 1 0;0 0 0 1],
+            [2 0 0 0;1 1 1 0;0 2 0 0;0 0 1 1],
+            [2 0 0 0;1 1 1 0;0 2 0 0;0 0 2 0],
+            [1 1 0 0;1 0 1 0;0 1 1 0;0 0 0 1]
+        ]
     end
 
     # @testset "51-2-15 polytope" begin
@@ -67,17 +80,17 @@ end
     #     println(facets)
     # end
 
-    @testset "51-3-15 polytope" begin
-        vertices = map( v -> convert.(Int64, v), LocalPolytope.vertices((6,1),(1,6), dits=4))
-        println(length(vertices))
-        PM = PrepareAndMeasure(6,6,4)
-
-        BG = BellGame([1 0 0 0 0 0;1 0 0 0 0 0;0 1 0 0 0 0;0 0 1 0 0 0;0 0 0 1 0 0;0 0 0 0 1 0], 4)
-
-        facets = adjacency_decomposition(BG, vertices, PM)
-
-        println(facets)
-    end
+    # @testset "51-3-15 polytope" begin
+    #     vertices = map( v -> convert.(Int64, v), LocalPolytope.vertices((6,1),(1,6), dits=3))
+    #     println(length(vertices))
+    #     PM = PrepareAndMeasure(6,6,3)
+    #
+    #     BG = BellGame([1 0 0 0 0 0;1 0 0 0 0 0;0 1 0 0 0 0;0 0 1 0 0 0;0 0 0 1 0 0;0 0 0 0 1 0], 3)
+    #
+    #     facets = adjacency_decomposition(BG, vertices, PM)
+    #
+    #     println(facets)
+    # end
 end
 
 end

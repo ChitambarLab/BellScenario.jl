@@ -245,17 +245,10 @@ function behavior_to_strategy(gen_behavior, scenario::Scenario) :: Strategy
     strategy
 end
 
-# include external modules
-
-
-
-
+# include internal modules
 include("./ConvexPolytope.jl")
 using .ConvexPolytope
 
-# include internal modules
-include("./LocalPolytope.jl")
-using .LocalPolytope
 include("./Behavior.jl")
 using .Behavior
 include("./Degeneracy.jl")
@@ -263,13 +256,13 @@ using .Degeneracy
 include("./Symmetry.jl")
 using .Symmetry
 #include("./PrepareAndMeasure.jl")
+# include internal modules
+include("./LocalPolytope.jl")
+using .LocalPolytope
 include("./DichotomicLocalPolytope.jl")
 using .DichotomicLocalPolytope
 #
 # include("./QuantumBehavior.jl")
 # include("./QuantumOpt.jl")
-
-include("./ConvexPolytope/adjacency_decomposition.jl")
-
 
 end
