@@ -81,13 +81,13 @@ end
     # end
 
     # @testset "51-3-15 polytope" begin
-    #     vertices = map( v -> convert.(Int64, v), LocalPolytope.vertices((6,1),(1,6), dits=3))
+    #     vertices = map( v -> convert.(Int64, v), LocalPolytope.vertices((6,1),(1,6), dits=4))
     #     println(length(vertices))
-    #     PM = PrepareAndMeasure(6,6,3)
+    #     PM = PrepareAndMeasure(6,6,4)
     #
-    #     BG = BellGame([1 0 0 0 0 0;1 0 0 0 0 0;0 1 0 0 0 0;0 0 1 0 0 0;0 0 0 1 0 0;0 0 0 0 1 0], 3)
+    #     BG = BellGame([1 0 0 0 0 0;1 0 0 0 0 0;0 1 0 0 0 0;0 0 1 0 0 0;0 0 0 1 0 0;0 0 0 0 1 0], 4)
     #
-    #     facets = adjacency_decomposition(BG, vertices, PM)
+    #     facets = LocalPolytope.adjacency_decomposition(vertices, BG, PM)
     #
     #     println(facets)
     # end

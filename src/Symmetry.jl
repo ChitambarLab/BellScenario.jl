@@ -1,4 +1,5 @@
 """
+
 """
 module Symmetry
 
@@ -154,6 +155,5 @@ function lexico_score(BG :: BellGame) :: Vector{Int64}
 
     map(row -> QMath.base_n_val(row, base), eachrow(game_copy))
 end
-
 
 end
