@@ -15,6 +15,7 @@ makedocs(;
         "BellScenario.jl" => [
             "Overview" => "BellScenario/overview.md",
             "Types" => "BellScenario/types.md",
+            "Scenarios" => "BellScenario/scenarios.md",
             "Adjacency Decomposition" => "BellScenario/adjacency_decomposition.md",
         ]
     ],
