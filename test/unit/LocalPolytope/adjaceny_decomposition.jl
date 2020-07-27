@@ -1,6 +1,6 @@
 using Test, XPORTA
 
-using Polyhedra: HalfSpace, vrep, convexhull, points
+using Polyhedra: HalfSpace
 
 @testset "./src/ConvexPolytope/adjacency_decomposition.jl" begin
 

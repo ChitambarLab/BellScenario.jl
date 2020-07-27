@@ -1,4 +1,6 @@
-using XPORTA, Polyhedra
+using XPORTA
+
+using Polyhedra: HalfSpace
 
 using ..BellScenario: Scenario, PrepareAndMeasure, BellGame,  Behavior
 
