@@ -70,29 +70,31 @@ function adjacent_facets(vertices, F::HalfSpace, PM::PrepareAndMeasure)
 end
 
 """
-    adjacenecy_decomposition( vertices, BG_seed::BellGame, PM::PrepareAndMeasure )
+    adjacenecy_decomposition(vertices, BG_seed::BellGame, PM::PrepareAndMeasure; kwargs )
 
 Given a polytpe represented by `vertices`, returns the complete set of canonical
 facets for prepare and measure scenario `PM`. The adjacency_decomposition algorithm
 requires a seeded vertex which is supplied with the `BG_seed` argument. Facets
 are returned in the lexicographic normal form.
+
+Keyword  arguments `kwargs`
+* `skip_games ::  Vector{BellGame}` - Optional list of games to skip.
 """
-function adjacency_decomposition(vertices, BG_seed::BellGame, PM::PrepareAndMeasure)
-    # TODO: accept more complicated seed facet structure to avoid guessing games etc.
-
+function adjacency_decomposition(vertices, BG_seed::BellGame, PM::PrepareAndMeasure; skip_games=Array{BellGame}(undef,0)::Vector{BellGame})
     # canonicalize facet
-    canonical_BG_seed  = LocalPolytope.generator_facet(BG_seed, PM)
+    canonical_BG_seed = LocalPolytope.generator_facet(BG_seed, PM)
+    canonical_skip_BGs = map( BG -> LocalPolytope.generator_facet(BG, PM), skip_games)
 
-    # holds considered facets
+    # holds considered and unconsidered facets
     facet_dict = Dict{BellGame, Bool}(canonical_BG_seed => false)
+
+    # add skipped facets as considered
+    for skip_BG in canonical_skip_BGs
+        facet_dict[skip_BG] = true
+    end
 
     # projects generalized facets to normalized facets
     facet_proj = Behavior.norm_to_gen_proj((PM.X,1),(1,PM.B))
-
-    positivity_facet = zeros(Int64, (PM.B, PM.X))
-    positivity_facet[1:(end-1), 1] .= 1
-
-    positivity_game = BellGame( positivity_facet , 1)
 
     # loop until all facet are considered
     while !all(values(facet_dict))
@@ -111,9 +113,7 @@ function adjacency_decomposition(vertices, BG_seed::BellGame, PM::PrepareAndMeas
         # add new facets to dictionary
         new_games = filter(game -> !haskey(facet_dict, game), adj_games)
         for new_game in new_games
-            if new_game != positivity_game
-                facet_dict[new_game] = false
-            end
+            facet_dict[new_game] = false
         end
 
         # set current bell game to true
@@ -121,5 +121,4 @@ function adjacency_decomposition(vertices, BG_seed::BellGame, PM::PrepareAndMeas
     end
 
     collect(keys(facet_dict))
-
 end
