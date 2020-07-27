@@ -9,6 +9,9 @@ module LocalPolytope
 using QBase: QMath
 using LinearAlgebra
 
+using ..BellScenario
+
+include("./LocalPolytope/generators.jl")
 include("./LocalPolytope/adjacency_decomposition.jl")
 
 # """

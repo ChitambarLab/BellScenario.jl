@@ -24,6 +24,7 @@ export ConvexPolytope, Degeneracy, LocalPolytope, Behavior, Symmetry #, QuantumB
 # end
 
 export rotate_facet, adjacent_facets, adjacency_decomposition
+
 include("./scenarios.jl")
 include("./strategies.jl")
 include("./games.jl")
@@ -102,14 +103,14 @@ include("./Degeneracy.jl")
 using .Degeneracy
 include("./Symmetry.jl")
 using .Symmetry
-#include("./PrepareAndMeasure.jl")
+include("./PrepareAndMeasure.jl")
 # include internal modules
 include("./LocalPolytope.jl")
 using .LocalPolytope
 include("./DichotomicLocalPolytope.jl")
 using .DichotomicLocalPolytope
 #
-# include("./QuantumBehavior.jl")
-# include("./QuantumOpt.jl")
+include("./QuantumBehavior.jl")
+include("./QuantumOpt.jl")
 
 end

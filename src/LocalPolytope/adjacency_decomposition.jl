@@ -1,6 +1,6 @@
 using XPORTA, Polyhedra
 
-using ..BellScenario: Scenario, PrepareAndMeasure, BellGame, Symmetry, Behavior
+using ..BellScenario: Scenario, PrepareAndMeasure, BellGame,  Behavior
 
 """
     rotate_facet(F::HalfSpace, G::HalfSpace, xbar::Vector{Int})
@@ -57,7 +57,7 @@ function adjacent_facets(vertices, F::HalfSpace, PM::PrepareAndMeasure)
 
                 (bound, facet_matrix) = LocalPolytope.facet_to_matrix(PM.X, PM.B, gen_facet)
 
-                canonical_facet = Symmetry.generator_facet(BellGame(convert.(Int64,facet_matrix), convert(Int64,bound)), PM)
+                canonical_facet = LocalPolytope.generator_facet(BellGame(convert.(Int64,facet_matrix), convert(Int64,bound)), PM)
 
                 push!(adjacent_facets, canonical_facet)
                 break
@@ -81,7 +81,7 @@ function adjacency_decomposition(vertices, BG_seed::BellGame, PM::PrepareAndMeas
     # TODO: accept more complicated seed facet structure to avoid guessing games etc.
 
     # canonicalize facet
-    canonical_BG_seed  = Symmetry.generator_facet(BG_seed, PM)
+    canonical_BG_seed  = LocalPolytope.generator_facet(BG_seed, PM)
 
     # holds considered facets
     facet_dict = Dict{BellGame, Bool}(canonical_BG_seed => false)

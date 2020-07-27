@@ -18,7 +18,10 @@ makedocs(;
             "Games" => "BellScenario/games.md",
             "Strategies" => "BellScenario/strategies.md",
             "Adjacency Decomposition" => "BellScenario/adjacency_decomposition.md",
-        ]
+        ],
+        "LocalPolytope.jl" => [
+            "Generators" => "LocalPolytope/generators.md",
+        ],
     ],
     repo="https://github.com/ChitambarLab/BellScenario.jl/blob/{commit}{path}#L{line}",
     sitename="BellScenario.jl",
