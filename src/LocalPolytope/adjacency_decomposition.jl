@@ -81,27 +81,35 @@ are returned in the lexicographic normal form.
 
 Keyword  arguments `kwargs`
 * `skip_games ::  Vector{BellGame}` - Optional list of games to skip.
+* `max_vertices :: Int64` - Defaults to 100, the maximum number of vertices to allow in target facets.
 """
-function adjacency_decomposition(vertices, BG_seed::BellGame, PM::PrepareAndMeasure; skip_games=Array{BellGame}(undef,0)::Vector{BellGame})
+function adjacency_decomposition(vertices, BG_seed::BellGame, PM::PrepareAndMeasure; skip_games=Array{BellGame}(undef,0)::Vector{BellGame}, max_vertices=100::Int64)
+    # projects generalized facets to normalized facets
+    facet_proj = Behavior.norm_to_gen_proj((PM.X,1),(1,PM.B))
+
     # canonicalize facet
     canonical_BG_seed = LocalPolytope.generator_facet(BG_seed, PM)
     canonical_skip_BGs = map( BG -> LocalPolytope.generator_facet(BG, PM), skip_games)
 
+    gen_facet_seed = cat([-1*canonical_BG_seed.β],canonical_BG_seed'[:], dims=1)
+    norm_facet_seed = gen_facet_seed'*facet_proj
+    num_BG_seed_vertices = length(filter(v -> (norm_facet_seed[2:end]'*v)[1] == -1*norm_facet_seed[1], vertices))
+
     # holds considered and unconsidered facets
-    facet_dict = Dict{BellGame, Bool}(canonical_BG_seed => false)
+    facet_dict = Dict{BellGame, Dict}(canonical_BG_seed => Dict("considered" => false, "num_vertices" =>  num_BG_seed_vertices))
 
     # add skipped facets as considered
     for skip_BG in canonical_skip_BGs
-        facet_dict[skip_BG] = true
+        facet_dict[skip_BG] = Dict("considered" => true)
     end
 
-    # projects generalized facets to normalized facets
-    facet_proj = Behavior.norm_to_gen_proj((PM.X,1),(1,PM.B))
-
     # loop until all facet are considered
-    while !all(values(facet_dict))
-        # select the first uncosidered facet
-        target_BG = findfirst(isequal(false), facet_dict)
+    while !all(d -> d["considered"], collect(values(facet_dict)))
+        # select the first uncosidered facet with fewest vertices
+        target_BG = sort(
+                filter(d -> facet_dict[d]["considered"] == false, collect(keys(facet_dict))),
+                by=key -> facet_dict[key]["num_vertices"]
+            )[1]
 
         # convert Bell Game to HalfSpace (generalized -> normalized rep)
         gen_facet = cat([-1*target_BG.β],target_BG'[:], dims=1)
@@ -115,11 +123,19 @@ function adjacency_decomposition(vertices, BG_seed::BellGame, PM::PrepareAndMeas
         # add new facets to dictionary
         new_games = filter(game -> !haskey(facet_dict, game), adj_games)
         for new_game in new_games
-            facet_dict[new_game] = false
+            new_gen_facet = cat([-1*new_game.β],new_game'[:], dims=1)
+            new_norm_facet = new_gen_facet'*facet_proj
+            num_vertices =  length(filter(v -> (new_norm_facet[2:end]'*v)[1] == -1*new_norm_facet[1], vertices))
+
+            if num_vertices <= max_vertices
+                facet_dict[new_game] = Dict("considered" => false,  "num_vertices" => num_vertices)
+            else
+                facet_dict[new_game] = Dict("considered" => true,  "num_vertices" => num_vertices)
+            end
         end
 
         # set current bell game to true
-        facet_dict[target_BG] = true
+        facet_dict[target_BG]["considered"] = true
     end
 
     collect(keys(facet_dict))
