@@ -4,6 +4,17 @@ using Test, LinearAlgebra
 
 using BellScenario: LocalPolytope, DichotomicLocalPolytope, Behavior
 
+@testset "running all tests for module LocalPolytope.jl" begin
+
+  println("running LocalPolytope.jl unit tests:")
+  for test in readdir("./test/unit/LocalPolytope/")
+      # run only julia files in test directory
+      if occursin(r"^.*\.jl$", test)
+          println("./unit/LocalPolytope/$test")
+          include("./LocalPolytope/$test")
+      end
+  end
+
 @testset "strategies()" begin
 
     @testset "trivial strategies" begin
@@ -415,6 +426,8 @@ end
     @test LocalPolytope.facet_to_matrix(5,5,
         [-1 0 0 -1 1 -1 0 0 0 0 0 0 0 1 -1 -1 1 0 -1 -1 0 0 0 0 0 0]
     ) == (4, [0 0 0 2 0;0 0 1 1 1;0 0 2 0 0;1 0 0 0 1;0 0 1 1 1])
+end
+
 end
 
 end

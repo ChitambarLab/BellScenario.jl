@@ -1,12 +1,8 @@
-module PrepareAndMeasure
-
 # """
 # PrepareAndMeasure Module
 #
 #     Generic methods for prepare and measure scenarios
 # """
-
-using ..LocalPolytope
 
 # """
 # num_zero_rows(strategy):
@@ -93,5 +89,3 @@ end
 function vertices_interpolable(strategy1, strategy2)
     (vertices_α_interpolable(strategy1, strategy2) || vertices_β_interpolable(strategy1, strategy2))
 end
-
-end # module
