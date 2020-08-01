@@ -93,9 +93,7 @@ end
             ], 12)
         PM = PrepareAndMeasure(5,5,2)
 
-        println(LocalPolytope.generator_facet(BG, PM) )
-
-        @test LocalPolytope.generator_facet(BG, PM) == [4 2 2 0 0;4 0 0 2 2;3 3 0 3 0;0 4 0 0 2;0 0 3 3 0]
+        @test LocalPolytope.generator_facet(BG, PM) == [4 2 2 0 0;4 0 0 2 2;3 3 0 3 0;0 3 0 0 3;0 0 2 4 0]
     end
 
     @testset "historic failure no longer fails" begin
