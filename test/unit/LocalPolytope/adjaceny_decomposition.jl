@@ -46,10 +46,10 @@ end
         BG = BellGame([1 0 0 0;0 1 0 0;0 0 1 0;0 0 0 1], 2)
 
         skip = [BellGame([1 0 0 0;1 0 0 0;1 0 0 0;0 0 0 0],1)]
-        games = LocalPolytope.adjacency_decomposition(vertices, BG, PM, skip_games=skip)
+        dict = LocalPolytope.adjacency_decomposition(vertices, BG, PM, skip_games=skip)
 
         # positvity included, but is skipped in computation
-        @test games == [
+        @test collect(keys(dict)) == [
             [1 0 0 0;1 0 0 0;0 1 0 0;0 0 1 0],
             [1 0 0 0;0 1 0 0;0 0 1 0;0 0 0 1],
             [1 0 0 0;1 0 0 0;1 0 0 0;0 0 0 0],
@@ -57,6 +57,8 @@ end
             [2 0 0 0;1 1 1 0;0 2 0 0;0 0 2 0],
             [1 1 0 0;1 0 1 0;0 1 1 0;0 0 0 1],
         ]
+
+        @test dict[[1 0 0 0;1 0 0 0;1 0 0 0;0 0 0 0]]["skipped"]
     end
 
     @testset  "41-2-14 polytope no skips" begin
@@ -66,9 +68,9 @@ end
 
         BG = BellGame([1 0 0 0;0 1 0 0;0 0 1 0;0 0 0 1], 2)
 
-        games = LocalPolytope.adjacency_decomposition(vertices, BG, PM)
+        dict = LocalPolytope.adjacency_decomposition(vertices, BG, PM)
 
-        @test games == [
+        @test collect(keys(dict)) == [
             [1 0 0 0;1 0 0 0;0 1 0 0;0 0 1 0],
             [1 0 0 0;0 1 0 0;0 0 1 0;0 0 0 1],
             [1 0 0 0;1 0 0 0;1 0 0 0;0 0 0 0],
@@ -76,6 +78,8 @@ end
             [2 0 0 0;1 1 1 0;0 2 0 0;0 0 2 0],
             [1 1 0 0;1 0 1 0;0 1 1 0;0 0 0 1]
         ]
+
+        @test dict[[1 0 0 0;1 0 0 0;1 0 0 0;0 0 0 0]]["skipped"] == false
     end
 
     @testset  "41-2-14 polytope filter out positivity vertices" begin
@@ -84,15 +88,15 @@ end
                 [0 0 0 0 1 1 1 1 0 0 0 0]',
                 [0 0 0 0 0 0 0 0 1 1 1 1]',
                 [0 0 0 0 0 0 0 0 0 0 0 0]'
-            ])  , map( v -> convert.(Int64, v), LocalPolytope.vertices((4,1),(1,4), dits=2)))
+            ]), map( v -> convert.(Int64, v), LocalPolytope.vertices((4,1),(1,4), dits=2)))
 
         PM = PrepareAndMeasure(4,4,2)
 
         BG = BellGame([1 0 0 0;0 1 0 0;0 0 1 0;0 0 0 1], 2)
 
-        games = LocalPolytope.adjacency_decomposition(vertices, BG, PM)
+        dict = LocalPolytope.adjacency_decomposition(vertices, BG, PM)
 
-        @test games == [
+        @test collect(keys(dict)) == [
             [1 0 0 0;1 0 0 0;0 1 0 0;0 0 1 0],
             [1 0 0 0;0 1 0 0;0 0 1 0;0 0 0 1],
             [1 0 0 0;1 0 0 0;1 0 0 0;0 0 0 0],
