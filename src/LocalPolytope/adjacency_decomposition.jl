@@ -79,6 +79,13 @@ facets for prepare and measure scenario `PM`. The adjacency_decomposition algori
 requires a seeded vertex which is supplied with the `BG_seed` argument. Facets
 are returned in the lexicographic normal form.
 
+Returns a dictionary where the keys are canonical `BellGames` and the value is a
+dictionary with keys
+
+* "considered" => true, if the facet was considered in the algorithm.
+* "skipped" => true, if the facet was skipped (not considered).
+* "num_vertices" => number of vertices.
+
 Keyword  arguments `kwargs`
 * `skip_games ::  Vector{BellGame}` - Optional list of games to skip.
 * `max_vertices :: Int64` - Defaults to 100, the maximum number of vertices to allow in target facets.
@@ -100,7 +107,7 @@ function adjacency_decomposition(vertices, BG_seed::BellGame, PM::PrepareAndMeas
 
     # add skipped facets as considered
     for skip_BG in canonical_skip_BGs
-        facet_dict[skip_BG] = Dict("considered" => true)
+        facet_dict[skip_BG] = Dict("considered" => true, "skipped" => true)
     end
 
     # loop until all facet are considered
@@ -128,9 +135,9 @@ function adjacency_decomposition(vertices, BG_seed::BellGame, PM::PrepareAndMeas
             num_vertices =  length(filter(v -> (new_norm_facet[2:end]'*v)[1] == -1*new_norm_facet[1], vertices))
 
             if num_vertices <= max_vertices
-                facet_dict[new_game] = Dict("considered" => false,  "num_vertices" => num_vertices)
+                facet_dict[new_game] = Dict("considered" => false, "skipped" => false,  "num_vertices" => num_vertices)
             else
-                facet_dict[new_game] = Dict("considered" => true,  "num_vertices" => num_vertices)
+                facet_dict[new_game] = Dict("considered" => true, "skipped" => true, "num_vertices" => num_vertices)
             end
         end
 
@@ -138,5 +145,5 @@ function adjacency_decomposition(vertices, BG_seed::BellGame, PM::PrepareAndMeas
         facet_dict[target_BG]["considered"] = true
     end
 
-    collect(keys(facet_dict))
+    facet_dict
 end
