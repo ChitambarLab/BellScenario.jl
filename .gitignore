@@ -6,4 +6,8 @@
 /docs/build/
 /docs/site/
 
+test/Manifest.toml
+docs/Manifest.toml
+
+porta_tmp
 porta.log

@@ -3,6 +3,7 @@ using Test, LinearAlgebra
 @testset "test/unit/LocalPolytope.jl" begin
 
 using BellScenario: LocalPolytope, DichotomicLocalPolytope, Behavior
+using QBase
 
 @testset "running all tests for module LocalPolytope.jl" begin
 
@@ -14,6 +15,7 @@ using BellScenario: LocalPolytope, DichotomicLocalPolytope, Behavior
           include("./LocalPolytope/$test")
       end
   end
+
 
 @testset "strategies()" begin
 
@@ -393,30 +395,6 @@ end
     @test LocalPolytope.behavior_to_strategy(4, 2, [1 0 1 0 0 1 0 1]') == [1 0 1 0;0 1 0 1]
 
     @test_throws DomainError LocalPolytope.behavior_to_strategy(3, 3, [1 1 0 0 0 1 0]')
-end
-
-@testset "num_prepare_and_measure_vertices()" begin
-    for N in 1:5
-        for d in 1:5
-            α = (N,1)
-            β = (1,N)
-            vertices = unique(LocalPolytope.vertices(α, β, dits=d))
-            @test length(vertices) == LocalPolytope.num_prepare_and_measure_vertices(N,d)
-        end
-    end
-end
-
-@testset "num_inhomogeneous_prepare_and_measure_vertices()" begin
-    for X in 1:5
-        for B in 1:5
-            for d in 1:5
-                α = (X,1)
-                β = (1,B)
-                vertices = unique(LocalPolytope.vertices(α, β, dits=d))
-                @test length(vertices) == LocalPolytope.num_inhomogeneous_prepare_and_measure_vertices(X,B,d)
-            end
-        end
-    end
 end
 
 @testset "facet_to_matrix()" begin

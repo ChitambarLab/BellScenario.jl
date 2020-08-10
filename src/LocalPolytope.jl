@@ -11,6 +11,7 @@ using LinearAlgebra
 
 using ..BellScenario
 
+include("./LocalPolytope/vertices.jl")
 include("./LocalPolytope/generators.jl")
 include("./LocalPolytope/adjacency_decomposition.jl")
 
@@ -557,41 +558,6 @@ function vertices(alice_expt, bob_expt; bits=0, dits=0, fixed_direction=true, re
     end
 
     vertices
-end
-
-# """
-# num_prepare_and_measure_vertices(N, d)
-#
-#     Counts the polytope vertices for prepare and measure scenarios where the
-#     number of inputs matches that of the outputs.
-#
-# Input:
-#     N: Integer, number of inputs/outputs
-#     d: Integer, number of communication dits
-#
-# Output:
-#     Integer, number of vertices
-# """
-function num_prepare_and_measure_vertices(N, d)
-    sum(map(i -> QMath.stirling2(N, i)*binomial(N, i)*factorial(i), 1:d))
-end
-
-# """
-# num_inhomogeneous_prepare_and_measure_vertices(X, B, d)
-#
-#     Counts the polytope vertices for prepare and measure scenarios where the
-#     number of inputs is different than the number of outputs.
-#
-# Input:
-#     X: Integer, number of inputs
-#     B: Integer, number of outputs
-#     d: Integer, number of communication dits
-#
-# Output:
-#     Integer, number of vertices
-# """
-function num_inhomogeneous_prepare_and_measure_vertices(X, B, d)
-    sum(map(i -> QMath.stirling2(X, i)*binomial(B, i)*factorial(i), 1:d))
 end
 
 # """
