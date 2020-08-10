@@ -116,6 +116,10 @@ end
         @test strategy_dims(BlackBox(2,5)) == (5,2)
     end
 
+    @testset "prepare and measure" begin
+        @test strategy_dims(PrepareAndMeasure(3,5,2)) == (5,3)
+    end
+
     @testset "bipartite scenario" begin
         @test strategy_dims(Bipartite((3,1),(1,4))) == (4,3)
         @test strategy_dims(Bipartite((2,2),(2,2))) == (4,4)

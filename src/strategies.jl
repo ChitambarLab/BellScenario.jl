@@ -124,6 +124,10 @@ function strategy_dims(scenario::BlackBox) :: Tuple{Int, Int}
     (scenario.num_out, scenario.num_in)
 end
 
+function strategy_dims(scenario::PrepareAndMeasure) :: Tuple{Int, Int}
+    (scenario.B, scenario.X)
+end
+
 function strategy_dims(scenario::Bipartite) :: Tuple{Int, Int}
     A = scenario.A
     B = scenario.B
