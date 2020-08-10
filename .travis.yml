@@ -10,7 +10,7 @@ notifications:
   email: false
 codecov: true
 coveralls: true
-install: julia --project=docs -e '
+before_script: julia --project=docs -e '
         using Pkg;
         Pkg.add(PackageSpec(url="https://github.com/ChitambarLab/QBase.jl", rev="master"));'
 jobs:
