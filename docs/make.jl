@@ -19,7 +19,7 @@ makedocs(;
             "Strategies" => "BellScenario/strategies.md",
         ],
         "LocalPolytope.jl" => [
-            "Vertices"  => "LocalPolytope/vertices.md"
+            "Vertices"  => "LocalPolytope/vertices.md",
             "Generators" => "LocalPolytope/generators.md",
             "Adjacency Decomposition" => "LocalPolytope/adjacency_decomposition.md",
         ],
