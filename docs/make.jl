@@ -17,6 +17,7 @@ makedocs(;
             "Scenarios" => "BellScenario/scenarios.md",
             "Games" => "BellScenario/games.md",
             "Strategies" => "BellScenario/strategies.md",
+            "File I/O" => "BellScenario/file_io.md",
         ],
         "LocalPolytope.jl" => [
             "Vertices"  => "LocalPolytope/vertices.md",
