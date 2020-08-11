@@ -4,7 +4,7 @@ using QBase
 
 using Polyhedra: HalfSpace
 
-import Base: *
+import Base: *, convert
 
 export ConvexPolytope, Degeneracy, LocalPolytope, Behavior, Symmetry #, QuantumBehavior, QuantumOpt, PrepareAndMeasure
 

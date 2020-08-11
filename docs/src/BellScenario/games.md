@@ -7,4 +7,5 @@ CurrentModule = BellScenario
 AbstractGame
 Game
 BellGame
+convert
 ```

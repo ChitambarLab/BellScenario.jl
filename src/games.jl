@@ -1,3 +1,5 @@
+using XPORTA: IEQ
+
 export AbstractGame, Game, BellGame
 
 """
@@ -34,4 +36,28 @@ struct BellGame <: AbstractGame{Int64}
     β :: Int64
     scenario :: Scenario
     BellGame(game::Matrix{Int64}, β::Int64) = new(game, β)
+end
+
+"""
+Conversions between BellGames and other polytope facet represenations.
+
+`BellGame`'s to `XPORTA.IEQ`
+
+    convert(::Type{IEQ}, bell_games::Vector{BellGame})
+
+`XPORTA.IEQ` to `BellGame`'s
+
+    convert(::Type{Vector{BellGame}}, ieq::IEQ, scenario::Scenario )
+"""
+function convert(::Type{IEQ}, bell_games::Vector{BellGame})
+    ieq_vectors = map( bg -> cat( bg.game'[:], bg.β, dims=1 ), bell_games )
+    IEQ(inequalities = hcat(ieq_vectors...)'[:,:])
+end
+
+function convert(::Type{Vector{BellGame}}, ieq::IEQ, scenario::Scenario )
+    inequalities = convert.(Int64, ieq.inequalities)
+    map( ineq -> BellGame(
+        reshape(ineq[1:(end-1)], reverse(strategy_dims(scenario)))'[:,:], # this is ugly to convert vector into matrix form
+        ineq[end]
+    ), eachrow(inequalities))
 end
