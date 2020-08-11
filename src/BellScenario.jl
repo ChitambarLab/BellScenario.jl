@@ -4,30 +4,17 @@ using QBase
 
 using Polyhedra: HalfSpace
 
-import Base: *
+import Base: *, convert
 
 export ConvexPolytope, Degeneracy, LocalPolytope, Behavior, Symmetry #, QuantumBehavior, QuantumOpt, PrepareAndMeasure
-
-# function local_polytope()
-#
-# end
-#
-# function local_vertices()
-# end
-#
-# function local_facets()
-#
-# end
-#
-# function optimize_quantum_nonlocality()
-#
-# end
 
 export rotate_facet, adjacent_facets, adjacency_decomposition
 
 include("./scenarios.jl")
 include("./strategies.jl")
 include("./games.jl")
+
+include("./file_io.jl")
 
 """
     facet_to_bell_game(num_in, num_out, gen_facet)

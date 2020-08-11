@@ -1,11 +1,8 @@
 ```@meta
 CurrentModule = BellScenario
 ```
-# Black-Box Games
+# File I/O
 
 ```@docs
-AbstractGame
-Game
-BellGame
-convert
+pretty_print_txt
 ```
