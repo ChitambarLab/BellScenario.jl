@@ -1,5 +1,7 @@
 using Test
-using BellScenario
+
+println("importing BellScenario.jl")
+@time using BellScenario
 
 function _test_runner()
     @testset "BellScenario.jl" begin
