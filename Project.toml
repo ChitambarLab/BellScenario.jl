@@ -6,7 +6,6 @@ version = "0.1.0"
 [deps]
 Convex = "f65535da-76fb-5f13-bab9-19810c17039a"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-Polyhedra = "67491407-f73d-577b-9b50-8179a7c68029"
 QBase = "e52e8ede-12bf-4731-8af7-b01f6064cb11"
 SCS = "c946c3f1-0d1f-5ce8-9dea-7daa1f7e2d13"
 XPORTA = "8c143463-af6f-456f-8aed-72447cb569d2"

@@ -1,34 +1,37 @@
 using Test, XPORTA
 
-using Polyhedra: HalfSpace
-
 @testset "./src/ConvexPolytope/adjacency_decomposition.jl" begin
 
-using BellScenario: LocalPolytope, PrepareAndMeasure, BellGame
+using BellScenario
 
 @testset "rotate_facet()" begin
     @testset "simplex rotation" begin
-        F = HalfSpace([-1,0,0], 0)
-        G1 = HalfSpace([0,0,-1], 0)
-        G2 = HalfSpace([0,0,1], 1)
+        F = [-1,0,0,0]
+        G1 = [0,0,-1,0]
+        G2 = [0,0,1,1]
 
         xbar = [1,0,0]
 
         # neighboring facets
-        @test LocalPolytope.rotate_facet(F,G1,xbar) == HalfSpace([0,0,-1], 0)
-        @test LocalPolytope.rotate_facet(F,G2,xbar) == HalfSpace([1,0,1], 1)
+        @test LocalPolytope.rotate_facet(F,G1,xbar) == [0,0,-1,0]
+        @test LocalPolytope.rotate_facet(F,G2,xbar) == [1,0,1,1]
     end
 end
 
 @testset "adjacent_facets" begin
     @testset "41-2-14 polytope" begin
-        vertices = map( v -> convert.(Int64, v), LocalPolytope.vertices((4,1),(1,4), dits=2))
         PM = PrepareAndMeasure(4,4,2)
+        vertices = LocalPolytope.vertices(PM)
 
-        F = HalfSpace([1,0,0,-1,0,1,0,-1,0,0,1,-1], 1)
-        adj_facets = LocalPolytope.adjacent_facets(vertices, F, PM)
+        F = [1,0,0,0,1,0,0,0,1,-1,-1,-1,1]
+        adj_facets = LocalPolytope.adjacent_facets(vertices, F)
 
-        @test unique(adj_facets) == [
+        @test length(adj_facets) == 48
+
+        adj_games = map(f -> convert(BellGame, f, PM, rep="normalized"), adj_facets)
+        canonical_games = unique(map(g -> LocalPolytope.generator_facet(g, PM), adj_games))
+
+        @test canonical_games == [
             [1 0 0 0;1 0 0 0;1 0 0 0;0 0 0 0],
             [1 0 0 0;1 0 0 0;0 1 0 0;0 0 1 0],
             [2 0 0 0;1 1 1 0;0 2 0 0;0 0 1 1],
@@ -40,8 +43,8 @@ end
 
 @testset "adjacency_decomposition" begin
     @testset  "41-2-14 polytope skip positivity" begin
-        vertices = map( v -> convert.(Int64, v), LocalPolytope.vertices((4,1),(1,4), dits=2))
         PM = PrepareAndMeasure(4,4,2)
+        vertices = LocalPolytope.vertices(PM)
 
         BG = BellGame([1 0 0 0;0 1 0 0;0 0 1 0;0 0 0 1], 2)
 
@@ -62,9 +65,8 @@ end
     end
 
     @testset  "41-2-14 polytope no skips" begin
-        vertices = map( v -> convert.(Int64, v), LocalPolytope.vertices((4,1),(1,4), dits=2))
-
         PM = PrepareAndMeasure(4,4,2)
+        vertices = LocalPolytope.vertices(PM)
 
         BG = BellGame([1 0 0 0;0 1 0 0;0 0 1 0;0 0 0 1], 2)
 
@@ -83,14 +85,8 @@ end
     end
 
     @testset  "41-2-14 polytope filter out positivity vertices" begin
-        vertices = filter(v -> !in(v,[
-                [1 1 1 1 0 0 0 0 0 0 0 0]',
-                [0 0 0 0 1 1 1 1 0 0 0 0]',
-                [0 0 0 0 0 0 0 0 1 1 1 1]',
-                [0 0 0 0 0 0 0 0 0 0 0 0]'
-            ]), map( v -> convert.(Int64, v), LocalPolytope.vertices((4,1),(1,4), dits=2)))
-
         PM = PrepareAndMeasure(4,4,2)
+        vertices = LocalPolytope.vertices(PM, rank_d_only = true)
 
         BG = BellGame([1 0 0 0;0 1 0 0;0 0 1 0;0 0 0 1], 2)
 

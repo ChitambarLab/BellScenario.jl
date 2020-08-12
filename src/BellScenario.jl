@@ -2,13 +2,9 @@ module BellScenario
 
 using QBase
 
-using Polyhedra: HalfSpace
-
 import Base: *, convert
 
 export ConvexPolytope, Degeneracy, LocalPolytope, Behavior, Symmetry #, QuantumBehavior, QuantumOpt, PrepareAndMeasure
-
-export rotate_facet, adjacent_facets, adjacency_decomposition
 
 include("./scenarios.jl")
 include("./strategies.jl")
