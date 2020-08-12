@@ -4,7 +4,7 @@ println("importing BellScenario.jl")
 @time using BellScenario
 
 function _test_runner()
-    @testset "BellScenario.jl" begin
+    @time @testset "BellScenario.jl" begin
         @testset "unit tests:" begin
             println("running unit tests.")
             for test in readdir("./test/unit/")

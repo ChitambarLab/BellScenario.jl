@@ -111,6 +111,52 @@ end
     end
 end
 
+@testset "strategy conversions" begin
+    @testset "DeterministicStrategy -> Vector{Int64}" begin
+        s1 = DeterministicStrategy([1 1 1;0 0 0;0 0 0])
+        s2 = DeterministicStrategy([1 0 0;0 1 0;0 0 1])
+
+        norm_v1 = convert(Vector{Int64}, s1, rep="normalized")
+        norm_v2 = convert(Vector{Int64}, s2, rep="normalized")
+        gen_v = convert(Vector{Int64}, s1, rep="generalized")
+
+        @test norm_v1 isa Vector{Int64}
+        @test norm_v1 == [1,0,1,0,1,0]
+
+        @test norm_v2 isa Vector{Int64}
+        @test norm_v2 == [1,0,0,1,0,0]
+
+        @test gen_v isa Vector{Int64}
+        @test gen_v == [1,0,0,1,0,0,1,0,0]
+
+        @test_throws DomainError convert(Vector{Int64}, s1, rep="no-signaling")
+    end
+
+    @testset "Vector{Int64} -> DeterministicStrategy" begin
+        norm_v1 = [1,0,0,1,0,0,1,0,0]
+        gen_v1 = [1,0,0,0,1,0,0,0,1,0,0,0]
+
+        norm_v2 = [0,0,1,0,0,0,0,0,0]
+
+        PM = PrepareAndMeasure(3,4,2)
+
+        norm_s1 = convert(DeterministicStrategy, norm_v1, PM, rep="normalized")
+        norm_s2 = convert(DeterministicStrategy, norm_v2, PM, rep="normalized")
+
+        gen_s1 = convert(DeterministicStrategy, gen_v1, PM, rep="generalized")
+
+        @test norm_s1 isa DeterministicStrategy
+        @test norm_s2 isa DeterministicStrategy
+        @test gen_s1 isa DeterministicStrategy
+
+        @test norm_s1 == [1 1 1;0 0 0;0 0 0;0 0 0]
+        @test norm_s2 == [0 0 0;0 0 0;1 0 0;0 1 1]
+        @test gen_s1 == [1 1 1;0 0 0;0 0 0;0 0 0]
+
+        @test_throws DomainError convert(DeterministicStrategy, norm_v1, PM, rep="no-signaling")
+    end
+end
+
 @testset "strategy_dims()" begin
     @testset "black box scenario" begin
         @test strategy_dims(BlackBox(2,5)) == (5,2)

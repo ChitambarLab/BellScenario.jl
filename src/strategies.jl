@@ -2,11 +2,29 @@ export AbstractStrategy, Strategy, DeterministicStrategy, strategy_dims, is_dete
 
 """
 A stochastic matrix which represents a map from input to output for a given Bell scenario.
+
+# Base library extensions for  `AbstractStrategy`:
+
+Two strategies can be multiplied together resulting in a new strategy, e.g. `S1*S2 = S3`.
+
+    *(S1::AbstractStrategy, S2::AbstractStrategy) :: Strategy
+
+The chained strategies can describe a new black-box scenario, therefore, `scenario`
+parameter can also be passed to the multiplication operator.
+
+    *(S1::AbstractStrategy, S2::AbstractStrategy, scenario::Scenario) :: Strategy
 """
 abstract type AbstractStrategy{T} <: AbstractMatrix{T} end
 Base.size(S::AbstractStrategy) = size(S.conditionals)
 Base.getindex(S::AbstractStrategy, I::Vararg{Int,2}) = getindex(S.conditionals, I...)
 Base.setindex!(S::AbstractStrategy, v, I::Vararg{Int,2}) = (S.conditionals[I...] = v)
+
+*(S1::AbstractStrategy, S2::AbstractStrategy) = Strategy(S1.conditionals*S2.conditionals)
+*(
+    S1::AbstractStrategy,
+    S2::AbstractStrategy,
+    scenario::Scenario
+) = Strategy(S1.conditionals*S2.conditionals, scenario)
 
 """
 A strategy matrix describing the statistical behavior of a black-box.
@@ -50,6 +68,33 @@ A `DomainError` is thrown if the provided `Scenario` does not match the dimensio
 of the `conditionals` matrix.
 
 A `DomainError` is thrown if the elements of `conditionals` are not `0` or `1`.
+
+# Base library Extensions for `DeterministicStrategy`:
+
+The product of two deterministic strategies is a `DeterministicStrategy`.
+
+    *(S1::DeterministicStrategy, S2::DeterministicStrategy) :: DeterministicStrategy
+
+Deterministic strategies correspond to vertices of the local polytope. A vertex is
+simply represented by a `Vector{Int64}` and the `rep` argument specifies whether
+the vertex is in the `"normalized"` or `"generalized"` representation.
+
+Vertex (`Vector{Int64}`) -> `DeterministicStrategy`
+
+    convert(
+        ::Type{DeterministicStrategy},
+        vertex  :: Vector{Int64},
+        scenario :: Scenario;
+        rep = "normalized" :: String
+    )
+
+`DeterministicStrategy` -> Vertex (`Vector{Int64}`)
+
+    convert(
+        ::Type{Vector{Int64}},
+        strategy :: DeterministicStrategy;
+        rep = "normalized" :: String
+    )
 """
 struct DeterministicStrategy <: AbstractStrategy{Int64}
     conditionals :: Matrix{Int64}
@@ -67,6 +112,52 @@ struct DeterministicStrategy <: AbstractStrategy{Int64}
     )
 end
 
+*(
+    S1::DeterministicStrategy,
+    S2::DeterministicStrategy
+) = DeterministicStrategy(S1.conditionals*S2.conditionals)
+*(
+    S1::DeterministicStrategy,
+    S2::DeterministicStrategy,
+    scenario::Scenario
+) = DeterministicStrategy(S1.conditionals*S2.conditionals, scenario)
+
+function convert(::Type{DeterministicStrategy}, vertex::Vector{Int64}, scenario::Scenario; rep="normalized" :: String)
+    if !(rep in ("normalized", "generalized"))
+        throw(DomainError(rep, "Argument `rep` must be either 'normalized' or 'generalized'"))
+    end
+
+    s_dims = strategy_dims(scenario)
+
+    strategy_matrix = (rep == "normalized") ? cat(
+        reshape(vertex, (s_dims[1]-1, s_dims[2])),
+        zeros(Int64, (1,s_dims[2])),
+        dims = 1
+    ) : reshape(vertex, s_dims)
+
+    # for vertices in the normalized representation, if a column does not contain
+    # a one, add it to the last row.
+    if rep == "normalized"
+        for col_id in 1:s_dims[2]
+            if sum(strategy_matrix[:,col_id]) == 0
+                strategy_matrix[s_dims[1], col_id] = 1
+            end
+        end
+    end
+
+    DeterministicStrategy(strategy_matrix, scenario)
+end
+
+function convert(::Type{Vector{Int64}}, strategy::DeterministicStrategy; rep = "normalized"::String)
+    if !(rep in ("normalized", "generalized"))
+        throw(DomainError(rep, "Argument `rep` must be either 'normalized' or 'generalized'"))
+    end
+
+    max_row = (rep == "normalized") ? size(strategy,1) - 1 : size(strategy,1)
+
+    strategy[1:max_row,:][:]
+end
+
 """
     is_deterministic( strategy :: AbstractMatrix  ) :: Bool
 
@@ -79,39 +170,6 @@ function is_deterministic(S :: AbstractMatrix) :: Bool
 
     (is_conditionals && is_01)
 end
-
-"""
-Two strategies can be multiplied together resulting in a new strategy, e.g. `S1*S2 = S3`.
-
-    *(S1::AbstractStrategy, S2::AbstractStrategy) :: Strategy
-
-The chained strategies can describe a new black-box scenario, therefore, `scenario`
-parameter can also be passed to the multiplication operator.
-
-    *(S1::AbstractStrategy, S2::AbstractStrategy, scenario::Scenario) :: Strategy
-
-The product of two deterministic strategies is a `DeterministicStrategy`.
-
-    *(S1::DeterministicStrategy, S2::DeterministicStrategy) :: DeterministicStrategy
-"""
-*(S1::AbstractStrategy, S2::AbstractStrategy) = Strategy(S1.conditionals*S2.conditionals)
-*(
-    S1::AbstractStrategy,
-    S2::AbstractStrategy,
-    scenario::Scenario
-) = Strategy(S1.conditionals*S2.conditionals, scenario)
-
-*(
-    S1::DeterministicStrategy,
-    S2::DeterministicStrategy
-) = DeterministicStrategy(S1.conditionals*S2.conditionals)
-*(
-    S1::DeterministicStrategy,
-    S2::DeterministicStrategy,
-    scenario::Scenario
-) = DeterministicStrategy(S1.conditionals*S2.conditionals, scenario)
-
-
 
 """
     strategy_dims( scenario :: Scenario ) :: Tuple{Int, Int}

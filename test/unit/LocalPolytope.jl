@@ -12,7 +12,7 @@ using QBase
       # run only julia files in test directory
       if occursin(r"^.*\.jl$", test)
           println("./unit/LocalPolytope/$test")
-          include("./LocalPolytope/$test")
+          @time include("./LocalPolytope/$test")
       end
   end
 

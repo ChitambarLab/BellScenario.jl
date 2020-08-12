@@ -5,20 +5,40 @@ using Test, LinearAlgebra
 using BellScenario
 
 @testset "vertices()" begin
-    @testset "vertices(PrepareAndMeasure)" begin
+    @testset "vertices(PrepareAndMeasure::Scenario)" begin
         @testset "simple cases" begin
             PM = PrepareAndMeasure(2,2,2)
-            @test LocalPolytope.vertices(PM) == [[1 1;0 0],[0 0;1 1],[1 0;0 1],[0 1;1 0]]
+            gen_vertices = LocalPolytope.vertices(PM, rep="generalized")
+            norm_vertices = LocalPolytope.vertices(PM, rep="normalized")
 
+            @test gen_vertices == [[1,0,1,0],[0,1,0,1],[1,0,0,1],[0,1,1,0]]
+            @test map(v -> convert(DeterministicStrategy, v, PM, rep="generalized"), gen_vertices) == [
+                [1 1;0 0],[0 0;1 1],[1 0;0 1],[0 1;1 0]
+            ]
+
+            @test norm_vertices == [[1,1],[0,0],[1,0],[0,1]]
+            @test map(v -> convert(DeterministicStrategy, v, PM, rep="normalized"), norm_vertices) == [
+                [1 1;0 0],[0 0;1 1],[1 0;0 1],[0 1;1 0]
+            ]
+
+            @test_throws DomainError LocalPolytope.vertices(PM, rep="no-signaling")
+        end
+
+        @testset "vertices compatible with conversion to DeterministicStrategy" begin
             PM = PrepareAndMeasure(5,5,5)
             vertices = LocalPolytope.vertices(PM)
-            @test all(is_deterministic.(vertices))
+
+            @test map(
+                v -> convert(DeterministicStrategy, v, PM, rep="normalized"),
+            vertices) isa Vector{DeterministicStrategy}
         end
 
         @testset "rank_d_only = true" begin
             PM = PrepareAndMeasure(4,4,3)
             vertices = LocalPolytope.vertices(PM, rank_d_only=true)
-            @test all(v -> rank(v) == 3, vertices)
+            det_strategies = map(v -> convert(DeterministicStrategy, v, PM, rep="normalized"), vertices)
+
+            @test all(s -> rank(s) == 3, det_strategies)
         end
     end
 end
@@ -34,6 +54,10 @@ end
                 end
             end
         end
+
+        PM = PrepareAndMeasure(4,4,3)
+        vertices = LocalPolytope.vertices(PM, rank_d_only=true)
+        @test length(vertices) == LocalPolytope.num_vertices(PM, rank_d_only=true)
     end
 end
 
