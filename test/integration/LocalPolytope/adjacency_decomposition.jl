@@ -1,22 +1,10 @@
-using Test, XPORTA
+using Test
 
-@testset "./src/ConvexPolytope/adjacency_decomposition.jl" begin
+@testset "./src/LocalPolytope/adjacency_decomposition.jl" begin
 
 using BellScenario
 
-@testset "rotate_facet()" begin
-    @testset "simplex rotation" begin
-        F = [-1,0,0,0]
-        G1 = [0,0,-1,0]
-        G2 = [0,0,1,1]
-
-        xbar = [1,0,0]
-
-        # neighboring facets
-        @test LocalPolytope.rotate_facet(F,G1,xbar) == [0,0,-1,0]
-        @test LocalPolytope.rotate_facet(F,G2,xbar) == [1,0,1,1]
-    end
-end
+test_dir = "./test/integration/files/"
 
 @testset "adjacent_facets" begin
     @testset "41-2-14 polytope" begin
@@ -24,7 +12,7 @@ end
         vertices = LocalPolytope.vertices(PM)
 
         F = [1,0,0,0,1,0,0,0,1,-1,-1,-1,1]
-        adj_facets = LocalPolytope.adjacent_facets(vertices, F)
+        adj_facets = LocalPolytope.adjacent_facets(vertices, F, dir=test_dir)
 
         @test length(adj_facets) == 48
 
@@ -49,7 +37,7 @@ end
         BG = BellGame([1 0 0 0;0 1 0 0;0 0 1 0;0 0 0 1], 2)
 
         skip = [BellGame([1 0 0 0;1 0 0 0;1 0 0 0;0 0 0 0],1)]
-        dict = LocalPolytope.adjacency_decomposition(vertices, BG, PM, skip_games=skip)
+        dict = LocalPolytope.adjacency_decomposition(vertices, BG, PM, skip_games=skip, dir=test_dir)
 
         # positvity included, but is skipped in computation
         @test collect(keys(dict)) == [
@@ -70,7 +58,7 @@ end
 
         BG = BellGame([1 0 0 0;0 1 0 0;0 0 1 0;0 0 0 1], 2)
 
-        dict = LocalPolytope.adjacency_decomposition(vertices, BG, PM)
+        dict = LocalPolytope.adjacency_decomposition(vertices, BG, PM, dir=test_dir)
 
         @test collect(keys(dict)) == [
             [1 0 0 0;1 0 0 0;0 1 0 0;0 0 1 0],
@@ -84,13 +72,13 @@ end
         @test dict[[1 0 0 0;1 0 0 0;1 0 0 0;0 0 0 0]]["skipped"] == false
     end
 
-    @testset  "41-2-14 polytope filter out positivity vertices" begin
+    @testset "41-2-14 polytope filter out positivity vertices" begin
         PM = PrepareAndMeasure(4,4,2)
         vertices = LocalPolytope.vertices(PM, rank_d_only = true)
 
         BG = BellGame([1 0 0 0;0 1 0 0;0 0 1 0;0 0 0 1], 2)
 
-        dict = LocalPolytope.adjacency_decomposition(vertices, BG, PM)
+        dict = LocalPolytope.adjacency_decomposition(vertices, BG, PM, dir=test_dir)
 
         @test collect(keys(dict)) == [
             [1 0 0 0;1 0 0 0;0 1 0 0;0 0 1 0],
@@ -101,6 +89,19 @@ end
             [1 1 0 0;1 0 1 0;0 1 1 0;0 0 0 1],
             [1 1 1 1;0 0 0 0;0 0 0 0;0 0 0 0],
         ]
+    end
+
+    @testset "31-2-13 polytope skip by  max_vertices" begin
+        PM = PrepareAndMeasure(3,3,2)
+        vertices = LocalPolytope.vertices(PM)
+
+        BG  = BellGame([1 0 0;1 0 0;0 0 0], 1)
+
+        dict = LocalPolytope.adjacency_decomposition(vertices, BG, PM, max_vertices=5, dir=test_dir)
+
+        @test dict[[1 0 0;0 1 0;0 0 1]]["skipped"]
+
+        @test collect(keys(dict)) == [[1 0 0;1 0 0;0 0 0],[1 0 0;0 1 0;0 0 1]]
     end
 end
 

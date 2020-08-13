@@ -1,4 +1,4 @@
-using XPORTA
+using XPORTA: POI, IEQ, traf, make_porta_tmp, rm_porta_tmp
 
 export rotate_facet, adjacent_facets, adjacency_decomposition
 
@@ -24,7 +24,9 @@ end
 """
     adjacent_facets(
         vertices :: Vector{Vector{Int64}},
-        F :: Vector{int64},
+        F :: Vector{int64};
+        dir = "./" :: String,
+        cleanup = true ::Bool
     ) :: Vector{Vector{Int64}}
 
 For the polytope represented by `vertices`, returns the set of facets
@@ -32,13 +34,24 @@ adjacent to `F`.
 
 Facet vector `F` and the return facet vectors are assumed to ba in the normalized
 subspace.
+
+The  `dir` argument specifies where to where to write files and directories from
+XPORTA.jl. If `cleanup` is `true`, then a  porta_tmp directory is created as a
+subdirectory of `dir`.
+
+If `cleanup` is `false`, the created  `porta_tmp` directory is not removed.
 """
-function adjacent_facets(vertices::Vector{Vector{Int64}}, F::Vector{Int64}) :: Vector{Vector{Int64}}
+function adjacent_facets(
+    vertices::Vector{Vector{Int64}},
+    F::Vector{Int64};
+    dir = "./" :: String,
+    cleanup=true :: Bool
+) :: Vector{Vector{Int64}}
     # vertices of facet F
     F_vertices = filter(v -> F[1:(end-1)]' * v == F[end], vertices)
 
     # find the subfacets of facet F, these subfacets are labeled G
-    G_ieq = traf(POI(vertices = hcat(F_vertices...)'[:,:]))
+    G_ieq = traf(POI(vertices = hcat(F_vertices...)'[:,:]), dir=dir, cleanup=cleanup)
     G_ineqs = convert.(Int64, G_ieq.inequalities)
 
     # polytope vertices not in F index 1 is farthest from F
@@ -92,15 +105,17 @@ dictionary with keys
 * "norm_facet" => facet vector representative (normalized rep) of canonical game
 
 Keyword  arguments `kwargs`
-* `skip_games ::  Vector{BellGame}` - Optional list of games to skip.
-* `max_vertices :: Int64` - Defaults to 100, the maximum number of vertices to allow in target facets.
+* `skip_games = [] ::  Vector{BellGame}` - List of games to skip.
+* `max_vertices = 100 :: Int64` - The maximum number of vertices to allow in target facets.
+* `dir` = "./" :: String` - Directory in which to create `porta_tmp/`
 """
 function adjacency_decomposition(
     vertices :: Vector{Vector{Int64}},
     BG_seed :: BellGame,
     PM :: PrepareAndMeasure;
     skip_games = Array{BellGame}(undef,0) :: Vector{BellGame},
-    max_vertices = 100 :: Int64
+    max_vertices = 100 :: Int64,
+    dir = "./"  :: String,
 )
     # canonicalize facet
     canonical_BG_seed = LocalPolytope.generator_facet(BG_seed, PM)
@@ -126,6 +141,9 @@ function adjacency_decomposition(
         facet_dict[skip_BG] = Dict("considered" => true, "skipped" => true)
     end
 
+    # create porta_tmp directory
+    porta_tmp_dir = make_porta_tmp(dir)
+
     # loop until all facet are considered
     while !all(d -> d["considered"], collect(values(facet_dict)))
         # select the first uncosidered facet with fewest vertices
@@ -138,7 +156,7 @@ function adjacency_decomposition(
         norm_facet = facet_dict[target_BG]["norm_facet"]
 
         # compute adjacent facets
-        adj_facets = adjacent_facets(vertices, norm_facet)
+        adj_facets = adjacent_facets(vertices, norm_facet, dir=porta_tmp_dir, cleanup=false)
 
         for adj_facet in adj_facets
             adj_game = convert(BellGame, adj_facet, PM, rep="normalized")
@@ -156,7 +174,7 @@ function adjacency_decomposition(
                         "num_vertices" => num_vertices
                     )
                 else
-                    facet_dict[new_game] = Dict(
+                    facet_dict[canonical_game] = Dict(
                         "considered" => true,
                         "skipped" => true,
                         "norm_facet" => adj_facet,
@@ -169,6 +187,9 @@ function adjacency_decomposition(
         # set current bell game "considered" to true
         facet_dict[target_BG]["considered"] = true
     end
+
+    # cleanup porta_tmp directory after completion
+    rm_porta_tmp(dir)
 
     facet_dict
 end
