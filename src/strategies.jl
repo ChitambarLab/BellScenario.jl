@@ -43,11 +43,15 @@ struct Strategy <: AbstractStrategy{Float64}
     conditionals ::  QMath.Conditionals
     scenario :: Scenario
     Strategy(
-        conditionals :: Matrix{<:Real},
+        conditionals :: QMath.Conditionals,
         scenario :: Scenario
-    ) =  size(conditionals) == strategy_dims(scenario) ? new(QMath.Conditionals(conditionals), scenario) : throw(
+    ) =  size(conditionals) == strategy_dims(scenario) ? new(conditionals, scenario) : throw(
         DomainError(conditionals, "conditionals are not the correct dimension for the specified bell scenario.")
     )
+    Strategy(
+        conditionals :: Matrix{<:Real},
+        scenario :: Scenario
+    ) = Strategy(QMath.Conditionals(conditionals), scenario)
     Strategy( conditionals :: Matrix{<:Real} ) = new(
         QMath.Conditionals(conditionals),
         BlackBox(reverse(size(conditionals))...)
