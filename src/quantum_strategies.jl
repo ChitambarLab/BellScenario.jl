@@ -36,9 +36,8 @@ function quantum_strategy(
     ρ_states :: Vector{<:States.AbstractDensityMatrix},
     PM :: PrepareAndMeasure
 ) :: Strategy
-    dits = PM.d
-    if (size(Π[1]) != (dits, dits)) || (size(ρ_states[1]) != (dits, dits))
-        throw(DomainError((Π, ρ_states), "POVM or States are not dimension `d=$dits`."))
+    if (size(Π[1]) != (PM.d, PM.d)) || (size(ρ_states[1]) != (PM.d, PM.d))
+        throw(DomainError((Π, ρ_states), "POVM or States are not dimension `d=$(PM.d)`."))
     end
     conditionals = measurement_probs(Π, ρ_states)
     Strategy(conditionals, PM)

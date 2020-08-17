@@ -1,6 +1,6 @@
 module BellScenario
 
-using QBase
+using QBase, LinearAlgebra
 
 import Base: *, convert
 
@@ -15,6 +15,7 @@ include("./games.jl")
 
 # quantum scenarios
 include("./quantum_strategies.jl")
+include("./quantum_opt.jl")
 
 # read/write and printing
 include("./file_io.jl")
