@@ -120,7 +120,7 @@ function adjacency_decomposition(
     max_vertices = 100 :: Int64,
     dir = "./"  :: String,
     log = false :: Bool,
-    log_filename = "adjacency_decomposition_$(Dates.now).json" :: String,
+    log_filename = "adjacency_decomposition_$(Dates.now()).json" :: String,
 )
     # canonicalize facet
     canonical_BG_seed = LocalPolytope.generator_facet(BG_seed, PM)
