@@ -1,4 +1,5 @@
 using XPORTA: POI, IEQ, traf, make_porta_tmp, rm_porta_tmp
+using JSON, Dates
 
 export rotate_facet, adjacent_facets, adjacency_decomposition
 
@@ -107,7 +108,9 @@ dictionary with keys
 Keyword  arguments `kwargs`
 * `skip_games = [] ::  Vector{BellGame}` - List of games to skip.
 * `max_vertices = 100 :: Int64` - The maximum number of vertices to allow in target facets.
-* `dir` = "./" :: String` - Directory in which to create `porta_tmp/`
+* `dir` = "./" :: String` - Directory in which to create `porta_tmp/` and `.json` files.
+* `log = false :: Bool` - If true, the facet dictionary is  written to `.json` each iteration.
+* `log_filename = "adjacency_decomposition_$(Dates.now).json" :: String`
 """
 function adjacency_decomposition(
     vertices :: Vector{Vector{Int64}},
@@ -116,6 +119,8 @@ function adjacency_decomposition(
     skip_games = Array{BellGame}(undef,0) :: Vector{BellGame},
     max_vertices = 100 :: Int64,
     dir = "./"  :: String,
+    log = false :: Bool,
+    log_filename = "adjacency_decomposition_$(Dates.now).json" :: String,
 )
     # canonicalize facet
     canonical_BG_seed = LocalPolytope.generator_facet(BG_seed, PM)
@@ -186,6 +191,12 @@ function adjacency_decomposition(
 
         # set current bell game "considered" to true
         facet_dict[target_BG]["considered"] = true
+
+        if log
+            open(dir*log_filename, "w") do io
+                JSON.print(io, facet_dict)
+            end
+        end
     end
 
     # cleanup porta_tmp directory after completion
