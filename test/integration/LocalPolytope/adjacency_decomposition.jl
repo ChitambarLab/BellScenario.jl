@@ -1,4 +1,4 @@
-using Test
+using Test, JSON
 
 @testset "./src/LocalPolytope/adjacency_decomposition.jl" begin
 
@@ -102,6 +102,42 @@ end
         @test dict[[1 0 0;0 1 0;0 0 1]]["skipped"]
 
         @test collect(keys(dict)) == [[1 0 0;1 0 0;0 0 0],[1 0 0;0 1 0;0 0 1]]
+    end
+
+    @testset "json logging" begin
+        filename = "JSON_logging_test.json"
+        if isfile(test_dir*filename)
+            rm(test_dir*filename)
+        end
+
+        PM = PrepareAndMeasure(3,3,2)
+        vertices = LocalPolytope.vertices(PM)
+
+        BG  = BellGame([1 0 0;1 0 0;0 0 0], 1)
+
+        dict = LocalPolytope.adjacency_decomposition(
+            vertices, BG, PM,
+            dir=test_dir, log=true, log_filename = filename
+        )
+
+        log_json = JSON.parsefile(test_dir*filename)
+
+        @test log_json == Dict{String,Any}(
+            "[1 0 0; 0 1 0; 0 0 1]" => Dict{String,Any}(
+                "norm_facet" => Any[1, 0, -1, -1, 0, 1, 1],
+                "considered" => true,
+                "num_vertices" => 6,
+                "skipped" => false
+            ),
+            "[1 0 0; 1 0 0; 0 0 0]" => Dict{String,Any}(
+                "norm_facet" => Any[1, 1, 0, 0, 0, 0, 1],
+                "considered" => true,
+                "num_vertices" => 14,
+                "skipped" => false
+            )
+        )
+
+        rm(test_dir*filename)
     end
 end
 
