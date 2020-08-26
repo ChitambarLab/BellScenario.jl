@@ -14,6 +14,7 @@ using ..BellScenario
 include("./LocalPolytope/vertices.jl")
 include("./LocalPolytope/generators.jl")
 include("./LocalPolytope/adjacency_decomposition.jl")
+include("./LocalPolytope/utils.jl")
 
 # """
 # strategies(num_inputs, num_outputs):

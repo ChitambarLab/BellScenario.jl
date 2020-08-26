@@ -19,7 +19,6 @@ jobs:
       julia: 1.4
       script: julia --project=docs -e '
           using Pkg;
-          Pkg.add(PackageSpec(url="https://github.com/ChitambarLab/QBase.jl", rev="master"));
           Pkg.develop(PackageSpec(path=pwd()));
           Pkg.instantiate();
           include("docs/make.jl");'
