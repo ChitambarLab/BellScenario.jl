@@ -1,7 +1,7 @@
 ```@meta
 CurrentModule = LocalPolytope
 ```
-# Generating Vertices and Facets
+# Utilities for Facets and Vertices
 
 ```@docs
 dimension
