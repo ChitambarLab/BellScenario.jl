@@ -6,6 +6,7 @@
 /docs/build/
 /docs/site/
 
+Manifest.toml
 test/Manifest.toml
 docs/Manifest.toml
 
