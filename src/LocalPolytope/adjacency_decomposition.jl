@@ -154,9 +154,6 @@ function adjacency_decomposition(
 
     # create porta_tmp directory
     porta_tmp_dir = make_porta_tmp(dir)
-    println("YYYYYYYY")
-
-    println("Using local adjacency Decomposition")
 
     # loop until all facet are considered
     while !all(d -> d["considered"], collect(values(facet_dict)))
@@ -170,14 +167,16 @@ function adjacency_decomposition(
         norm_facet = facet_dict[target_BG]["norm_facet"]
 
         # compute adjacent facets
-        adj_facets =
-            println("trying")
+        adj_facets = try
             adjacent_facets(vertices, norm_facet, dir=porta_tmp_dir, cleanup=false)
         # if an unexpected error occurs with XPORTA, mark facet as such and move on.
         catch error
-            printn("caught")
-            facet_dict[target_BG]["considered"] == true
-            facet_dict[target_BG]["error"] == error
+            facet_dict[target_BG]["considered"] = true
+
+            push!(facet_dict[target_BG],"error" => true)
+            push!(facet_dict[target_BG],"error_msg" => sprint(showerror, error, backtrace()))
+
+            continue
         end
 
         for adj_facet in adj_facets
