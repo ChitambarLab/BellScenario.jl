@@ -167,7 +167,17 @@ function adjacency_decomposition(
         norm_facet = facet_dict[target_BG]["norm_facet"]
 
         # compute adjacent facets
-        adj_facets = adjacent_facets(vertices, norm_facet, dir=porta_tmp_dir, cleanup=false)
+        adj_facets = try
+            adjacent_facets(vertices, norm_facet, dir=porta_tmp_dir, cleanup=false)
+        # if an unexpected error occurs with XPORTA, mark facet as such and move on.
+        catch error
+            facet_dict[target_BG]["considered"] = true
+
+            push!(facet_dict[target_BG],"error" => true)
+            push!(facet_dict[target_BG],"error_msg" => sprint(showerror, error, backtrace()))
+
+            continue
+        end
 
         for adj_facet in adj_facets
             adj_game = convert(BellGame, adj_facet, PM, rep="normalized")
