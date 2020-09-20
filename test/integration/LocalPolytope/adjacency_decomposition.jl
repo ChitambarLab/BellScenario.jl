@@ -50,6 +50,9 @@ end
         ]
 
         @test dict[[1 0 0 0;1 0 0 0;1 0 0 0;0 0 0 0]]["skipped"]
+
+        @test all(d -> haskey(d[2], "norm_facet"), dict)
+        @test all(d -> haskey(d[2], "generator_facet"), dict)
     end
 
     @testset  "41-2-14 polytope no skips" begin
@@ -124,12 +127,14 @@ end
 
         @test log_json == Dict{String,Any}(
             "[1 0 0; 0 1 0; 0 0 1]" => Dict{String,Any}(
+                "generator_facet" => Any[1, 0, 0, 1, -1, -1, 1],
                 "norm_facet" => Any[1, 0, -1, -1, 0, 1, 1],
                 "considered" => true,
                 "num_vertices" => 6,
                 "skipped" => false
             ),
             "[1 0 0; 1 0 0; 0 0 0]" => Dict{String,Any}(
+                "generator_facet" => Any[1, 1, 0, 0, 0, 0, 1],
                 "norm_facet" => Any[1, 1, 0, 0, 0, 0, 1],
                 "considered" => true,
                 "num_vertices" => 14,

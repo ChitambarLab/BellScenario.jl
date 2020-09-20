@@ -137,13 +137,19 @@ function adjacency_decomposition(
             "considered" => false,
             "skipped" => false,
             "norm_facet"  => norm_facet_seed,
+            "generator_facet" => convert(Vector{Int64}, canonical_BG_seed),
             "num_vertices" => num_BG_seed_vertices
         )
     )
 
     # add skipped facets as considered
     for skip_BG in canonical_skip_BGs
-        facet_dict[skip_BG] = Dict("considered" => true, "skipped" => true)
+        facet_dict[skip_BG] = Dict(
+            "considered" => true,
+            "norm_facet" => convert(Vector{Int64}, skip_BG, rep = "normalized"),
+            "generator_facet" => convert(Vector{Int64}, skip_BG),
+            "skipped" => true
+        )
     end
 
     # create porta_tmp directory
@@ -161,7 +167,17 @@ function adjacency_decomposition(
         norm_facet = facet_dict[target_BG]["norm_facet"]
 
         # compute adjacent facets
-        adj_facets = adjacent_facets(vertices, norm_facet, dir=porta_tmp_dir, cleanup=false)
+        adj_facets = try
+            adjacent_facets(vertices, norm_facet, dir=porta_tmp_dir, cleanup=false)
+        # if an unexpected error occurs with XPORTA, mark facet as such and move on.
+        catch error
+            facet_dict[target_BG]["considered"] = true
+
+            push!(facet_dict[target_BG],"error" => true)
+            push!(facet_dict[target_BG],"error_msg" => sprint(showerror, error, backtrace()))
+
+            continue
+        end
 
         for adj_facet in adj_facets
             adj_game = convert(BellGame, adj_facet, PM, rep="normalized")
@@ -176,6 +192,7 @@ function adjacency_decomposition(
                         "considered" => false,
                         "skipped" => false,
                         "norm_facet" => adj_facet,
+                        "generator_facet" => convert(Vector{Int64}, canonical_game),
                         "num_vertices" => num_vertices
                     )
                 else
@@ -183,6 +200,7 @@ function adjacency_decomposition(
                         "considered" => true,
                         "skipped" => true,
                         "norm_facet" => adj_facet,
+                        "generator_facet" => convert(Vector{Int64}, canonical_game),
                         "num_vertices" => num_vertices
                     )
                 end

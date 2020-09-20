@@ -24,6 +24,7 @@ makedocs(;
             "Vertices"  => "LocalPolytope/vertices.md",
             "Generators" => "LocalPolytope/generators.md",
             "Adjacency Decomposition" => "LocalPolytope/adjacency_decomposition.md",
+            "Utilities" => "LocalPolytope/utils.md",
         ],
     ],
     repo="https://github.com/ChitambarLab/BellScenario.jl/blob/{commit}{path}#L{line}",
