@@ -71,13 +71,12 @@ end
     random_strategy(
         num_inputs :: Int64,
         num_outputs :: Int64;
-        insert_zeros = true
     ) :: Strategy
 
-Constructs a randomized [`Strategy`](@ref) matrix. The `insert_zeros` flag ensures
-that the constructed strategy does not closely resemble a uniform distribution.
+Constructs a randomized [`Strategy`](@ref) matrix. Zeros are inserted into the
+strategy to ensure that it does not closely resemble a uniform distribution.
 """
-function random_strategy(num_inputs :: Int64, num_outputs :: Int64; insert_zeros=true) :: Strategy
+function random_strategy(num_inputs :: Int64, num_outputs :: Int64) :: Strategy
     prob_vecs = map(i -> begin
         num_nonzero_elements = rand(1:num_outputs)
         v = zeros(Float64, num_outputs)
