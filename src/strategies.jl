@@ -7,6 +7,8 @@ export strategy_dims, is_deterministic
 # Constructors
 export random_strategy
 
+using Random: shuffle!
+
 """
 A stochastic matrix which represents a map from input to output for a given Bell scenario.
 
@@ -66,14 +68,21 @@ struct Strategy <: AbstractStrategy{Float64}
 end
 
 """
-    random_strategy( num_inputs :: Int64, num_outputs :: Int64 ) :: Strategy
+    random_strategy(
+        num_inputs :: Int64,
+        num_outputs :: Int64;
+        insert_zeros = true
+    ) :: Strategy
 
-Constructs a randomized [`Strategy`](@ref) matrix.
+Constructs a randomized [`Strategy`](@ref) matrix. The `insert_zeros` flag ensures
+that the constructed strategy does not closely resemble a uniform distribution.
 """
-function random_strategy(num_inputs :: Int64, num_outputs :: Int64) :: Strategy
+function random_strategy(num_inputs :: Int64, num_outputs :: Int64; insert_zeros=true) :: Strategy
     prob_vecs = map(i -> begin
-        v = rand(Float64, num_outputs)
-        v/norm(v,1)
+        num_nonzero_elements = rand(1:num_outputs)
+        v = zeros(Float64, num_outputs)
+        v[1:num_nonzero_elements] = rand(Float64, num_nonzero_elements)
+        shuffle!(v)/norm(v,1)
     end, 1:num_inputs)
 
     Strategy(hcat(prob_vecs...))
