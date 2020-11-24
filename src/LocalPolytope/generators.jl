@@ -1,4 +1,34 @@
-export generator_facet
+export generator_facet, generator_vertex, generator
+
+"""
+    generator_vertex(
+        D :: DeterministicStrategy,
+        PM :: PrepareAndMeasure
+    ) :: DeterministicStrategy
+
+Finds the generating vertex for the provided `DeterministicStrategy`. The
+generating vertex is the lexicographic normal form of `D`.
+"""
+function generator_vertex(
+    D :: DeterministicStrategy,
+    PM :: PrepareAndMeasure
+) :: DeterministicStrategy
+
+    sorted_row_sums = sort(map(row -> sum(row), eachrow(D)), rev=true)
+
+    m = zeros(Int64, size(D))
+
+    low_id = 1
+    for row_id in 1:length(sorted_row_sums)
+        high_id = (low_id-1)+sorted_row_sums[row_id]
+
+        m[row_id, low_id:high_id] .= 1
+
+        low_id += sorted_row_sums[row_id]
+    end
+
+    return DeterministicStrategy(m, PM)
+end
 
 """
     generator_facet( BG :: BellGame, PM :: PrepareAndMeasure ) :: BellGame
@@ -142,20 +172,23 @@ function lexico_score(BG :: BellGame) :: Vector{Int64}
 end
 
 
-# function generator(BG :: BellGame, PM :: PrepareAndMeasure) :: BellGame
-#
-#     _lexico_reduce(m :: Matrix{Int64}, target_row :: Int64,  )
-#
-# end
+function generator(BG :: BellGame, PM :: PrepareAndMeasure) :: BellGame
+
+    max_perms = _lexico_reduce(BG.game, 1, [(collect(1:size(BG,1)), collect(1:size(BG,2)))], [collect(1:size(BG,2))], PM )[1]
+
+    generator = BG.game[max_perms[1],max_perms[2]]
+
+    BellGame(generator, BG.β)
+end
 
 
 function _lexico_reduce(
     m :: Matrix{Int64},
     target_row :: Int64,
     max_perms ::  Vector{Tuple{Vector{Int64},Vector{Int64}}},
-    allowed_col_perms :: Vector{Vector{Int64}}
+    allowed_col_perms :: Vector{Vector{Int64}},
     # allowed_row_perms :: Vector{Int64},
-    # PM :: PrepareAndMeasure
+    PM :: PrepareAndMeasure
 )
     num_rows = size(m,2)
     allowed_row_perms = collect(target_row:num_rows)
@@ -238,7 +271,7 @@ function _lexico_reduce(
             end
         end
 
-        _lexico_reduce(m, target_row + 1, max_perms, new_allowed_col_perms )
+        max_perms = _lexico_reduce(m, target_row + 1, max_perms, new_allowed_col_perms, PM )
     end
 
     max_perms
