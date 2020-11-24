@@ -157,6 +157,20 @@ end
     end
 end
 
+@testset "random_strategy()" begin
+    @testset "simple cases"  begin
+        strat = random_strategy(3,3)
+
+        @test strat isa Strategy
+        @test size(strat) == (3,3)
+
+        strat = random_strategy(9,7)
+
+        @test strat isa Strategy
+        @test size(strat) == (7,9)
+    end
+end
+
 @testset "strategy_dims()" begin
     @testset "black box scenario" begin
         @test strategy_dims(BlackBox(2,5)) == (5,2)

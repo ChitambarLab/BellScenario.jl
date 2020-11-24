@@ -1,4 +1,11 @@
-export AbstractStrategy, Strategy, DeterministicStrategy, strategy_dims, is_deterministic
+# Types
+export AbstractStrategy, Strategy, DeterministicStrategy
+
+# Validation methods
+export strategy_dims, is_deterministic
+
+# Constructors
+export random_strategy
 
 """
 A stochastic matrix which represents a map from input to output for a given Bell scenario.
@@ -56,6 +63,20 @@ struct Strategy <: AbstractStrategy{Float64}
         QMath.Conditionals(conditionals),
         BlackBox(reverse(size(conditionals))...)
     )
+end
+
+"""
+    random_strategy( num_inputs :: Int64, num_outputs :: Int64 ) :: Strategy
+
+Constructs a randomized [`Strategy`](@ref) matrix.
+"""
+function random_strategy(num_inputs :: Int64, num_outputs :: Int64) :: Strategy
+    prob_vecs = map(i -> begin
+        v = rand(Float64, num_outputs)
+        v/norm(v,1)
+    end, 1:num_inputs)
+
+    Strategy(hcat(prob_vecs...))
 end
 
 """
