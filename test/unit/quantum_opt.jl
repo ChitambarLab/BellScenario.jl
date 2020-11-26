@@ -4,13 +4,13 @@ using Test, QBase
 
 using BellScenario
 
-@testset "optimize_measurement(PrepareAndMeasure)" begin
+@testset "optimize_measurement(LocalSignaling)" begin
     @testset "trine states" begin
-        PM = PrepareAndMeasure(3,3,2)
+        scenario = LocalSignaling(3,3,2)
         game = BellGame([1 0 0;0 1 0;0 0 1], 2)
         ρ_states = States.trine_qubits
 
-        dict = optimize_measurement(game, ρ_states, PM)
+        dict = optimize_measurement(game, ρ_states, scenario)
 
         @test isapprox(dict["violation"], 0.0, atol=1e-6)
         @test all(isapprox.(dict["povm"][1], 2/3*ρ_states[1], atol=1e-6))
@@ -19,15 +19,15 @@ using BellScenario
 
         @test dict["states"] == ρ_states
         @test dict["game"] == game
-        @test dict["scenario"] == PM
+        @test dict["scenario"] == scenario
     end
 
     @testset "bb84 states" begin
-        PM = PrepareAndMeasure(4,4,2)
+        scenario = LocalSignaling(4,4,2)
         game = BellGame([1 0 0 0;0 1 0 0;0 0 1 0;0 0 0 1], 2)
         ρ_states = States.bb84_qubits
 
-        dict = optimize_measurement(game, ρ_states, PM)
+        dict = optimize_measurement(game, ρ_states, scenario)
 
         @test isapprox(dict["violation"], 0.0, atol=1e-6)
         @test all(isapprox.(dict["povm"][1], 1/2*ρ_states[1], atol=1e-3))
@@ -37,11 +37,11 @@ using BellScenario
     end
 
     @testset "sic qubit states" begin
-        PM = PrepareAndMeasure(4,4,2)
+        scenario = LocalSignaling(4,4,2)
         game = BellGame([1 0 0 0;0 1 0 0;0 0 1 0;0 0 0 1], 2)
         ρ_states = States.sic_qubits
 
-        dict = optimize_measurement(game, ρ_states, PM)
+        dict = optimize_measurement(game, ρ_states, scenario)
 
         @test isapprox(dict["violation"], 0.0, atol=1e-5)
         @test all(isapprox.(dict["povm"][1], 1/2*ρ_states[1], atol=1e-5))
@@ -51,14 +51,14 @@ using BellScenario
     end
 
     @testset "Errors" begin
-        PM = PrepareAndMeasure(3,3,2)
+        scenario = LocalSignaling(3,3,2)
         states = States.bb84_qubits
         game = BellGame([1 0 0 0;0 1 0 0;0 0 1 0;0 0 0 1], 2)
 
-        @test_throws DomainError optimize_measurement(game, states, PM)
+        @test_throws DomainError optimize_measurement(game, states, scenario)
 
-        PM = PrepareAndMeasure(4,4,3)
-        @test_throws DomainError  optimize_measurement(game, states, PM)
+        scenario = LocalSignaling(4,4,3)
+        @test_throws DomainError  optimize_measurement(game, states, scenario)
     end
 end
 

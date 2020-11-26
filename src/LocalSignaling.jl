@@ -1,5 +1,5 @@
 # """
-# PrepareAndMeasure Module
+# LocalSignaling Module
 #
 #     Generic methods for prepare and measure scenarios
 # """

@@ -7,5 +7,5 @@ CurrentModule = BellScenario
 Scenario
 BlackBox
 Bipartite
-PrepareAndMeasure
+LocalSignaling
 ```

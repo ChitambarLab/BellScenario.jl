@@ -3,15 +3,15 @@
 """
 module Symmetry
 
-using ..BellScenario: PrepareAndMeasure
+using ..BellScenario: LocalSignaling
 
 using ..QBase: QMath
 
 abstract type Group end
 
-function groups(PM :: PrepareAndMeasure)
-    input_relabels = QMath.permutation_matrices(PM.X)
-    output_relabels = QMath.permutation_matrices(PM.B)
+function groups(scenario :: LocalSignaling)
+    input_relabels = QMath.permutation_matrices(scenario.X)
+    output_relabels = QMath.permutation_matrices(scenario.B)
 
     Dict(
         "input" => input_relabels,

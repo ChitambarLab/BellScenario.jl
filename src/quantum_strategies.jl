@@ -11,12 +11,12 @@ scenarios include:
         ρ_states :: Vector{<:States.AbstractDensityMatrix}
     ) :: Strategy
 
-`PrepareAndMeasure` scenarios
+`LocalSignaling` scenarios
 
     quantum_strategy(
         Π :: Observables.AbstractPOVM,
         ρ_states :: Vector{<:States.AbstractDensityMatrix},
-        PM :: PrepareAndMeasure
+        scenario :: LocalSignaling
     ) :: Strategy
 
 A `DomainError` is thrown if the provided states and measurements are not compatible
@@ -34,11 +34,11 @@ end
 function quantum_strategy(
     Π :: Observables.AbstractPOVM,
     ρ_states :: Vector{<:States.AbstractDensityMatrix},
-    PM :: PrepareAndMeasure
+    scenario :: LocalSignaling
 ) :: Strategy
-    if (size(Π[1]) != (PM.d, PM.d)) || (size(ρ_states[1]) != (PM.d, PM.d))
-        throw(DomainError((Π, ρ_states), "POVM or States are not dimension `d=$(PM.d)`."))
+    if (size(Π[1]) != (scenario.d, scenario.d)) || (size(ρ_states[1]) != (scenario.d, scenario.d))
+        throw(DomainError((Π, ρ_states), "POVM or States are not dimension `d=$(scenario.d)`."))
     end
     conditionals = measurement_probs(Π, ρ_states)
-    Strategy(conditionals, PM)
+    Strategy(conditionals, scenario)
 end

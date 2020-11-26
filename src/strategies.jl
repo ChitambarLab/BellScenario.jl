@@ -215,7 +215,7 @@ function strategy_dims(scenario::BlackBox) :: Tuple{Int, Int}
     (scenario.num_out, scenario.num_in)
 end
 
-function strategy_dims(scenario::PrepareAndMeasure) :: Tuple{Int, Int}
+function strategy_dims(scenario::LocalSignaling) :: Tuple{Int, Int}
     (scenario.B, scenario.X)
 end
 

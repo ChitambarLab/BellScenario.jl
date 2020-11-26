@@ -59,10 +59,10 @@ end
     @testset  "Vector{Int64} -> BellGame" begin
         norm_facet = [2,1,0,0,1,2,-2,-1,-2,2]
         gen_facet = [2,1,0,0,0,1,2,0,0,1,0,2,4]
-        PM = PrepareAndMeasure(3,4,2)
+        scenario = LocalSignaling(3,4,2)
 
-        bell_game = convert(BellGame, norm_facet, PM, rep="normalized")
-        bell_game2 = convert(BellGame, gen_facet, PM, rep="generalized")
+        bell_game = convert(BellGame, norm_facet, scenario, rep="normalized")
+        bell_game2 = convert(BellGame, gen_facet, scenario, rep="generalized")
 
         @test bell_game isa BellGame
         @test bell_game2 isa BellGame
@@ -71,7 +71,7 @@ end
         @test bell_game2 == [2 0 0;1 1 1;0 2 0;0 0 2]
         @test bell_game2.β == 4
 
-        @test_throws DomainError convert(BellGame, norm_facet, PM, rep="no-signaling")
+        @test_throws DomainError convert(BellGame, norm_facet, scenario, rep="no-signaling")
     end
 
     @testset "BellGames -> IEQ" begin
@@ -114,7 +114,7 @@ end
 
     @testset "BellGames -> IEQ -> BellGames" begin
         bell_games = BellGame.([[2 0 0 0;0 2 0 0;0 0 2 0;1 1 1 0],[1 0 0 0;1 0 0 0;1 0 0 0;0 0 0 0]],[4,1])
-        scenario = PrepareAndMeasure(4,4,2)
+        scenario = LocalSignaling(4,4,2)
 
         ieq = convert(IEQ, bell_games)
         converted_bell_games = convert(Vector{BellGame}, ieq, scenario)

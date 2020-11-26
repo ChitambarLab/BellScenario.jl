@@ -138,12 +138,12 @@ end
 
         norm_v2 = [0,0,1,0,0,0,0,0,0]
 
-        PM = PrepareAndMeasure(3,4,2)
+        scenario = LocalSignaling(3,4,2)
 
-        norm_s1 = convert(DeterministicStrategy, norm_v1, PM, rep="normalized")
-        norm_s2 = convert(DeterministicStrategy, norm_v2, PM, rep="normalized")
+        norm_s1 = convert(DeterministicStrategy, norm_v1, scenario, rep="normalized")
+        norm_s2 = convert(DeterministicStrategy, norm_v2, scenario, rep="normalized")
 
-        gen_s1 = convert(DeterministicStrategy, gen_v1, PM, rep="generalized")
+        gen_s1 = convert(DeterministicStrategy, gen_v1, scenario, rep="generalized")
 
         @test norm_s1 isa DeterministicStrategy
         @test norm_s2 isa DeterministicStrategy
@@ -153,7 +153,7 @@ end
         @test norm_s2 == [0 0 0;0 0 0;1 0 0;0 1 1]
         @test gen_s1 == [1 1 1;0 0 0;0 0 0;0 0 0]
 
-        @test_throws DomainError convert(DeterministicStrategy, norm_v1, PM, rep="no-signaling")
+        @test_throws DomainError convert(DeterministicStrategy, norm_v1, scenario, rep="no-signaling")
     end
 end
 
@@ -177,7 +177,7 @@ end
     end
 
     @testset "prepare and measure" begin
-        @test strategy_dims(PrepareAndMeasure(3,5,2)) == (5,3)
+        @test strategy_dims(LocalSignaling(3,5,2)) == (5,3)
     end
 
     @testset "bipartite scenario" begin

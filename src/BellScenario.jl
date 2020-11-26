@@ -4,7 +4,7 @@ using QBase, LinearAlgebra
 
 import Base: *, convert
 
-export ConvexPolytope, Degeneracy, LocalPolytope, Behavior, Symmetry #, QuantumBehavior, QuantumOpt, PrepareAndMeasure
+export ConvexPolytope, Degeneracy, LocalPolytope, Behavior, Symmetry #, QuantumBehavior, QuantumOpt, LocalSignaling
 
 # black-box scenarios
 include("./scenarios.jl")
@@ -30,7 +30,7 @@ include("./Degeneracy.jl")
 using .Degeneracy
 include("./Symmetry.jl")
 using .Symmetry
-include("./PrepareAndMeasure.jl")
+include("./LocalSignaling.jl")
 # include internal modules
 include("./LocalPolytope.jl")
 using .LocalPolytope

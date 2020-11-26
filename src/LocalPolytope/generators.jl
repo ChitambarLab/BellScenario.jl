@@ -3,7 +3,7 @@ export generator_facet, generator_vertex
 """
     generator_vertex(
         D :: DeterministicStrategy,
-        PM :: PrepareAndMeasure
+        scenario :: LocalSignaling
     ) :: DeterministicStrategy
 
 Finds the generating vertex for the provided [`DeterministicStrategy`](@ref). The
@@ -11,7 +11,7 @@ generating vertex is the lexicographic normal form of `D`.
 """
 function generator_vertex(
     D :: DeterministicStrategy,
-    PM :: PrepareAndMeasure
+    scenario :: LocalSignaling
 ) :: DeterministicStrategy
 
     sorted_row_sums = sort(map(row -> sum(row), eachrow(D)), rev=true)
@@ -27,17 +27,17 @@ function generator_vertex(
         low_id += sorted_row_sums[row_id]
     end
 
-    return DeterministicStrategy(m, PM)
+    return DeterministicStrategy(m, scenario)
 end
 
 """
-    generator_facet( BG :: BellGame, PM :: PrepareAndMeasure ) :: BellGame
+    generator_facet( BG :: BellGame, scenario :: LocalSignaling ) :: BellGame
 
 Finds the generating facet for the provided `BellGame`. The generator is provided
 in lexicographic normal form. The generating facet is found recursively by an
 algorithm which sorts by lexicographic scores.
 """
-function generator_facet(BG :: BellGame, PM :: PrepareAndMeasure) :: BellGame
+function generator_facet(BG :: BellGame, scenario :: LocalSignaling) :: BellGame
 
     game_copy = copy(BG)
 
@@ -50,7 +50,7 @@ function generator_facet(BG :: BellGame, PM :: PrepareAndMeasure) :: BellGame
     end
 
     target_row = 1
-    col_perms = [collect(1:PM.X)]
+    col_perms = [collect(1:scenario.X)]
     perm_game = _perm_increase_lexico_score(game_copy, target_row, col_perms)
 
     # correcting reduced values

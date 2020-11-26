@@ -45,21 +45,21 @@ end
     @test_throws DomainError Bipartite((2,3),(4,5),dits=0)
 end
 
-@testset "PrepareAndMeasure()" begin
+@testset "LocalSignaling()" begin
     @testset "construction" begin
-        PM = PrepareAndMeasure(3,4,2)
+        scenario = LocalSignaling(3,4,2)
 
-        @test PM isa Scenario
-        @test PM isa PrepareAndMeasure
+        @test scenario isa Scenario
+        @test scenario isa LocalSignaling
 
 
-        @test PM.X == 3
-        @test PM.B == 4
-        @test PM.d ==  2
+        @test scenario.X == 3
+        @test scenario.B == 4
+        @test scenario.d ==  2
     end
 
     @testset "DomainError" begin
-        @test_throws DomainError PrepareAndMeasure(0,2,2)
+        @test_throws DomainError LocalSignaling(0,2,2)
     end
 end
 end

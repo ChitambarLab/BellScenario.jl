@@ -88,12 +88,12 @@ end
     adjacenecy_decomposition(
         vertices :: Vector{Vector{Int64}},
         BG_seed :: BellGame,
-        PM :: PrepareAndMeasure;
+        scenario :: LocalSignaling;
         kwargs
     )
 
 Given a polytpe represented by `vertices`, returns the complete set of canonical
-facets for prepare and measure scenario `PM`. The adjacency_decomposition algorithm
+facets for prepare and measure scenario `scenario`. The adjacency_decomposition algorithm
 requires a seeded vertex which is supplied with the `BG_seed` argument. Facets
 are returned in the lexicographic normal form.
 
@@ -115,7 +115,7 @@ Keyword  arguments `kwargs`
 function adjacency_decomposition(
     vertices :: Vector{Vector{Int64}},
     BG_seed :: BellGame,
-    PM :: PrepareAndMeasure;
+    scenario :: LocalSignaling;
     skip_games = Array{BellGame}(undef,0) :: Vector{BellGame},
     max_vertices = 100 :: Int64,
     dir = "./"  :: String,
@@ -123,8 +123,8 @@ function adjacency_decomposition(
     log_filename = "adjacency_decomposition_$(Dates.now()).json" :: String,
 )
     # canonicalize facet
-    canonical_BG_seed = LocalPolytope.generator_facet(BG_seed, PM)
-    canonical_skip_BGs = map( BG -> LocalPolytope.generator_facet(BG, PM), skip_games)
+    canonical_BG_seed = LocalPolytope.generator_facet(BG_seed, scenario)
+    canonical_skip_BGs = map( BG -> LocalPolytope.generator_facet(BG, scenario), skip_games)
 
     norm_facet_seed = convert(Vector{Int64}, canonical_BG_seed, rep = "normalized")
     num_BG_seed_vertices = length(
@@ -180,8 +180,8 @@ function adjacency_decomposition(
         end
 
         for adj_facet in adj_facets
-            adj_game = convert(BellGame, adj_facet, PM, rep="normalized")
-            canonical_game = LocalPolytope.generator_facet(adj_game, PM)
+            adj_game = convert(BellGame, adj_facet, scenario, rep="normalized")
+            canonical_game = LocalPolytope.generator_facet(adj_game, scenario)
 
             # add new facet to  dictionary
             if !haskey(facet_dict, canonical_game)

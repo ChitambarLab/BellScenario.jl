@@ -1,4 +1,4 @@
-export Scenario, BlackBox, Bipartite, PrepareAndMeasure
+export Scenario, BlackBox, Bipartite, LocalSignaling
 
 """
 An abstract type to represent general black-box scenarios.
@@ -51,20 +51,22 @@ struct Bipartite <: Scenario
 end
 
 """
-    PrepareAndMeasure(
-        X :: Int,
-        B :: Int,
-        d :: Int,
+    LocalSignaling(
+        X :: Int64,
+        B :: Int64,
+        d :: Int64,
     )
 
-A black-box scenario with `X` inputs, `B` outputs, and `d`-dits of communication from the
-input device to the output device.
+A black-box signaling scenario involving a transmitting and receiving device.
+The transmitter takes `X` inputs and the receiver has `B` outputs.
+The transmitter signals to the receiver using `d`-dits of classical or quantum
+communication.
 """
-struct PrepareAndMeasure <: Scenario
-    X :: Int
-    B :: Int
-    d :: Int
-    PrepareAndMeasure(X::Int, B::Int, d::Int) = (X ≥ 1 && B ≥ 1 && d ≥ 1) ? new(X,B,d) : throw(
+struct LocalSignaling <: Scenario
+    X :: Int64
+    B :: Int64
+    d :: Int64
+    LocalSignaling(X::Int64, B::Int64, d::Int64) = (X ≥ 1 && B ≥ 1 && d ≥ 1) ? new(X,B,d) : throw(
         DomainError((X, B, d), "parameters must be ≥ 1")
     )
 end

@@ -15,22 +15,22 @@ using BellScenario
     @test q_strat == [1 0 0;0 1 0;0 0 1]
 end
 
-@testset "quantum_strategy(PrepareAndMeasure)" begin
-    PM = PrepareAndMeasure(3,3,2)
+@testset "quantum_strategy(LocalSignaling)" begin
+    scenario = LocalSignaling(3,3,2)
     q_strat = quantum_strategy(
         Observables.mirror_symmetric_qubit_3povm(π/3),
         States.trine_qubits,
-        PM
+        scenario
     )
 
     @test q_strat isa Strategy
     @test q_strat ≈ [2/3 1/6 1/6;1/6 2/3 1/6;1/6 1/6 2/3]
-    @test q_strat.scenario isa PrepareAndMeasure
+    @test q_strat.scenario isa LocalSignaling
 
     @test_throws DomainError quantum_strategy(
         Observables.POVM([[1 0 0;0 0 0;0 0 0],[0 0 0;0 1 0;0 0 0],[0 0 0;0 0 0;0 0 1]]),
         States.DensityMatrix.([[1 0 0;0 0 0;0 0 0],[0 0 0;0 1 0;0 0 0],[0 0 0;0 0 0;0 0 1]]),
-        PM
+        scenario
     )
 end
 
