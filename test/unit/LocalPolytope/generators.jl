@@ -4,6 +4,29 @@ using Test
 
 using BellScenario
 
+@testset "generator_vertex()" begin
+    @testset "simple 3-2-3 example" begin
+        PM = PrepareAndMeasure(3,3,2)
+
+        D = DeterministicStrategy([0 0 0;1 0 1;0 1 0],PM)
+
+        generator = LocalPolytope.generator_vertex(D, PM)
+
+        @test generator == [1 1 0;0 0 1;0 0 0]
+        @test generator isa DeterministicStrategy
+    end
+
+    @testset "simple 6-4-4 example" begin
+        PM = PrepareAndMeasure(6,4,4)
+        D = DeterministicStrategy([1 0 1 1 0 0;0 0 0 0 1 0;0 1 0 0 0 0;0 0 0 0 0 1], PM)
+
+        generator = LocalPolytope.generator_vertex(D, PM)
+
+        @test generator == [1 1 1 0 0 0;0 0 0 1 0 0;0 0 0 0 1 0;0 0 0 0 0 1]
+        @test D isa DeterministicStrategy
+    end
+end
+
 @testset "_sort_perm_groups()" begin
     @test LocalPolytope._sort_perm_groups(
             [(1,1),(3,2),(4,3),(2,4),(5,5)],

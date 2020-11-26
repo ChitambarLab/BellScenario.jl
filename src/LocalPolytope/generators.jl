@@ -1,4 +1,34 @@
-export generator_facet
+export generator_facet, generator_vertex
+
+"""
+    generator_vertex(
+        D :: DeterministicStrategy,
+        PM :: PrepareAndMeasure
+    ) :: DeterministicStrategy
+
+Finds the generating vertex for the provided [`DeterministicStrategy`](@ref). The
+generating vertex is the lexicographic normal form of `D`.
+"""
+function generator_vertex(
+    D :: DeterministicStrategy,
+    PM :: PrepareAndMeasure
+) :: DeterministicStrategy
+
+    sorted_row_sums = sort(map(row -> sum(row), eachrow(D)), rev=true)
+
+    m = zeros(Int64, size(D))
+
+    low_id = 1
+    for row_id in 1:length(sorted_row_sums)
+        high_id = (low_id-1)+sorted_row_sums[row_id]
+
+        m[row_id, low_id:high_id] .= 1
+
+        low_id += sorted_row_sums[row_id]
+    end
+
+    return DeterministicStrategy(m, PM)
+end
 
 """
     generator_facet( BG :: BellGame, PM :: PrepareAndMeasure ) :: BellGame
@@ -32,7 +62,7 @@ function generator_facet(BG :: BellGame, PM :: PrepareAndMeasure) :: BellGame
 end
 
 """
-Helper function for `generator_facet`. 
+Helper function for `generator_facet`.
 """
 function _perm_increase_lexico_score(
     game::Matrix{Int64},
