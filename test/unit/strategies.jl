@@ -23,11 +23,11 @@ using BellScenario
 
         @test S == 1/2*[1 1 1;1 1 1]
 
-        @test S.scenario == BlackBox(3,2)
+        @test S.scenario == BlackBox(2,3)
     end
 
     @testset "Strategy DomainError" begin
-        scenario_error = BlackBox(4,3)
+        scenario_error = BlackBox(3,4)
 
         @test_throws DomainError Strategy([1 0;0 1], scenario_error)
         @test_throws DomainError Strategy([0.5 0.5;1 0.5])
@@ -173,7 +173,7 @@ end
 
 @testset "strategy_dims()" begin
     @testset "black box scenario" begin
-        @test strategy_dims(BlackBox(2,5)) == (5,2)
+        @test strategy_dims(BlackBox(5,2)) == (5,2)
     end
 
     @testset "prepare and measure" begin
@@ -181,7 +181,7 @@ end
     end
 
     @testset "bipartite scenario" begin
-        @test strategy_dims(Bipartite((3,1),(1,4))) == (4,3)
+        @test strategy_dims(Bipartite((3,1),(1,4))) == (3,4)
         @test strategy_dims(Bipartite((2,2),(2,2))) == (4,4)
     end
 end
@@ -192,7 +192,7 @@ end
     @test D isa DeterministicStrategy
     @test D.conditionals isa Matrix{Int64}
     @test D == [1 0;0 1;0 0]
-    @test D.scenario == BlackBox(2,3)
+    @test D.scenario == BlackBox(3,2)
 
     @test_throws DomainError DeterministicStrategy([0.5 0.5;0.5 0.5])
     @test_throws DomainError DeterministicStrategy([1 0;0 1], BlackBox(3,2))

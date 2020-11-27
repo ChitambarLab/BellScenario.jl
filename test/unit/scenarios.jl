@@ -7,8 +7,8 @@ using BellScenario
 @testset "BlackBox()" begin
     BB = BlackBox(2,3)
 
-    @test BB.num_in == 2
-    @test BB.num_out == 3
+    @test BB.num_in == 3
+    @test BB.num_out == 2
 
     @test BB isa BlackBox
 

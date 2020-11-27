@@ -61,4 +61,23 @@ end
     end
 end
 
+@testset "black_box_strategies()" begin
+    @test LocalPolytope.black_box_strategies(BlackBox(1,5)) == [[1 1 1 1 1]]
+    @test LocalPolytope.black_box_strategies(BlackBox(2,2)) == [
+        [1 1;0 0],[0 1;1 0],[1 0;0 1],[0 0;1 1]
+    ]
+    @test LocalPolytope.black_box_strategies(BlackBox(2,3)) == [
+        [1 1 1;0 0 0],[0 1 1;1 0 0],[1 0 1;0 1 0],[0 0 1;1 1 0],
+        [1 1 0;0 0 1],[0 1 0;1 0 1],[1 0 0;0 1 1],[0 0 0;1 1 1]
+    ]
+
+    @testset "spot checks" begin
+        strategies = LocalPolytope.black_box_strategies(BlackBox(5,7))
+
+        @test length(strategies) == 5^7
+        @test length(unique(strategies)) == 5^7
+        @test all(s -> is_deterministic(s), strategies)
+    end
+end
+
 end

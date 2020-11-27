@@ -1,5 +1,7 @@
 export vertices, num_vertices
 
+export black_box_strategies
+
 """
     vertices(
         scenario :: LocalSignaling;
@@ -63,6 +65,9 @@ function vertices(scenario :: LocalSignaling;
     vertices
 end
 
+function vertices(scenario :: BipartiteNonSignaling)
+end
+
 """
     num_vertices( scenario :: LocalSignaling; rank_d_only = false :: Bool ) :: Int64
 
@@ -72,4 +77,35 @@ If `rank_d_only = true`, then only strategies using  `d`-dits are counted.
 function num_vertices(scenario :: LocalSignaling; rank_d_only = false :: Bool) :: Int64
     lower_dits_bound = rank_d_only ? scenario.d : 1
     sum(map(i -> QMath.stirling2(scenario.X, i)*binomial(scenario.B, i)*factorial(i), lower_dits_bound:scenario.d))
+end
+
+
+"""
+    black_box_strategies(scenario :: BlackBox) :: Vector{Matrix{Int64}}
+
+    black_box_strategies(num_out :: Int64, num_in :: Int64) :: Vector{Matrix{Int64}}
+
+Enumerates the set of deterministic strategies for the specified `BlackBox`.
+"""
+black_box_strategies(
+    num_out :: Int64,
+    num_in :: Int64
+) = black_box_strategies(BlackBox(num_out,num_in))
+
+function black_box_strategies(scenario :: BlackBox) :: Vector{Matrix{Int64}}
+    num_in = scenario.num_in
+    num_out = scenario.num_out
+
+    strategies = (num_out == 1) ? Matrix{Int64}[fill(1,(1,num_in))] : map( i -> begin
+        m = zeros(Int64, num_out, num_in)
+        base_n_array = digits(i, base = num_out, pad = num_in) .+ 1
+
+        for j in 1:num_in
+            m[base_n_array[j],j] = 1
+        end
+
+        m
+    end, 0:(num_out^num_in - 1))
+
+    strategies
 end

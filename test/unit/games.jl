@@ -94,7 +94,7 @@ end
 
     @testset "IEQ -> BellGames" begin
         gen_ieq = IEQ(inequalities = [1 1 0 0 0 1 2;1 1 0 0 0 0 1] )
-        scenario = BlackBox(2,3)
+        scenario = BlackBox(3,2)
 
         bell_games = convert(Vector{BellGame}, gen_ieq, scenario, rep="generalized")
 

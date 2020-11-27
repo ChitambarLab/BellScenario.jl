@@ -63,7 +63,7 @@ struct Strategy <: AbstractStrategy{Float64}
     ) = Strategy(QMath.Conditionals(conditionals), scenario)
     Strategy( conditionals :: Matrix{<:Real} ) = new(
         QMath.Conditionals(conditionals),
-        BlackBox(reverse(size(conditionals))...)
+        BlackBox(size(conditionals)...)
     )
 end
 
@@ -140,7 +140,7 @@ struct DeterministicStrategy <: AbstractStrategy{Int64}
     )
     DeterministicStrategy(
         conditionals :: Matrix{<:Real}
-    ) = is_deterministic(conditionals) ? new(conditionals, BlackBox(reverse(size(conditionals))...)) : throw(
+    ) = is_deterministic(conditionals) ? new(conditionals, BlackBox(size(conditionals)...)) : throw(
         DomainError(conditionals, "conditionals are not a deterministic (`{0,1}`) distribution.")
     )
 end

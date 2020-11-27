@@ -8,21 +8,21 @@ An abstract type to represent general black-box scenarios.
 abstract type Scenario end
 
 """
-    BlackBox(num_in :: Int64, num_out :: Int64) <: Scenario
+    BlackBox(num_out :: Int64, num_in :: Int64) <: Scenario
 
 A black-box scenario considering a single device. A black-box is an uncharacterized
 device with a finite number of classical inputs and outputs.
 
-A `DomainError` is throw if parameters `num_in` or `num_out` is less than 1.
+A `DomainError` is throw if parameters `num_out` or `num_in` is less than 1.
 """
 struct BlackBox <: Scenario
-    num_in :: Int64
     num_out :: Int64
+    num_in :: Int64
     BlackBox(
-        num_in::Int64,
-        num_out::Int64
-    ) = ((num_in >= 1) && (num_out >= 1)) ? new(num_in, num_out) : throw(
-        DomainError((num_in, num_out), "inputs must be ≥ 1")
+        num_out::Int64,
+        num_in::Int64
+    ) = ((num_out >= 1) && (num_in >= 1)) ? new(num_out, num_in) : throw(
+        DomainError((num_out, num_in), "inputs must be ≥ 1")
     )
 end
 
