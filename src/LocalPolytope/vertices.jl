@@ -4,6 +4,16 @@ export black_box_strategies
 
 """
     vertices(
+        scenario :: BlackBox;
+        rep = "normalized" :: String
+    ) :: Vector{Vector{Int64}}
+
+Generates the Local Polytope vertices for a BlackBox scenario. Valid represenations
+are:
+
+*`rep == "normalized"` or `rep == "generalized"`.
+
+    vertices(
         scenario :: LocalSignaling;
         rep = "normalized" :: String
         rank_d_only = false :: Bool
@@ -61,6 +71,28 @@ function vertices(scenario :: LocalSignaling;
             end
         end
     end
+
+    vertices
+end
+
+"""
+see main docs block above for `vertices`
+"""
+function vertices(
+    scenario :: BlackBox;
+    rep = "normalized" :: String
+) :: Vector{Vector{Int64}}
+    if !(rep in ["normalized","generalized"])
+        throw(DomainError(rep, "Argument `rep` must be either 'normalized' or 'generalized'."))
+    end
+
+    strategies = black_box_strategies(scenario)
+
+    vertices = (rep == "normalized") ? map(
+        s -> s[1:(end-1),:][:], strategies
+    ) : map(
+        s -> s[:], strategies
+    )
 
     vertices
 end

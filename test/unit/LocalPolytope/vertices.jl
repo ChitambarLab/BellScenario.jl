@@ -4,7 +4,7 @@ using Test, LinearAlgebra
 
 using BellScenario
 
-@testset "vertices()" begin
+@testset "vertices(scenario :: LocalSignaling)" begin
     @testset "vertices(LocalSignaling::Scenario)" begin
         @testset "simple cases" begin
             scenario = LocalSignaling(2,2,2)
@@ -40,6 +40,28 @@ using BellScenario
 
             @test all(s -> rank(s) == 3, det_strategies)
         end
+    end
+end
+
+@testset "vertices(scenario :: BlackBox)" begin
+    @testset "BlackBox(3,2)" begin
+        gen_verts = LocalPolytope.vertices(BlackBox(3,2), rep="generalized")
+        norm_verts = LocalPolytope.vertices(BlackBox(3,2))
+
+        @test gen_verts == [
+            [1,0,0,1,0,0],[0,1,0,1,0,0],[0,0,1,1,0,0],
+            [1,0,0,0,1,0],[0,1,0,0,1,0],[0,0,1,0,1,0],
+            [1,0,0,0,0,1],[0,1,0,0,0,1],[0,0,1,0,0,1]
+        ]
+        @test norm_verts == [
+            [1,0,1,0],[0,1,1,0],[0,0,1,0],
+            [1,0,0,1],[0,1,0,1],[0,0,0,1],
+            [1,0,0,0],[0,1,0,0],[0,0,0,0]
+        ]
+    end
+
+    @testset "DomainErrors" begin
+        @test_throws DomainError LocalPolytope.vertices(BlackBox(2,2),rep="nonsignaling")
     end
 end
 
