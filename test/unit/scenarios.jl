@@ -17,6 +17,24 @@ using BellScenario
     @test_throws DomainError BlackBox(0,-1)
 end
 
+@testset "BipartiteNonSignaling()" begin
+    scenario = BipartiteNonSignaling(1,2,3,4)
+    @test scenario isa Scenario
+    @test scenario isa BipartiteNonSignaling
+
+    @test scenario.A == 1
+    @test scenario.B == 2
+    @test scenario.X == 3
+    @test scenario.Y == 4
+
+    @testset "DomainErrors" begin
+        @test_throws DomainError BipartiteNonSignaling(0,2,2,2)
+        @test_throws DomainError BipartiteNonSignaling(2,0,2,2)
+        @test_throws DomainError BipartiteNonSignaling(2,2,0,2)
+        @test_throws DomainError BipartiteNonSignaling(2,2,2,0)
+    end
+end
+
 @testset "Bipartite()" begin
     @testset "calling w/ BlackBox parameters, no Comm" begin
         BS = Bipartite((2,3),(4,5))
