@@ -13,6 +13,17 @@ are:
 
 *`rep == "normalized"` or `rep == "generalized"`.
 
+vertices(
+    scenario :: BipartiteNoSignaling,
+    rep="no-signaling" :: String
+) :: Vector{Vector{Int64}}
+
+Enumerates the LocalPolytope vertices for the [`BipartiteNoSignaling`](@ref) scenario.
+Valid representations for the vertices include:
+* `"no-signaling"`, `"normalized"`, `"generalized"`
+
+A `DomainError` is thrown if a valid representation is not specified.
+
     vertices(
         scenario :: LocalSignaling;
         rep = "normalized" :: String
@@ -26,8 +37,7 @@ which use fewer dits  of communication and thus have a  matrix rank less than d.
 !!! warning
     The vertices computed in this method are vectorized directly from a strategy
     matrix by column-majorization. These vertices are distinct from those produced
-    by older `LocalPolytope.vertices()` methods which are row-majorized. This
-    functionality is a trial run of performance improvements to polytope computation.
+    by older `LocalPolytope.vertices()` methods which are row-majorized.
 """
 function vertices(scenario :: LocalSignaling;
     rep = "normalized" :: String,
@@ -97,7 +107,47 @@ function vertices(
     vertices
 end
 
-function vertices(scenario :: BipartiteNonSignaling)
+"""
+See main docs block above for `vertices`
+"""
+function vertices(scenario :: BipartiteNoSignaling, rep="no-signaling" :: String) :: Vector{Vector{Int64}}
+    alice_strategies = black_box_strategies(scenario.A, scenario.X)
+    bob_strategies = black_box_strategies(scenario.B, scenario.Y)
+
+    if rep == "no-signaling"
+        α_strategies = map(s -> s[1:end-1,:], alice_strategies)
+        β_strategies = map(s -> s[1:end-1,:], bob_strategies)
+
+        dim_α = scenario.X*(scenario.A - 1)
+        dim_β = scenario.Y*(scenario.B - 1)
+        dim_v = dim_α + dim_β + dim_α*dim_β
+
+        strategies = map( (α, β) for α in α_strategies for β in β_strategies) do (α,β)
+            v = zeros(Int64, dim_v)
+
+            v[1:dim_α+dim_β] = vcat(α[:],β[:])
+            v[dim_α+dim_β+1:end] = kron(α,β)[:]
+
+            v
+        end
+
+        return strategies
+
+
+    elseif rep in ("normalized", "generalized")
+
+        strategies = (rep == "normalized") ? map(
+            (α, β) for α in alice_strategies for β in bob_strategies) do (α,β)
+                kron(α,β)[1:end-1,:][:]
+            end : map(
+            (α, β) for α in alice_strategies for β in bob_strategies) do (α,β)
+                kron(α,β)[:]
+            end
+
+        return strategies
+    else
+        throw(DomainError(rep, "`rep in (\"no-signaling\",\"normalized\",\"generalized\")` must be satisfied" ))
+    end
 end
 
 """

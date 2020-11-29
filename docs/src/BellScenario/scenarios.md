@@ -6,7 +6,7 @@ CurrentModule = BellScenario
 ```@docs
 Scenario
 BlackBox
-BipartiteNonSignaling
+BipartiteNoSignaling
 Bipartite
 LocalSignaling
 ```

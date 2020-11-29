@@ -1,6 +1,6 @@
 export Scenario, BlackBox, Bipartite, LocalSignaling
 
-export BipartiteNonSignaling
+export BipartiteNoSignaling
 
 """
 An abstract type to represent general black-box scenarios.
@@ -27,7 +27,7 @@ struct BlackBox <: Scenario
 end
 
 """
-    BipartiteNonSignaling(
+    BipartiteNoSignaling(
         A :: Int64,
         B :: Int64,
         X :: Int64,
@@ -36,12 +36,12 @@ end
 
 A non-signaling Bell scenario using two devices.
 """
-struct BipartiteNonSignaling <: Scenario
+struct BipartiteNoSignaling <: Scenario
     A :: Int64
     B :: Int64
     X :: Int64
     Y :: Int64
-    BipartiteNonSignaling(
+    BipartiteNoSignaling(
         A::Int64, B::Int64, X::Int64, Y::Int64
     ) = (
             (A >= 1) && (B >= 1) && (X >= 1) && (Y >= 1)

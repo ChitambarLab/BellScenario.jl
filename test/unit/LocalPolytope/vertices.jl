@@ -43,6 +43,85 @@ using BellScenario
     end
 end
 
+@testset "vertices(scenario :: BipartiteNoSignaling)" begin
+    @testset "CHSH scenario no-signaling" begin
+        scenario = BipartiteNoSignaling(2,2,2,2)
+        vertices = LocalPolytope.vertices(scenario)
+
+        @test vertices == [
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 0, 1, 0, 1, 0, 1],
+            [1, 1, 1, 0, 1, 0, 1, 0],
+            [1, 1, 0, 0, 0, 0, 0, 0],
+            [0, 1, 1, 1, 0, 0, 1, 1],
+            [0, 1, 0, 1, 0, 0, 0, 1],
+            [0, 1, 1, 0, 0, 0, 1, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0],
+            [1, 0, 1, 1, 1, 1, 0, 0],
+            [1, 0, 0, 1, 0, 1, 0, 0],
+            [1, 0, 1, 0, 1, 0, 0, 0],
+            [1, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 1, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+        ]
+    end
+
+    @testset "CHSH scenario normalized" begin
+        scenario = BipartiteNoSignaling(2,2,2,2)
+        vertices = LocalPolytope.vertices(scenario, "normalized")
+
+        @test vertices == [
+            [1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
+            [0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0],
+            [1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0],
+            [0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0],
+            [0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0],
+            [0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0],
+            [1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1],
+            [0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+            [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
+            [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+            [0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ]
+    end
+
+    @testset "CHSH scenario generalized" begin
+        scenario = BipartiteNoSignaling(2,2,2,2)
+        vertices = LocalPolytope.vertices(scenario, "generalized")
+
+        @test vertices == [
+            [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+            [0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
+            [1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
+            [0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0],
+            [0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0],
+            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+            [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0],
+            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            [0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+            [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+            [0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0],
+            [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1],
+            [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+        ]
+    end
+
+    @testset "DomainErrors" begin
+        scenario = BipartiteNoSignaling(2,2,2,2)
+        @test_throws DomainError LocalPolytope.vertices(scenario, "fixed-direction")
+    end
+end
+
 @testset "vertices(scenario :: BlackBox)" begin
     @testset "BlackBox(3,2)" begin
         gen_verts = LocalPolytope.vertices(BlackBox(3,2), rep="generalized")
