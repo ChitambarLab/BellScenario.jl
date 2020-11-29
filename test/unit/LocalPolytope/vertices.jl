@@ -145,6 +145,18 @@ end
 end
 
 @testset  "num_vertices()" begin
+    @testset "num_vertices(BlackBox)" begin
+        for num_in in 1:6
+            for num_out in 1:6
+                scenario = BlackBox(num_out, num_in)
+                vertices = LocalPolytope.vertices(scenario)
+                @test length(vertices) == LocalPolytope.num_vertices(scenario)
+            end
+        end
+
+        @test LocalPolytope.num_vertices(BlackBox(3,4)) == 3^4
+    end
+
     @testset "num_vertices(LocalSignaling)" begin
         for X in 1:5
             for B in 1:5
@@ -159,6 +171,24 @@ end
         scenario = LocalSignaling(4,4,3)
         vertices = LocalPolytope.vertices(scenario, rank_d_only=true)
         @test length(vertices) == LocalPolytope.num_vertices(scenario, rank_d_only=true)
+
+        @test LocalPolytope.num_vertices(LocalSignaling(4,5,3)) == 505
+    end
+
+    @testset "num_vertices(BipartiteNoSignaling)" begin
+        for X in 1:4
+            for Y in 1:4
+                for A in 1:4
+                    for B in 1:4
+                        scenario = BipartiteNoSignaling(A,B,X,Y)
+                        vertices = LocalPolytope.vertices(scenario)
+                        @test length(vertices) == LocalPolytope.num_vertices(scenario)
+                    end
+                end
+            end
+        end
+
+        @test LocalPolytope.num_vertices(BipartiteNoSignaling(2,3,4,5)) == 2^4*3^5
     end
 end
 

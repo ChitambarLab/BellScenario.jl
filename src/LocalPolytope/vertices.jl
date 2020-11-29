@@ -151,16 +151,55 @@ function vertices(scenario :: BipartiteNoSignaling, rep="no-signaling" :: String
 end
 
 """
+Counts the number of local polytope vertices for the specified Bell [`Scenario`](@ref).
+
+[`BlackBox`](@ref) scenario:
+
+    num_vertices( scenario :: BlackBox ) :: Int64
+
+For ``n`` outputs and ``m`` inputs the number of vertices ``|\\mathcal{V}|`` are counted:
+
+```math
+|\\mathcal{V}| = n^m
+```
+
+[`LocalSignaling`](@ref) scenario:
+
     num_vertices( scenario :: LocalSignaling; rank_d_only = false :: Bool ) :: Int64
 
-Counts the numbr of polytope vertices for the specified `LocalSignaling` scenario.
-If `rank_d_only = true`, then only strategies using  `d`-dits are counted.
+If `rank_d_only = true`, then only strategies using  `d`-dits are counted. For
+``X`` inputs and ``B`` outputs the number of vertices ``|\\mathcal{V}|`` are counted:
+
+```math
+|\\mathcal{V}| = \\sum_{c=1}^d \\left\\{X \\atop c \\right\\}\\binom{B}{c}c!
+```
+
+[`BipartiteNoSignaling`](@ref) scenario:
+
+    num_vertices( scenario :: BipartiteNoSignaling ) :: Int64
+
+For two non-signaling black-boxes with ``X`` and ``Y`` inputs and ``A`` and ``B``
+outputs respectively, the number of vertices ``|\\mathcal{V}|`` are counted:
+
+```math
+|\\mathcal{V}| = A^X B^Y
+```
 """
+function num_vertices(scenario :: BlackBox) :: Int64
+    scenario.num_out^scenario.num_in
+end
+
 function num_vertices(scenario :: LocalSignaling; rank_d_only = false :: Bool) :: Int64
     lower_dits_bound = rank_d_only ? scenario.d : 1
     sum(map(i -> QMath.stirling2(scenario.X, i)*binomial(scenario.B, i)*factorial(i), lower_dits_bound:scenario.d))
 end
 
+function num_vertices(scenario :: BipartiteNoSignaling) :: Int64
+    black_box_A = BlackBox(scenario.A, scenario.X)
+    black_box_B = BlackBox(scenario.B, scenario.Y)
+
+    num_vertices(black_box_A)*num_vertices(black_box_B)
+end
 
 """
     black_box_strategies(scenario :: BlackBox) :: Vector{Matrix{Int64}}
