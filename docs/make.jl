@@ -22,6 +22,7 @@ makedocs(;
         ],
         "LocalPolytope.jl" => [
             "Vertices"  => "LocalPolytope/vertices.md",
+            "Facets" => "LocalPolytope/facets.md",
             "Generators" => "LocalPolytope/generators.md",
             "Adjacency Decomposition" => "LocalPolytope/adjacency_decomposition.md",
             "Utilities" => "LocalPolytope/utils.md",

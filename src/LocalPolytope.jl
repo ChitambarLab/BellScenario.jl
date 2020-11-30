@@ -8,10 +8,12 @@ module LocalPolytope
 
 using QBase: QMath
 using LinearAlgebra
+using XPORTA
 
 using ..BellScenario
 
 include("./LocalPolytope/vertices.jl")
+include("./LocalPolytope/facets.jl")
 include("./LocalPolytope/generators.jl")
 include("./LocalPolytope/adjacency_decomposition.jl")
 include("./LocalPolytope/utils.jl")
