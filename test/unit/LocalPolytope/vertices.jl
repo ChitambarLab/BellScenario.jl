@@ -11,11 +11,13 @@ using BellScenario
             gen_vertices = LocalPolytope.vertices(scenario, rep="generalized")
             norm_vertices = LocalPolytope.vertices(scenario, rep="normalized")
 
+            @test length(gen_vertices[1]) == LocalPolytope.vertex_dims(scenario, "generalized")
             @test gen_vertices == [[1,0,1,0],[0,1,0,1],[1,0,0,1],[0,1,1,0]]
             @test map(v -> convert(DeterministicStrategy, v, scenario, rep="generalized"), gen_vertices) == [
                 [1 1;0 0],[0 0;1 1],[1 0;0 1],[0 1;1 0]
             ]
 
+            @test length(norm_vertices[1]) == LocalPolytope.vertex_dims(scenario, "normalized")
             @test norm_vertices == [[1,1],[0,0],[1,0],[0,1]]
             @test map(v -> convert(DeterministicStrategy, v, scenario, rep="normalized"), norm_vertices) == [
                 [1 1;0 0],[0 0;1 1],[1 0;0 1],[0 1;1 0]
@@ -48,6 +50,7 @@ end
         scenario = BipartiteNoSignaling(2,2,2,2)
         vertices = LocalPolytope.vertices(scenario)
 
+        @test length(vertices[1]) == LocalPolytope.vertex_dims(scenario, "no-signaling")
         @test vertices == [
             [1, 1, 1, 1, 1, 1, 1, 1],
             [1, 1, 0, 1, 0, 1, 0, 1],
@@ -72,6 +75,7 @@ end
         scenario = BipartiteNoSignaling(2,2,2,2)
         vertices = LocalPolytope.vertices(scenario, "normalized")
 
+        @test length(vertices[1]) == LocalPolytope.vertex_dims(scenario, "normalized")
         @test vertices == [
             [1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
             [0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0],
@@ -96,6 +100,7 @@ end
         scenario = BipartiteNoSignaling(2,2,2,2)
         vertices = LocalPolytope.vertices(scenario, "generalized")
 
+        @test length(vertices[1]) == LocalPolytope.vertex_dims(scenario, "generalized")
         @test vertices == [
             [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
             [0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
@@ -124,19 +129,22 @@ end
 
 @testset "vertices(scenario :: BlackBox)" begin
     @testset "BlackBox(3,2)" begin
-        gen_verts = LocalPolytope.vertices(BlackBox(3,2), rep="generalized")
-        norm_verts = LocalPolytope.vertices(BlackBox(3,2))
+        scenario = BlackBox(3,2)
+        gen_verts = LocalPolytope.vertices(scenario, rep="generalized")
+        norm_verts = LocalPolytope.vertices(scenario)
 
         @test gen_verts == [
             [1,0,0,1,0,0],[0,1,0,1,0,0],[0,0,1,1,0,0],
             [1,0,0,0,1,0],[0,1,0,0,1,0],[0,0,1,0,1,0],
             [1,0,0,0,0,1],[0,1,0,0,0,1],[0,0,1,0,0,1]
         ]
+        @test length(gen_verts[1]) == LocalPolytope.vertex_dims(scenario, "generalized")
         @test norm_verts == [
             [1,0,1,0],[0,1,1,0],[0,0,1,0],
             [1,0,0,1],[0,1,0,1],[0,0,0,1],
             [1,0,0,0],[0,1,0,0],[0,0,0,0]
         ]
+        @test length(norm_verts[1]) == LocalPolytope.vertex_dims(scenario, "normalized")
     end
 
     @testset "DomainErrors" begin
@@ -189,6 +197,30 @@ end
         end
 
         @test LocalPolytope.num_vertices(BipartiteNoSignaling(2,3,4,5)) == 2^4*3^5
+    end
+end
+
+@testset "vertex_dims()" begin
+    @testset "BlackBox" begin
+        @test LocalPolytope.vertex_dims(BlackBox(3,2), "generalized") == 6
+        @test LocalPolytope.vertex_dims(BlackBox(3,2), "normalized") == 4
+
+        @test_throws DomainError LocalPolytope.vertex_dims(BlackBox(3,2), "no-signaling")
+    end
+
+    @testset "LocalSignaling" begin
+        @test LocalPolytope.vertex_dims(LocalSignaling(4,5,2), "generalized") == 20
+        @test LocalPolytope.vertex_dims(LocalSignaling(4,5,2), "normalized") == 16
+
+        @test_throws DomainError LocalPolytope.vertex_dims(LocalSignaling(4,5,2), "no-signaling")
+    end
+
+    @testset "BipartiteNoSignaling" begin
+        @test LocalPolytope.vertex_dims(BipartiteNoSignaling(2,3,4,5), "generalized") == 120
+        @test LocalPolytope.vertex_dims(BipartiteNoSignaling(2,3,4,5), "normalized") == 100
+        @test LocalPolytope.vertex_dims(BipartiteNoSignaling(2,3,4,5), "no-signaling") == 54
+
+        @test_throws DomainError LocalPolytope.vertex_dims(BipartiteNoSignaling(2,3,4,5), "fixed-direction")
     end
 end
 

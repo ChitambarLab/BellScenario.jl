@@ -6,4 +6,5 @@ CurrentModule = LocalPolytope
 ```@docs
 vertices
 num_vertices
+vertex_dims
 ```

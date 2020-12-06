@@ -1,4 +1,4 @@
-export vertices, num_vertices
+export vertices, num_vertices, vertex_dims
 
 """
     vertices(
@@ -131,7 +131,6 @@ function vertices(scenario :: BipartiteNoSignaling, rep="no-signaling" :: String
 
         return strategies
 
-
     elseif rep in ("normalized", "generalized")
 
         strategies = (rep == "normalized") ? map(
@@ -197,4 +196,37 @@ function num_vertices(scenario :: BipartiteNoSignaling) :: Int64
     black_box_B = BlackBox(scenario.B, scenario.Y)
 
     num_vertices(black_box_A)*num_vertices(black_box_B)
+end
+
+"""
+Returns the length of a vertex for the specified [`Scenario`](@ref) and representation.
+
+    vertex_dims(scenario :: Union{BlackBox,LocalSignaling}, rep :: String) :: Int64
+
+Valid values of `rep` are `"normalized"` and `"generalized"`.
+
+    vertex_dims(scenario :: BipartiteNoSignaling, rep :: String) :: Int64
+
+Valid values of `rep` are `"no-signaling"`, `"normalized"`, and `"generalized"`.
+"""
+function vertex_dims(scenario :: Union{BlackBox,LocalSignaling}, rep :: String) :: Int64
+    if !(rep in ["normalized", "generalized"])
+        throw(DomainError(rep, "Argument `rep` must be either \"normalized\" or \"generalized\"."))
+    end
+
+    strat_dims = strategy_dims(scenario)
+
+    (rep == "normalized") ? strat_dims[2] * (strat_dims[1] - 1) : strat_dims[2] * strat_dims[1]
+end
+
+function vertex_dims(scenario :: BipartiteNoSignaling, rep :: String) :: Int64
+    if !(rep in ["no-signaling", "normalized", "generalized"])
+        throw(DomainError(rep, "Argument `rep` must be either \"no-signaling\", \"normalized\", or \"generalized\"."))
+    end
+
+    dim_α = scenario.X*(scenario.A - 1)
+    dim_β = scenario.Y*(scenario.B - 1)
+
+    (rep == "no-signaling") ? dim_α + dim_β + dim_α*dim_β : vertex_dims(
+        BlackBox(strategy_dims(scenario)...), rep)
 end
