@@ -1,7 +1,5 @@
 export vertices, num_vertices
 
-export black_box_strategies
-
 """
     vertices(
         scenario :: BlackBox;
@@ -96,7 +94,7 @@ function vertices(
         throw(DomainError(rep, "Argument `rep` must be either 'normalized' or 'generalized'."))
     end
 
-    strategies = black_box_strategies(scenario)
+    strategies = deterministic_strategies(scenario)
 
     vertices = (rep == "normalized") ? map(
         s -> s[1:(end-1),:][:], strategies
@@ -111,8 +109,8 @@ end
 See main docs block above for `vertices`
 """
 function vertices(scenario :: BipartiteNoSignaling, rep="no-signaling" :: String) :: Vector{Vector{Int64}}
-    alice_strategies = black_box_strategies(scenario.A, scenario.X)
-    bob_strategies = black_box_strategies(scenario.B, scenario.Y)
+    alice_strategies = deterministic_strategies(scenario.A, scenario.X)
+    bob_strategies = deterministic_strategies(scenario.B, scenario.Y)
 
     if rep == "no-signaling"
         α_strategies = map(s -> s[1:end-1,:], alice_strategies)
@@ -199,34 +197,4 @@ function num_vertices(scenario :: BipartiteNoSignaling) :: Int64
     black_box_B = BlackBox(scenario.B, scenario.Y)
 
     num_vertices(black_box_A)*num_vertices(black_box_B)
-end
-
-"""
-    black_box_strategies(scenario :: BlackBox) :: Vector{Matrix{Int64}}
-
-    black_box_strategies(num_out :: Int64, num_in :: Int64) :: Vector{Matrix{Int64}}
-
-Enumerates the set of deterministic strategies for the specified `BlackBox`.
-"""
-black_box_strategies(
-    num_out :: Int64,
-    num_in :: Int64
-) = black_box_strategies(BlackBox(num_out,num_in))
-
-function black_box_strategies(scenario :: BlackBox) :: Vector{Matrix{Int64}}
-    num_in = scenario.num_in
-    num_out = scenario.num_out
-
-    strategies = (num_out == 1) ? Matrix{Int64}[fill(1,(1,num_in))] : map( i -> begin
-        m = zeros(Int64, num_out, num_in)
-        base_n_array = digits(i, base = num_out, pad = num_in) .+ 1
-
-        for j in 1:num_in
-            m[base_n_array[j],j] = 1
-        end
-
-        m
-    end, 0:(num_out^num_in - 1))
-
-    strategies
 end
