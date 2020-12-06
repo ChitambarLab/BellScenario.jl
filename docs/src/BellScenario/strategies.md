@@ -10,4 +10,5 @@ DeterministicStrategy
 is_deterministic
 strategy_dims
 random_strategy
+deterministic_strategies
 ```
