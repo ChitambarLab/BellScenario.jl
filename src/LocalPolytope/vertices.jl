@@ -1,8 +1,7 @@
 export vertices, num_vertices, vertex_dims
 
 """
-    vertices(
-        scenario :: BlackBox;
+    vertices( scenario :: BlackBox;
         rep = "normalized" :: String
     ) :: Vector{Vector{Int64}}
 
@@ -10,20 +9,28 @@ Generates the Local Polytope vertices for a BlackBox scenario. Valid represenati
 are:
 
 *`rep == "normalized"` or `rep == "generalized"`.
-
-vertices(
-    scenario :: BipartiteNoSignaling,
-    rep="no-signaling" :: String
+"""
+function vertices(
+    scenario :: BlackBox;
+    rep = "normalized" :: String
 ) :: Vector{Vector{Int64}}
+    if !(rep in ["normalized","generalized"])
+        throw(DomainError(rep, "Argument `rep` must be either 'normalized' or 'generalized'."))
+    end
 
-Enumerates the LocalPolytope vertices for the [`BipartiteNoSignaling`](@ref) scenario.
-Valid representations for the vertices include:
-* `"no-signaling"`, `"normalized"`, `"generalized"`
+    strategies = deterministic_strategies(scenario)
 
-A `DomainError` is thrown if a valid representation is not specified.
+    vertices = (rep == "normalized") ? map(
+        s -> s[1:(end-1),:][:], strategies
+    ) : map(
+        s -> s[:], strategies
+    )
 
-    vertices(
-        scenario :: LocalSignaling;
+    vertices
+end
+
+"""
+    vertices( scenario :: LocalSignaling;
         rep = "normalized" :: String
         rank_d_only = false :: Bool
     ) ::  Vector{Vector{Int64}}
@@ -84,29 +91,15 @@ function vertices(scenario :: LocalSignaling;
 end
 
 """
-see main docs block above for `vertices`
-"""
-function vertices(
-    scenario :: BlackBox;
-    rep = "normalized" :: String
-) :: Vector{Vector{Int64}}
-    if !(rep in ["normalized","generalized"])
-        throw(DomainError(rep, "Argument `rep` must be either 'normalized' or 'generalized'."))
-    end
+    vertices( scenario :: BipartiteNoSignaling,
+        rep="no-signaling" :: String
+    ) :: Vector{Vector{Int64}}
 
-    strategies = deterministic_strategies(scenario)
+Enumerates the LocalPolytope vertices for the [`BipartiteNoSignaling`](@ref) scenario.
+Valid representations for the vertices include:
+* `"no-signaling"`, `"normalized"`, `"generalized"`
 
-    vertices = (rep == "normalized") ? map(
-        s -> s[1:(end-1),:][:], strategies
-    ) : map(
-        s -> s[:], strategies
-    )
-
-    vertices
-end
-
-"""
-See main docs block above for `vertices`
+A `DomainError` is thrown if a valid representation is not specified.
 """
 function vertices(scenario :: BipartiteNoSignaling, rep="no-signaling" :: String) :: Vector{Vector{Int64}}
     alice_strategies = deterministic_strategies(scenario.A, scenario.X)
@@ -148,10 +141,6 @@ function vertices(scenario :: BipartiteNoSignaling, rep="no-signaling" :: String
 end
 
 """
-Counts the number of local polytope vertices for the specified Bell [`Scenario`](@ref).
-
-[`BlackBox`](@ref) scenario:
-
     num_vertices( scenario :: BlackBox ) :: Int64
 
 For ``n`` outputs and ``m`` inputs the number of vertices ``|\\mathcal{V}|`` are counted:
@@ -159,10 +148,15 @@ For ``n`` outputs and ``m`` inputs the number of vertices ``|\\mathcal{V}|`` are
 ```math
 |\\mathcal{V}| = n^m
 ```
+"""
+function num_vertices(scenario :: BlackBox) :: Int64
+    scenario.num_out^scenario.num_in
+end
 
-[`LocalSignaling`](@ref) scenario:
-
-    num_vertices( scenario :: LocalSignaling; rank_d_only = false :: Bool ) :: Int64
+"""
+    num_vertices( scenario :: LocalSignaling;
+        rank_d_only = false :: Bool
+    ) :: Int64
 
 If `rank_d_only = true`, then only strategies using  `d`-dits are counted. For
 ``X`` inputs and ``B`` outputs the number of vertices ``|\\mathcal{V}|`` are counted:
@@ -170,9 +164,13 @@ If `rank_d_only = true`, then only strategies using  `d`-dits are counted. For
 ```math
 |\\mathcal{V}| = \\sum_{c=1}^d \\left\\{X \\atop c \\right\\}\\binom{B}{c}c!
 ```
+"""
+function num_vertices(scenario :: LocalSignaling; rank_d_only = false :: Bool) :: Int64
+    lower_dits_bound = rank_d_only ? scenario.d : 1
+    sum(map(i -> QMath.stirling2(scenario.X, i)*binomial(scenario.B, i)*factorial(i), lower_dits_bound:scenario.d))
+end
 
-[`BipartiteNoSignaling`](@ref) scenario:
-
+"""
     num_vertices( scenario :: BipartiteNoSignaling ) :: Int64
 
 For two non-signaling black-boxes with ``X`` and ``Y`` inputs and ``A`` and ``B``
@@ -182,15 +180,6 @@ outputs respectively, the number of vertices ``|\\mathcal{V}|`` are counted:
 |\\mathcal{V}| = A^X B^Y
 ```
 """
-function num_vertices(scenario :: BlackBox) :: Int64
-    scenario.num_out^scenario.num_in
-end
-
-function num_vertices(scenario :: LocalSignaling; rank_d_only = false :: Bool) :: Int64
-    lower_dits_bound = rank_d_only ? scenario.d : 1
-    sum(map(i -> QMath.stirling2(scenario.X, i)*binomial(scenario.B, i)*factorial(i), lower_dits_bound:scenario.d))
-end
-
 function num_vertices(scenario :: BipartiteNoSignaling) :: Int64
     black_box_A = BlackBox(scenario.A, scenario.X)
     black_box_B = BlackBox(scenario.B, scenario.Y)
@@ -199,15 +188,12 @@ function num_vertices(scenario :: BipartiteNoSignaling) :: Int64
 end
 
 """
-Returns the length of a vertex for the specified [`Scenario`](@ref) and representation.
+For the given [`Scenario`](@ref), returns the length of the vertex in the representation
+specified by `rep`. A `DomainError` is thrown if the `rep` is invalid.
 
     vertex_dims(scenario :: Union{BlackBox,LocalSignaling}, rep :: String) :: Int64
 
 Valid values of `rep` are `"normalized"` and `"generalized"`.
-
-    vertex_dims(scenario :: BipartiteNoSignaling, rep :: String) :: Int64
-
-Valid values of `rep` are `"no-signaling"`, `"normalized"`, and `"generalized"`.
 """
 function vertex_dims(scenario :: Union{BlackBox,LocalSignaling}, rep :: String) :: Int64
     if !(rep in ["normalized", "generalized"])
@@ -219,6 +205,14 @@ function vertex_dims(scenario :: Union{BlackBox,LocalSignaling}, rep :: String) 
     (rep == "normalized") ? strat_dims[2] * (strat_dims[1] - 1) : strat_dims[2] * strat_dims[1]
 end
 
+"""
+    vertex_dims( scenario:: BipartiteNoSignaling, rep :: String ) :: Int64
+
+Valid values for `rep` include:
+* "no-signaling"
+* "normalized"
+* "generalized"
+"""
 function vertex_dims(scenario :: BipartiteNoSignaling, rep :: String) :: Int64
     if !(rep in ["no-signaling", "normalized", "generalized"])
         throw(DomainError(rep, "Argument `rep` must be either \"no-signaling\", \"normalized\", or \"generalized\"."))
