@@ -11,6 +11,7 @@ include("./scenarios.jl")
 
 # fundamental data structures
 include("./strategies.jl")
+include("./strategy_utilities.jl")
 include("./deterministic_strategies.jl")
 include("./games.jl")
 

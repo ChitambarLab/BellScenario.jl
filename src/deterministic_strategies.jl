@@ -75,7 +75,7 @@ end
     scenario::Scenario
 ) = DeterministicStrategy(S1.conditionals*S2.conditionals, scenario)
 
-function convert(::Type{DeterministicStrategy}, vertex::Vector{Int64}, scenario::Scenario; rep="normalized" :: String)
+function convert(::Type{DeterministicStrategy}, vertex::Vector{Int64}, scenario::Union{LocalSignaling,BlackBox}; rep="normalized" :: String)
     if !(rep in ("normalized", "generalized"))
         throw(DomainError(rep, "Argument `rep` must be either 'normalized' or 'generalized'"))
     end
