@@ -1,7 +1,7 @@
 """
     convert(
         S :: Type{<:AbstractStrategy}, vertex::Vector{<:Real}, scenario::BipartiteNoSignaling;
-        rep="normalized" :: String
+        rep="no-signaling" :: String
     )
 
 Transforms a behavior vector or vertex in to either a [`Strategy`](@ref) or [`DeterministicStrategy`](@ref).

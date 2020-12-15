@@ -74,6 +74,9 @@ using BellScenario
     end
 
     @testset "DomainError not valid rep" begin
+        scenario = BipartiteNoSignaling(2,2,2,2)
+        behavior = [0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1]
+        
         @test_throws DomainError convert(Strategy, behavior, scenario, rep="fixed-direction")
     end
 end

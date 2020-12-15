@@ -124,18 +124,19 @@ function convert(::Type{Vector{Int64}}, BG::BellGame; rep = "normalized"::String
     game_dims = size(game_matrix)
 
     if rep == "normalized"
-        for col_id in 1:game_dims[2]
-            col = game_matrix[:,col_id]
-            if col[end] !== 0
-                game_matrix[:,col_id] .-= col[end]
-                bound -= col[end]
-            end
-        end
+        (game_matrix, bound) = _apply_game_normalization!(game_matrix, bound)
+        # for col_id in 1:game_dims[2]
+        #     col = game_matrix[:,col_id]
+        #     if col[end] !== 0
+        #         game_matrix[:,col_id] .-= col[end]
+        #         bound -= col[end]
+        #     end
+        # end
 
         game_matrix = game_matrix[1:(end-1),:]
     end
 
-    cat(game_matrix[:], bound, dims=1)
+    vcat(game_matrix[:], bound)
 end
 
 """

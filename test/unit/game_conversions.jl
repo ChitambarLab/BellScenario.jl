@@ -139,12 +139,10 @@ end
                 BG = convert(BellGame, facet, scenario)
 
                 @test BG isa BellGame
-                println(BG)
 
                 facet2 = convert(Vector{Int64}, BG, scenario)
 
                 @test facet2 isa Vector{Int64}
-
                 @test facet2 == facet
             end
         end
