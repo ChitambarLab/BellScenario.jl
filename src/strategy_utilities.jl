@@ -48,7 +48,6 @@ function convert(S::Type{<:AbstractStrategy}, vertex::Vector{<:Real}, scenario::
             gen_strat[(scenario.A-1)*scenario.B + i,:] = p_by_row - ones(Int64, (1,scenario.A-1)) * αβ_strat[αβ_row_ids,:]
         end
 
-
     elseif rep == "normalized"
         gen_strat[1:gen_strat_dims[1]-1,:] = reshape(vertex, (gen_strat_dims[1]-1, gen_strat_dims[2]))
     end

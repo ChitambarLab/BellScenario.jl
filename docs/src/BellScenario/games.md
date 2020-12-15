@@ -19,9 +19,12 @@ facets. There are two supported types which can be converted to/from BellGames:
     the bound placed in the last element of the vector.
 * `IEQ` - A facet data structure defined in [XPORTA.jl](https://juliapolyhedra.github.io/XPORTA.jl/dev/).
 
+
 ```@docs
 convert(::Type{BellGame},::Vector{Int64},::BlackBox)
+convert(::Type{BellGame},::Vector{Int64},::BipartiteNoSignaling)
 convert(::Type{Vector{Int64}}, ::BellGame)
+convert(::Type{Vector{Int64}},BG::BellGame,scenario::BipartiteNoSignaling)
 convert(::Type{Vector{BellGame}},::IEQ,::BlackBox)
 convert(::Type{IEQ}, bell_games::Vector{BellGame})
 ```
