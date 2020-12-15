@@ -3,7 +3,10 @@
         S :: Type{<:AbstractStrategy}, vertex::Vector{<:Real}, scenario::BipartiteNoSignaling;
         rep="normalized" :: String
     )
-fdhsajfdjk
+
+Transforms a behavior vector or vertex in to either a [`Strategy`](@ref) or [`DeterministicStrategy`](@ref).
+If converting into a `DeterministicStrategy`, the vertex must contain `Int64` values.
+Valid representations are "no-signaling", "normalized", and "generalized".
 """
 function convert(S::Type{<:AbstractStrategy}, vertex::Vector{<:Real}, scenario::BipartiteNoSignaling;
     rep="no-signaling" :: String

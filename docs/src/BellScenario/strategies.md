@@ -11,4 +11,5 @@ is_deterministic
 strategy_dims
 random_strategy
 deterministic_strategies
+convert(::Type{<:AbstractStrategy}, ::Vector{Float64}, ::BipartiteNoSignaling; ::String)
 ```
