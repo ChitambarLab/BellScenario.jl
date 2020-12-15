@@ -112,4 +112,79 @@ using BellScenario
     end
 end
 
+@testset "convert(::Type{<:AbstractStrategy}, ...)" begin
+
+    @testset "convert vertex to strat - no-signaling vertices" begin
+        for a in 2:4
+            for b in 2:4
+                for x in 2:4
+                    for y in 2:4
+                        # legacy code
+                        # (n_in, n_out)
+                        α = (x,a)
+                        β = (y,b)
+
+                        v_old = LocalPolytope.vertices(α,β,dits=1,rep="no-signaling")
+                        b_old = Behavior.add_constants(α,β, v_old, rep="no-signaling")
+                        proj = Behavior.ns_to_gen_proj(α,β)
+
+                        gen_b_old = map(v -> proj * v,  b_old)
+
+                        strat_old = map( v ->
+                            LocalPolytope.behavior_to_strategy(x*y, a*b, v)[:,:]
+                        , gen_b_old)
+
+                        # current code
+                        scenario = BipartiteNoSignaling(a,b,x,y)
+                        v_new = LocalPolytope.vertices(scenario)
+
+
+                        strat_new = map( v ->
+                            convert(DeterministicStrategy, v, scenario)
+                        , v_new)
+
+                        @test strat_old == strat_new
+                    end
+                end
+            end
+        end
+    end
+
+    @testset "convert vertex to strat - normalized vertices" begin
+        for a in 2:4
+            for b in 2:4
+                for x in 2:3
+                    for y in 2:4
+                        # legacy code
+                        # (n_in, n_out)
+                        α = (x,a)
+                        β = (y,b)
+
+                        v_old = LocalPolytope.vertices(α,β,dits=1,rep="normalized")
+                        b_old = Behavior.add_constants(α,β, v_old, rep="normalized")
+                        proj = Behavior.norm_to_gen_proj(α,β)
+
+                        gen_b_old = map(v -> proj * v,  b_old)
+
+                        strat_old = map( v ->
+                            LocalPolytope.behavior_to_strategy(x*y, a*b, v)[:,:]
+                        , gen_b_old)
+
+                        # current code
+                        scenario = BipartiteNoSignaling(a,b,x,y)
+                        v_new = LocalPolytope.vertices(scenario, "normalized")
+
+
+                        strat_new = map( v ->
+                            convert(DeterministicStrategy, v, scenario, rep="normalized")
+                        , v_new)
+
+                        @test strat_old == strat_new
+                    end
+                end
+            end
+        end
+    end
+end
+
 end

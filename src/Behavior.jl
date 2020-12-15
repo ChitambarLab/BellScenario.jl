@@ -33,19 +33,19 @@ function index(outcome, α_expt, β_expt, rep="generalized")
     if rep == "generalized"
         index += (a-1)*b_out*x_in*y_in + (b-1)*x_in*y_in + (x-1)*y_in + y
     elseif rep == "normalized"
-        if a == a_out & b == b_out
+        if a == a_out && b == b_out
             throw(ArgumentError("outcome coordinate 'a' or 'b' is not in normalized representation"))
         else
             index += (a-1)*(b_out)*x_in*y_in + (b-1)*x_in*y_in + (x-1)*y_in + y
         end
     elseif rep == "no-signaling"
-        if a == a_out | b == b_out
+        if a == a_out || b == b_out
             throw(ArgumentError("outcome coordinate 'a' or 'b' is not in no-signaling representation"))
-        elseif (b == 0 & y == 0) & (in(a,1:(a_out-1)) & in(x,1:(x_in)))
+        elseif (b == 0 && y == 0) && (in(a,1:(a_out-1)) && in(x,1:(x_in)))
             index += (a-1)*x_in + x
-        elseif (a == 0 & x == 0) & (in(b,1:(b_out-1)) & in(y,1:(y_in)))
+        elseif (a == 0 && x == 0) && (in(b,1:(b_out-1)) && in(y,1:(y_in)))
             index += x_in*(a_out - 1) + (b-1)*y_in + y
-        elseif (in(a,1:(a_out-1)) & in(x,1:(x_in))) & (in(b,1:(b_out-1)) & in(y,1:(y_in)))
+        elseif (in(a,1:(a_out-1)) && in(x,1:(x_in))) && (in(b,1:(b_out-1)) && in(y,1:(y_in)))
             index += x_in*(a_out - 1) + y_in*(b_out - 1) + (a-1)*(b_out-1)*x_in*y_in + (b-1)*x_in*y_in + (x-1)*y_in + y
         else
             throw(ArgumentError("outcome coordinate ($a,$b,$x,$y) is not valid in no-signaling representation"))
@@ -53,9 +53,9 @@ function index(outcome, α_expt, β_expt, rep="generalized")
     elseif rep == "fixed-direction"
         if b == b_out
             throw(ArgumentError("outcome coordinate is not in fixed-direction representation"))
-        elseif (b == 0 & y == 0) & (in(a,1:(a_out-1)) & in(x,1:(x_in)))
+        elseif (b == 0 && y == 0) && (in(a,1:(a_out-1)) && in(x,1:(x_in)))
             index += (a-1)*x_in + x
-        elseif (in(a,1:a_out) & in(x,1:(x_in))) & (in(b,1:(b_out-1)) & in(y,1:(y_in)))
+        elseif (in(a,1:a_out) && in(x,1:(x_in))) && (in(b,1:(b_out-1)) && in(y,1:(y_in)))
             index += x_in*(a_out - 1) + (a-1)*(b_out-1)*x_in*y_in + (b-1)*x_in*y_in + (x-1)*y_in + y
         else
             throw(ArgumentError("outcome ($a,$b,$x,$y) is not valid"))
@@ -118,7 +118,7 @@ function is_valid( behavior, α_expt, β_expt, rep="generalized")
     false_count = 0
 
     for i in 1:size(behavior)[1]
-        if !((0 <= behavior[i]) & (behavior[i] <= 1))
+        if !((0 <= behavior[i]) && (behavior[i] <= 1))
             false_count += 1
         end
     end
@@ -161,7 +161,7 @@ function is_valid( behavior, α_expt, β_expt, rep="generalized")
                 id = index((a,0,x,0),α_expt,β_expt,"no-signaling")
                 a_norm += behavior[id]
             end
-            if (1 < a_norm) & !(1 ≈ a_norm)
+            if (1 < a_norm) && !(1 ≈ a_norm)
                 false_count += 1
             end
         end
@@ -172,7 +172,7 @@ function is_valid( behavior, α_expt, β_expt, rep="generalized")
                 id = index((0,b,0,y),α_expt,β_expt,"no-signaling")
                 b_norm += behavior[id]
             end
-            if (1 < b_norm) & !(1 ≈ b_norm)
+            if (1 < b_norm) && !(1 ≈ b_norm)
                 false_count += 1
             end
         end
@@ -207,7 +207,7 @@ function is_valid( behavior, α_expt, β_expt, rep="generalized")
             end
             a_comps[x] = 1-a_norm
 
-            if (1 < a_norm) & !(1 ≈ a_norm)
+            if (1 < a_norm) && !(1 ≈ a_norm)
                 false_count += 1
             end
         end
@@ -246,7 +246,7 @@ function is_valid( behavior, α_expt, β_expt, rep="generalized")
                         ab_norm += behavior[id]
 
                         # verifying that the b_marginal matches the rest
-                        if (a < a_out) & test_b_marg
+                        if (a < a_out) && test_b_marg
                             if b_margs[x,y,b] == -1
                                 b_margs[x,y,b] = (behavior[id]/ax_val)
                             else
@@ -254,7 +254,7 @@ function is_valid( behavior, α_expt, β_expt, rep="generalized")
                                     false_count += 1
                                 end
                             end
-                        elseif (a == a_out) & test_b_marg
+                        elseif (a == a_out) && test_b_marg
                             if b_margs[x,y,b] == -1
                                 b_margs[x,y,b] = behavior[id]/a_comps[x]
                             else
@@ -267,7 +267,7 @@ function is_valid( behavior, α_expt, β_expt, rep="generalized")
                     end
                 end
 
-                if (1 < ab_norm) & !(1 ≈ ab_norm)
+                if (1 < ab_norm) && !(1 ≈ ab_norm)
                     false_count += 1
                 end
             end
@@ -311,7 +311,7 @@ function gen_to_norm_proj(α_expt, β_expt)
         for y in 1:y_num
             for a in 1:a_num
                 for b in 1:b_num
-                    if (a < a_num) | (b < b_num)
+                    if (a < a_num) || (b < b_num)
                         row = index((a,b,x,y),α_expt,β_expt,"normalized")
                         col = index((a,b,x,y),α_expt,β_expt)
                         proj[row,col] = 1
@@ -460,7 +460,7 @@ function norm_to_gen_proj(α_expt, β_expt)
             for a in 1:a_num
                 for b in 1:b_num
                     # 1:1 mappings
-                    if (a < a_num) | (b < b_num)
+                    if (a < a_num) || (b < b_num)
                         row = index((a,b,x,y),α_expt,β_expt)
                         col = index((a,b,x,y),α_expt,β_expt,"normalized")
                         proj[row,col] = 1
@@ -469,7 +469,7 @@ function norm_to_gen_proj(α_expt, β_expt)
                         proj[row,1] = 1
                         for α in 1:a_num
                             for β in 1:b_num
-                                if (α < a_num) | (β < b_num)
+                                if (α < a_num) || (β < b_num)
                                     col = index((α,β,x,y),α_expt,β_expt,"normalized")
                                     proj[row,col] = -1
                                 end

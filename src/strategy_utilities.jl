@@ -32,7 +32,7 @@ function convert(S::Type{<:AbstractStrategy}, vertex::Vector{<:Real}, scenario::
 
         # reversing no-signaling constraints for Alice
         for i in 0:scenario.A-2
-            gen_strat[i*scenario.B+1:i*scenario.B + scenario.B-1,:] = αβ_strat[i*(scenario.B-1)+1,:]
+            gen_strat[i*scenario.B+1:i*scenario.B + scenario.B-1,:] = αβ_strat[i*(scenario.B-1)+1:(i+1)*(scenario.B-1),:]
 
             p_ax_row = kron(α_strat[i+1,:],ones(Int64, scenario.Y))'
             gen_strat[i*scenario.B+scenario.B,:] = p_ax_row - ones(Int64, (1,scenario.B-1)) * αβ_strat[i*(scenario.B-1)+1:(i+1)*(scenario.B-1),:]
