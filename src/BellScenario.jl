@@ -13,7 +13,9 @@ include("./scenarios.jl")
 include("./strategies.jl")
 include("./strategy_utilities.jl")
 include("./deterministic_strategies.jl")
+
 include("./games.jl")
+include("./game_conversions.jl")
 
 # quantum scenarios
 include("./quantum_strategies.jl")
