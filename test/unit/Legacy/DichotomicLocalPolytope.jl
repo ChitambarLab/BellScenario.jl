@@ -1,6 +1,6 @@
 using Test
 
-@testset "/src/BellScenario/DichotomicLocalPolytope.jl" begin
+@testset "/src/Legacy/DichotomicLocalPolytope.jl" begin
 
 using BellScenario: Behavior, DichotomicLocalPolytope
 

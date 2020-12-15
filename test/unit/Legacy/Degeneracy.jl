@@ -1,6 +1,6 @@
 using Test, LinearAlgebra
 
-@testset "/src/Degeneracy.jl" begin
+@testset "/src/Legacy/Degeneracy.jl" begin
 
 using BellScenario: Degeneracy
 

@@ -1,6 +1,6 @@
 using Test, LinearAlgebra
 
-@testset "/src/Behavior.jl" begin
+@testset "/src/Legacy/Behavior.jl" begin
 
 using BellScenario: Behavior, QMath
 

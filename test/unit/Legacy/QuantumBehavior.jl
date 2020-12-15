@@ -1,6 +1,6 @@
 using Test
 
-@testset "./src/Scenario/QuantumBehavior.jl" begin
+@testset "./src/Legacy/QuantumBehavior.jl" begin
 
 using BellScenario: QuantumBehavior
 

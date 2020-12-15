@@ -4,7 +4,11 @@ using QBase, LinearAlgebra
 
 import Base: *, convert
 
-export ConvexPolytope, Degeneracy, LocalPolytope, Behavior, Symmetry #, QuantumBehavior, QuantumOpt, LocalSignaling
+# exported modules
+export LocalPolytope
+
+# Legacy modules
+export ConvexPolytope, Degeneracy, Behavior, QuantumBehavior, QuantumOpt
 
 # black-box scenarios
 include("./scenarios.jl")
@@ -24,24 +28,25 @@ include("./quantum_opt.jl")
 # read/write and printing
 include("./file_io.jl")
 
-# include internal modules
-include("./ConvexPolytope.jl")
-using .ConvexPolytope
-
-include("./Behavior.jl")
-using .Behavior
-include("./Degeneracy.jl")
-using .Degeneracy
-include("./Symmetry.jl")
-using .Symmetry
-include("./LocalSignaling.jl")
-# include internal modules
 include("./LocalPolytope.jl")
 using .LocalPolytope
-include("./DichotomicLocalPolytope.jl")
+
+# include internal modules
+include("./Legacy/ConvexPolytope.jl")
+using .ConvexPolytope
+
+include("./Legacy/Behavior.jl")
+using .Behavior
+include("./Legacy/Degeneracy.jl")
+using .Degeneracy
+
+# include internal modules
+
+include("./Legacy/DichotomicLocalPolytope.jl")
 using .DichotomicLocalPolytope
 #
-include("./QuantumBehavior.jl")
-include("./QuantumOpt.jl")
+include("./Legacy/QuantumBehavior.jl")
+include("./Legacy/QuantumOpt.jl")
+include("./Legacy/LocalSignaling.jl")
 
 end

@@ -1,6 +1,6 @@
 using Test
 
-@testset "/src/ConvexPolytope.jl" begin
+@testset "/src/Legacy/ConvexPolytope.jl" begin
 
 using BellScenario: ConvexPolytope
 

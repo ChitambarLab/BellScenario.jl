@@ -1,6 +1,6 @@
 using Test
 
-@testset "./src/BellScenario.jl" begin
+@testset "./src/Legacy/LocalSignaling.jl" begin
 
 using BellScenario
 
