@@ -1,3 +1,12 @@
+"""
+The `BellScenario` module provides:
+1. A [`Scenario`](@ref) abstract type which serves as the parent of different
+    multipartite black-box signaling scenarios.
+2. An [`AbstractStrategy`](@ref) type to describe the contain the conditional probabilities
+    of a given Bell Scenario.
+3. An [`AbstractGame`](@ref) type to describe inequalities which bound the black-box statistics.
+4. A quantum optimization library for tuning the parameters of quantum systems.
+"""
 module BellScenario
 
 using QBase, LinearAlgebra
