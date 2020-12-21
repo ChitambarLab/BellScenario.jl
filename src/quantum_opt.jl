@@ -6,9 +6,9 @@ export optimize_measurement
 [`LocalSignaling`](@ref) scenario:
 
     optimize_measurement(
+        scenario :: LocalSignaling,
         game :: BellGame,
-        ρ_states :: Vector{<:States.AbstractDensityMatrix},
-        scenario :: LocalSignaling
+        ρ_states :: Vector{<:States.AbstractDensityMatrix}
     )
 
 Finds the measurement that optimizes the score of the [`BellGame`](@ref) against
@@ -23,9 +23,9 @@ The optimization is performed with the following semi-definite program:
 ```
 """
 function optimize_measurement(
+    scenario::LocalSignaling,
     game::BellGame,
     ρ_states::Vector{<:States.AbstractDensityMatrix},
-    scenario::LocalSignaling,
 ) :: Dict
     if scenario.X != length(ρ_states)
         throw(DomainError(scenario, "expected length of `ρ_states` is $(scenario.X)), but got $(length(ρ_states)) instead"))
@@ -56,7 +56,7 @@ function optimize_measurement(
     # parse/return results
     score = objective.optval
     violation = score - norm_bound
-    Π_opt = map(Π_b -> Π_b.value, Π_vars)
+    Π_opt = _opt_vars_to_povm(map(Π_b -> Π_b.value, Π_vars))
 
     Dict(
         "violation" => violation,
@@ -107,10 +107,29 @@ The following semi-definite program optimizes the Alice's POVM:
 ```
 """
 function optimize_measurement(
-    game::BellGame,
     scenario::BipartiteNoSignaling,
+    game::BellGame,
     ρ_AB :: States.AbstractDensityMatrix;
-    A_POVMs :: Vector{<:Observables.AbstractPOVM},
+    A_POVMs=Vector{Observables.POVM}(undef,0) :: Vector{<:Observables.AbstractPOVM},
+    B_POVMs=Vector{Observables.POVM}(undef,0) :: Vector{<:Observables.AbstractPOVM}
+) :: Dict
+    if length(A_POVMs) > 0
+        return _optimize_measurement_B(scenario, game, ρ_AB, A_POVMs)
+    elseif length(B_POVMs) > 0
+        return _optimize_measurement_A(scenario, game, ρ_AB, B_POVMs)
+    else
+        throw(DomainError((A_POVMs,B_POVMs), "either `A_POVMs` or `B_POVMs` must be specified."))
+    end
+end
+
+# """
+# Helper function for optimizing Bob's POVM
+# """
+function _optimize_measurement_B(
+    scenario::BipartiteNoSignaling,
+    game::BellGame,
+    ρ_AB :: States.AbstractDensityMatrix,
+    A_POVMs :: Vector{<:Observables.AbstractPOVM}
 ) :: Dict
     if !(scenario.X == length(A_POVMs))
         throw( DomainError(
@@ -150,33 +169,32 @@ function optimize_measurement(
     end
 
     # optimize model
-    solve!(problem, SCS.Optimizer(verbose=1))
+    solve!(problem, SCS.Optimizer(verbose=0))
 
     # parse/return results
     score = problem.optval
     violation = score - game.β
 
-    Π_B_opt = map(y -> map(Π_b -> Π_b.value, B_POVMs[y]), 1:scenario.Y)
+    Π_B_opt = map(y -> _opt_vars_to_povm(map(Π_b -> Π_b.value, B_POVMs[y])), 1:scenario.Y)
 
     Dict(
         "violation" => violation,
         "score" => score,
-        "povm" => Π_opt,
         "game" => game,
         "scenario" => scenario,
-        "states" => ρ_AB,
+        "state" => ρ_AB,
         "A_POVMs" => A_POVMs,
         "B_POVMs" => Π_B_opt
     )
 end
 
 # """
-# see above docs for BipartiteNoSignaling
+# Helper function for optimizing Alice's POVM
 # """
-function optimize_measurement(
-    game::BellGame,
+function _optimize_measurement_A(
     scenario::BipartiteNoSignaling,
-    ρ_AB :: States.AbstractDensityMatrix;
+    game::BellGame,
+    ρ_AB :: States.AbstractDensityMatrix,
     B_POVMs :: Vector{<:Observables.AbstractPOVM}
 ) :: Dict
     if !(scenario.Y == length(B_POVMs))
@@ -217,13 +235,13 @@ function optimize_measurement(
     end
 
     # optimize model
-    solve!(problem, SCS.Optimizer(verbose=1))
+    solve!(problem, SCS.Optimizer(verbose=0))
 
     # parse/return results
     score = problem.optval
     violation = score - game.β
 
-    Π_A_opt = map( x -> map(Π_a -> Π_a.value, A_POVMs[x]), 1:scenario.X)
+    Π_A_opt = map( x -> _opt_vars_to_povm(map(Π_a -> Π_a.value, A_POVMs[x])), 1:scenario.X)
 
     Dict(
         "violation" => violation,
@@ -234,4 +252,13 @@ function optimize_measurement(
         "A_POVMs" => Π_A_opt,
         "B_POVMs" => B_POVMs
     )
+end
+
+# """
+# Helper function for converting POVM optimization variables to a POVM
+# """
+function _opt_vars_to_povm(povm::Vector{Matrix{Complex{Float64}}}) :: Observables.POVM
+    Π = Observables.is_povm(povm) ? Observables.POVM(povm) : throw(DomainError(povm, "not a povm"))
+
+    Π
 end
