@@ -65,6 +65,7 @@ function convert(::Type{BellGame},
         αβ_game = reshape(facet[α_dim+β_dim+1:end-1], ((scenario.A-1)*(scenario.B-1), scenario.X*scenario.Y))
         αβ_col_sum = sum.(eachcol(αβ_game))
 
+        # using no-signaling constraints to remove g_a,x
         for a in 1:scenario.A-1
             game[(a-1)*scenario.B+1:(a-1)*scenario.B + scenario.B-1,:] = αβ_game[(a-1)*(scenario.B-1)+1:a*(scenario.B-1),:]
 
@@ -79,14 +80,9 @@ function convert(::Type{BellGame},
                     game[(a-1)*scenario.B+1:a*scenario.B,αβ_col_id] += α_game[a,x]*ones(Int64,scenario.B)
                 end
             end
-            # y_vec = zeros(Int64, scenario.Y)
-            # y_vec[1] = 1
-            # no_sig_input_id = findfirst(j -> j != 0, β_game[a,:])
-            # y_vec[(no_sig_input_id != nothing) ? no_sig_input_id : 1] = 1
-
-            # game[(a-1)*scenario.B+1:a*scenario.B,:] += ones(Int64,scenario.B)*kron(α_game[a,:],y_vec)'
         end
 
+        # using no-signaling constraints to remove g_b,y
         for b in 1:scenario.B-1
             game_row_ids = b:scenario.B:scenario.A*scenario.B-1
 
@@ -100,14 +96,6 @@ function convert(::Type{BellGame},
 
                     game[game_row_ids,αβ_col_id] += β_game[b,y]*ones(Int64,scenario.A)
                 end
-                # x_vec[1] = 1
-                # no_sig_input_id = findfirst(j -> j != 0, α_game[i,:])
-                # x_vec[(no_sig_input_id != nothing) ? no_sig_input_id : 1] = 1
-
-                # game_row_ids = b:scenario.B:scenario.A*scenario.B-1
-                # αβ_game_row_ids = b:scenario.B-1:(scenario.A-1)*(scenario.B-1)
-
-                # game[game_row_ids,:] += ones(Int64,scenario.A)*kron(x_vec,β_game[b,:])'
             end
         end
     elseif rep == "normalized"
