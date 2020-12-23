@@ -63,24 +63,52 @@ function convert(::Type{BellGame},
         α_game = reshape(facet[1:α_dim], (scenario.A-1, scenario.X))
         β_game = reshape(facet[α_dim+1:α_dim+β_dim], (scenario.B-1, scenario.Y))
         αβ_game = reshape(facet[α_dim+β_dim+1:end-1], ((scenario.A-1)*(scenario.B-1), scenario.X*scenario.Y))
+        αβ_col_sum = sum.(eachcol(αβ_game))
 
-        for i in 0:scenario.A-2
-            game[i*scenario.B+1:i*scenario.B + scenario.B-1,:] = αβ_game[i*(scenario.B-1)+1:(i+1)*(scenario.B-1),:]
+        for a in 1:scenario.A-1
+            game[(a-1)*scenario.B+1:(a-1)*scenario.B + scenario.B-1,:] = αβ_game[(a-1)*(scenario.B-1)+1:a*(scenario.B-1),:]
 
-            b_vec = zeros(Int64, scenario.Y)
-            b_vec[1] = 1
+            for x in 1:scenario.X
+                if α_game[a,x] != 0
+                    x_vec = zeros(Int64, scenario.X)
+                    x_vec[x] = 1
 
-            game[i*scenario.B+1:(i+1)*scenario.B,:] += ones(Int64,scenario.B)*kron(α_game[i+1,:],b_vec)'
+                    y_vec = ones(Int64,scenario.Y)
+                    αβ_col_id = findfirst(i -> i != 0, kron(x_vec,y_vec).*αβ_col_sum)
+
+                    game[(a-1)*scenario.B+1:a*scenario.B,αβ_col_id] += α_game[a,x]*ones(Int64,scenario.B)
+                end
+            end
+            # y_vec = zeros(Int64, scenario.Y)
+            # y_vec[1] = 1
+            # no_sig_input_id = findfirst(j -> j != 0, β_game[a,:])
+            # y_vec[(no_sig_input_id != nothing) ? no_sig_input_id : 1] = 1
+
+            # game[(a-1)*scenario.B+1:a*scenario.B,:] += ones(Int64,scenario.B)*kron(α_game[a,:],y_vec)'
         end
 
-        for i in 1:scenario.B-1
-            a_vec = zeros(Int64, scenario.X)
-            a_vec[1] = 1
+        for b in 1:scenario.B-1
+            game_row_ids = b:scenario.B:scenario.A*scenario.B-1
 
-            game_row_ids = i:scenario.B:scenario.A*scenario.B-1
-            αβ_game_row_ids = i:scenario.B-1:(scenario.A-1)*(scenario.B-1)
+            for y in 1:scenario.Y
+                if β_game[b,y] != 0
+                    y_vec = zeros(Int64, scenario.Y)
+                    y_vec[y] = 1
 
-            game[game_row_ids,:] += ones(Int64,scenario.A)*kron(a_vec,β_game[i,:])'
+                    x_vec = ones(Int64, scenario.X)
+                    αβ_col_id = findfirst(i -> i != 0, kron(x_vec,y_vec).*αβ_col_sum)
+
+                    game[game_row_ids,αβ_col_id] += β_game[b,y]*ones(Int64,scenario.A)
+                end
+                # x_vec[1] = 1
+                # no_sig_input_id = findfirst(j -> j != 0, α_game[i,:])
+                # x_vec[(no_sig_input_id != nothing) ? no_sig_input_id : 1] = 1
+
+                # game_row_ids = b:scenario.B:scenario.A*scenario.B-1
+                # αβ_game_row_ids = b:scenario.B-1:(scenario.A-1)*(scenario.B-1)
+
+                # game[game_row_ids,:] += ones(Int64,scenario.A)*kron(x_vec,β_game[b,:])'
+            end
         end
     elseif rep == "normalized"
         game[1:game_dims[1]-1,:] = reshape(facet[1:end-1], (game_dims[1]-1, game_dims[2]))
@@ -125,13 +153,6 @@ function convert(::Type{Vector{Int64}}, BG::BellGame; rep = "normalized"::String
 
     if rep == "normalized"
         (game_matrix, bound) = _apply_game_normalization!(game_matrix, bound)
-        # for col_id in 1:game_dims[2]
-        #     col = game_matrix[:,col_id]
-        #     if col[end] !== 0
-        #         game_matrix[:,col_id] .-= col[end]
-        #         bound -= col[end]
-        #     end
-        # end
 
         game_matrix = game_matrix[1:(end-1),:]
     end
@@ -176,6 +197,7 @@ function convert(::Type{Vector{Int64}},
         α_game = zeros(Int64, (scenario.A-1, scenario.X))
         β_game = zeros(Int64, (scenario.B-1, scenario.Y))
 
+        # removing greatest output for Alice using no-signaling constraint
         for a in 1:scenario.A-1
             target_row = a * scenario.B
             subtract_vals = game_matrix[target_row,:]
@@ -193,16 +215,18 @@ function convert(::Type{Vector{Int64}},
             α_game[a,:] = α_game_rows
         end
 
+        # removing greatest outputs for Bob using no-signaling constraint
         for b in 1:scenario.B-1
+
             target_row = (scenario.A-1) * (scenario.B) + b
             subtract_vals = game_matrix[target_row,:]
 
-            b_dims = b:scenario.B: scenario.A * scenario.B -1
+            b_dims = b:scenario.B:scenario.A * scenario.B -1
 
             game_matrix[b_dims,:] -= ones(Int64, scenario.A) * subtract_vals'
 
             β_game_rows = map(y -> begin
-                y_dims = y:scenario.Y: scenario.X*y
+                y_dims = y:scenario.Y:scenario.X*scenario.Y
 
                 sum(subtract_vals[y_dims])
             end, 1:scenario.Y)
