@@ -1,5 +1,3 @@
-using Convex, SCS
-
 export optimize_measurement
 
 @doc raw"""
@@ -96,12 +94,12 @@ The following semi-definite program optimizes the Bob's POVM:
     ) :: Dict
 
 Find Alice's measurement which optimizes a `BellGame`'s score for the shared quantum
-state `ρ_AB` and POVM measurement applied by Bob.
+state `ρ_{AB}` and POVM measurement applied by Bob.
 The following semi-definite program optimizes the Alice's POVM:
 
 ```math
 \begin{aligned}
-&\max_{\{\Pi_a^x\}} \sum_{a,b,x,y} G_{a,b,x,y}\text{Tr}[(\Pi_a^x \otimes \Pi_b^y)\rho_AB] \\
+&\max_{\{\Pi_a^x\}} \sum_{a,b,x,y} G_{a,b,x,y}\text{Tr}[(\Pi_a^x \otimes \Pi_b^y)\rho_{AB}] \\
 &s.t. \quad \sum_a \Pi_a^x = \mathbb{I},\quad \Pi_a^x \geq 0 \quad \forall \;x
 \end{aligned}
 ```

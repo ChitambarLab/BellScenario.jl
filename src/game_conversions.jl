@@ -101,7 +101,7 @@ function convert(::Type{BellGame},
     elseif rep == "normalized"
         game[1:game_dims[1]-1,:] = reshape(facet[1:end-1], (game_dims[1]-1, game_dims[2]))
     end
-
+    println(game)
     BellGame(_reverse_game_normalization(game,bound)...)
 end
 

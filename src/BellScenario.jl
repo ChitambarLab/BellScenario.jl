@@ -14,7 +14,7 @@ using QBase, LinearAlgebra
 import Base: *, convert
 
 # exported modules
-export LocalPolytope
+export LocalPolytope, Nonlocality
 
 # Legacy modules
 export ConvexPolytope, Degeneracy, Behavior, QuantumBehavior, QuantumOpt
@@ -32,13 +32,15 @@ include("./game_conversions.jl")
 
 # quantum scenarios
 include("./quantum_strategies.jl")
-include("./quantum_opt.jl")
 
 # read/write and printing
 include("./file_io.jl")
 
 include("./LocalPolytope.jl")
 using .LocalPolytope
+
+include("./Nonlocality/Nonlocality.jl")
+using .Nonlocality
 
 # include internal modules
 include("./Legacy/ConvexPolytope.jl")
