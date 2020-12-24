@@ -13,6 +13,8 @@ abstract type Scenario end
 A black-box scenario considering a single device. A black-box is an uncharacterized
 device with a finite number of classical inputs and outputs.
 
+![Black-Box Device](../assets/scenario_images/blackbox_device.png)
+
 A `DomainError` is throw if parameters `num_out` or `num_in` is less than 1.
 """
 struct BlackBox <: Scenario

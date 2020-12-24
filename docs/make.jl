@@ -3,7 +3,7 @@ using Documenter, BellScenario
 makedocs(;
     modules=[BellScenario],
     format=Documenter.HTML(
-        assets  = ["assets/custom.css"],
+        assets = ["assets/custom.css"],
     ),
     pages=[
         "Home" => "index.md",
@@ -33,7 +33,6 @@ makedocs(;
     repo="https://github.com/ChitambarLab/BellScenario.jl/blob/{commit}{path}#L{line}",
     sitename="BellScenario.jl",
     authors="Brian Doolittle",
-    assets=String[],
 )
 
 deploydocs(;

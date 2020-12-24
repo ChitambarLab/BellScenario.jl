@@ -1,16 +1,24 @@
 """
-The `LocalPolytope` module is a submodule of [`BellScenario`](@ref). If shared
-randomness is held between each of the black-boxes involved in the Bell scenario,
-then the set of conditional probabilities attainable by the black-boxes form a
-convex polytope regarded as the Local Polytope. A convex polytope has two equivalent
-descriptions,
+The `LocalPolytope` module characterizes the classical bounds of Bell scenarios.
+The set of strategies attainable by classical devices forms a convex polyhedron
+known as the *local polytope*.
+Each distinct strategy represents a point in the local polytope and the extreme
+points (vertices) of the local polytope are deterministic strategies.
+When shared randomness is permitted between all black-boxes involved in the Bell
+scenario, any mixture of deterministic strategies can be taken and the set forms
+a convex polytope.
+A convex polytope has two equivalent descriptions,
 
-1. The V-Description: The polytope is the convex hull of a set of extreme-points.
-2. The H-Description: The polytope is the intersection of a set of linear half-spaces.
+1. The V-Description: The polytope is the convex hull of a set of vertices, ``\\quad\\text{conv}(\\mathbf{V})``.
+2. The H-Description: The polytope is the intersection of a set of linear half-spaces ``\\quad\\cap\\mathbf{F}``.
 
-The V-Description is typically easier to compute while the H-Description is useful
-because it inherently provides a set of inequalities which confirm whether a point
-is contained within the polytope. 
+```math
+\\text{conv}(\\mathbf{V}) = \\cap\\mathbf{F}
+```
+
+Typically, the V-Description is easier to compute, however, the H-Description
+describes the bound as linear inequalities which provide a simple test for inclusion
+or exclusion from the local polytope.
 
 This module
 exports the following memthods:
