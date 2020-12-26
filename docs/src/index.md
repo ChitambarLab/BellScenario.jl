@@ -4,7 +4,7 @@
 
 This software is a general tool for analyzing quantum non-locality in Bell scenarios.
 
-## Features
+## Featured Modules
   1. [`BellScenario`](@ref): Types and constructors for describing Bell scenarios.
   2. [`LocalPolytope`](@ref): Computes the bounds classical Bell Scenarios.
   3. [`Nonlocality`](@ref): Optimizes quantum states and measurements for non-locality.
@@ -26,8 +26,22 @@ which leads to advantages in communications, data processing, and information se
 
 # Acknowledgements
 
+Development of BellScenario.jl was made possible by the advisory of Dr. Eric
+Chitambar and general support from the Physics Department at the University of
+Illinois Urbana-Champaign.
+Funding was provided by NSF Award 1914440.
+
 # Citing
+
+To reference this work, see [`CITATION.bib`](https://github.com/ChitambarLab/BellScenario.jl/blob/master/CITATION.bib).
 
 # Licensing
 
+BellScenario.jl is released under the MIT License.
+
 # Contents
+
+```@contents
+Pages = ["user_guide.md", "BellScenario/overview.md", "LocalPolytope/overview.md", "Nonlocality/overview.md", "development_manual.md",]
+Depth = 1
+```

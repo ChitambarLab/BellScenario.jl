@@ -8,12 +8,12 @@ An abstract type to represent general black-box scenarios.
 abstract type Scenario end
 
 """
+![Black-Box Device](../assets/scenario_images/blackbox_device.png)
+
     BlackBox(num_out :: Int64, num_in :: Int64) <: Scenario
 
 A black-box scenario considering a single device. A black-box is an uncharacterized
 device with a finite number of classical inputs and outputs.
-
-![Black-Box Device](../assets/scenario_images/blackbox_device.png)
 
 A `DomainError` is throw if parameters `num_out` or `num_in` is less than 1.
 """
@@ -29,13 +29,13 @@ struct BlackBox <: Scenario
 end
 
 """
+![Local Signaling Scenario](../assets/scenario_images/local_signaling_scenario.png)
+
     LocalSignaling(
         X :: Int64,
         B :: Int64,
         d :: Int64,
     )
-
-![Local Signaling Scenario](../assets/scenario_images/local_signaling_scenario.png)
 
 A black-box signaling scenario involving a transmitting and receiving device.
 The transmitter takes `X` inputs and the receiver has `B` outputs.
@@ -52,14 +52,14 @@ struct LocalSignaling <: Scenario
 end
 
 """
+![Bipartite No-Signaling Scenario](../assets/scenario_images/bipartite_no_signaling_scenario.png)
+
     BipartiteNoSignaling(
         A :: Int64,
         B :: Int64,
         X :: Int64,
         Y :: Int64
     ) <: Scenario
-
-![Bipartite No-Signaling Scenario](../assets/scenario_images/bipartite_no_signaling_scenario.png)
 
 A non-signaling Bell scenario using two devices.
 """
