@@ -29,7 +29,10 @@ convert(::Type{Vector{BellGame}},::IEQ,::BlackBox)
 convert(::Type{IEQ}, bell_games::Vector{BellGame})
 ```
 
-# File I/O
+## File I/O
+
+In practice, one may need to view are large set of `BellGame`s in a human-readable
+form.
 
 ```@docs
 pretty_print_txt
