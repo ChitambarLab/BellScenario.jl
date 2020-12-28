@@ -24,7 +24,7 @@ makedocs(;
         ],
         "Nonlocality.jl" => [
             "Overview" => "Nonlocality/overview.md",
-            "Quantum Optimization" => "Nonlocality/quantum_opt.md",
+            "Optimize Measurements" => "Nonlocality/optimize_measurements.md",
         ],
         "Development Manual" => "development_manual.md",
     ],

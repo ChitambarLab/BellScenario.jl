@@ -1,7 +1,7 @@
 ```@meta
 CurrentModule = Nonlocality
 ```
-# Quantum Optimization
+# Optimize Measurements
 
 ```@docs
 optimize_measurement

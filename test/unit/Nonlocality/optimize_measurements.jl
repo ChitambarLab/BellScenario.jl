@@ -1,6 +1,6 @@
 using Test, QBase
 
-@testset "./src/quantum_opt.jl" begin
+@testset "./src/Nonlocality/optimize_measurements.jl" begin
 
 using BellScenario
 

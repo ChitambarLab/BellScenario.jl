@@ -14,6 +14,6 @@ using QBase, LinearAlgebra
 
 using Convex, SCS
 
-include("./quantum_opt.jl")
+include("./optimize_measurements.jl")
 
 end
