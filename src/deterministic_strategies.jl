@@ -8,46 +8,34 @@ export is_deterministic
 export deterministic_strategies
 
 """
-A strategy matrix describing the deterministic behavior of a black-box.
+    DeterministicStrategy(conditionals :: Matrix{Int64}) <: AbstractStrategy{Int64}
 
-    DeterministicStrategy(conditionals :: Matrix{Int64}) <: AbstractMatrix{Int64}
-
-By default, the constructor creates a strategy for a 'BlackBox' scenario. However,
+A strategy matrix describing the behavior of a deterministic black-box.
+A strategy *deterministic* if its elements satisfy ``P(y|x)\\in\\{0,1\\}`` in addition
+to the non-negativity and normalization constraints.
+By default, the constructor creates a strategy for a 'BlackBox' scenario, however,
 a `Scenario` can be passed to the `DeterministicStrategy` constructor.
 
     DeterministicStrategy(conditionals :: Matrix{Int}, scenario :: Scenario)
-
-A `DomainError` is thrown if the provided `Scenario` does not match the dimension
-of the `conditionals` matrix.
-
-A `DomainError` is thrown if the elements of `conditionals` are not `0` or `1`.
-
-# Base library Extensions for `DeterministicStrategy`:
 
 The product of two deterministic strategies is a `DeterministicStrategy`.
 
     *(S1::DeterministicStrategy, S2::DeterministicStrategy) :: DeterministicStrategy
 
-Deterministic strategies correspond to vertices of the local polytope. A vertex is
-simply represented by a `Vector{Int64}` and the `rep` argument specifies whether
-the vertex is in the `"normalized"` or `"generalized"` representation.
+When multiplied a new `Scenario` can be specified.
 
-Vertex (`Vector{Int64}`) -> `DeterministicStrategy`
+    *(
+        S1::DeterministicStrategy,
+        S2::DeterministicStrategy,
+        scenario::Scenario
+    ) :: Deterministic Strategy
 
-    convert(
-        ::Type{DeterministicStrategy},
-        vertex  :: Vector{Int64},
-        scenario :: Scenario;
-        rep = "normalized" :: String
-    )
+### Errors:
 
-`DeterministicStrategy` -> Vertex (`Vector{Int64}`)
-
-    convert(
-        ::Type{Vector{Int64}},
-        strategy :: DeterministicStrategy;
-        rep = "normalized" :: String
-    )
+A `DomainError` is thrown if:
+* The provided `Scenario` does not match the dimension of the `conditionals` matrix.
+* The elements of `conditionals` are not `0` or `1`.
+* The strategy elements are not non-negative and normalized.
 """
 struct DeterministicStrategy <: AbstractStrategy{Int64}
     conditionals :: Matrix{Int64}
@@ -75,6 +63,20 @@ end
     scenario::Scenario
 ) = DeterministicStrategy(S1.conditionals*S2.conditionals, scenario)
 
+"""
+Deterministic strategies correspond to vertices of the local polytope.
+A vertex is simply represented by a `Vector{Int64}` where the `rep` argument specifies
+the subspace of the vertex e.g. `"normalized"` or `"generalized"` representation.
+
+Vertex (`Vector{Int64}`) -> `DeterministicStrategy`
+
+    convert(
+        ::Type{DeterministicStrategy},
+        vertex  :: Vector{Int64},
+        scenario :: Scenario;
+        rep = "normalized" :: String
+    )
+"""
 function convert(::Type{DeterministicStrategy}, vertex::Vector{Int64}, scenario::Union{LocalSignaling,BlackBox}; rep="normalized" :: String)
     if !(rep in ("normalized", "generalized"))
         throw(DomainError(rep, "Argument `rep` must be either 'normalized' or 'generalized'"))
@@ -101,6 +103,15 @@ function convert(::Type{DeterministicStrategy}, vertex::Vector{Int64}, scenario:
     DeterministicStrategy(strategy_matrix, scenario)
 end
 
+"""
+`DeterministicStrategy` -> Vertex (`Vector{Int64}`)
+
+    convert(
+        ::Type{Vector{Int64}},
+        strategy :: DeterministicStrategy;
+        rep = "normalized" :: String
+    )
+"""
 function convert(::Type{Vector{Int64}}, strategy::DeterministicStrategy; rep = "normalized"::String)
     if !(rep in ("normalized", "generalized"))
         throw(DomainError(rep, "Argument `rep` must be either 'normalized' or 'generalized'"))

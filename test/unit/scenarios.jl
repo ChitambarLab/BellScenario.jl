@@ -35,11 +35,11 @@ end
     end
 end
 
-@testset "Bipartite()" begin
+@testset "BipartiteSignaling()" begin
     @testset "calling w/ BlackBox parameters, no Comm" begin
-        BS = Bipartite((2,3),(4,5))
+        BS = BipartiteSignaling((2,3),(4,5))
 
-        @test BS isa Bipartite
+        @test BS isa BipartiteSignaling
         @test BS isa Scenario
 
         @test BS.A == BlackBox(2,3)
@@ -49,9 +49,9 @@ end
     end
 
     @testset "calling w/ BlackBox parameters, no Comm" begin
-        BS = Bipartite((2,2),(2,2), dits =3, bidirectional=true)
+        BS = BipartiteSignaling((2,2),(2,2), dits =3, bidirectional=true)
 
-        @test BS isa Bipartite
+        @test BS isa BipartiteSignaling
         @test BS isa Scenario
 
         @test BS.A == BlackBox(2,2)
@@ -60,7 +60,7 @@ end
         @test BS.bidirectional == true
     end
 
-    @test_throws DomainError Bipartite((2,3),(4,5),dits=0)
+    @test_throws DomainError BipartiteSignaling((2,3),(4,5),dits=0)
 end
 
 @testset "LocalSignaling()" begin

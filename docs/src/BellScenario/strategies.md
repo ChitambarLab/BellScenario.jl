@@ -6,16 +6,27 @@ CurrentModule = BellScenario
 ```@docs
 AbstractStrategy
 Strategy
-DeterministicStrategy
-is_deterministic
 strategy_dims
 random_strategy
-deterministic_strategies
-convert(::Type{<:AbstractStrategy}, ::Vector{Float64}, ::BipartiteNonSignaling; ::String)
 ```
 
-# Quantum Strategies
+## Deterministic Strategies
+
+```@docs
+DeterministicStrategy
+is_deterministic
+deterministic_strategies
+```
+
+## Quantum Strategies
 
 ```@docs
 quantum_strategy
+```
+
+## Conversion Methods
+```@docs
+convert(::Type{DeterministicStrategy}, ::Vector{Int64}, ::BlackBox; ::String)
+convert(::Type{<:AbstractStrategy}, ::Vector{Float64}, ::BipartiteNonSignaling; ::String)
+convert(::Type{Vector{Int64}}, ::DeterministicStrategy; ::String)
 ```

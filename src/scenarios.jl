@@ -1,4 +1,4 @@
-export Scenario, BlackBox, Bipartite, LocalSignaling
+export Scenario, BlackBox, BipartiteSignaling, LocalSignaling
 
 export BipartiteNonSignaling
 
@@ -38,14 +38,17 @@ end
         X :: Int64,
         Y :: Int64,
         d :: Int64,
-    )
+    ) <: Scenario
 
-A black-box signaling scenario involving a transmitting and receiving device.
-The transmitter takes `X` inputs and the receiver has `B` outputs.
-The transmitter signals to the receiver using `d`-dits of classical or quantum
-communication.
+A bipartite signaling scenario where information is passed from a transmitter
+black-box to a receiver black-box using no more than `d` dits of communication.
 
 ![Local Signaling Scenario](../assets/scenario_images/local_signaling_scenario.png)
+
+The transmitter device has `X` inputs and the receiver device has `Y` outputs and
+shared randomness is held between the two devices.
+When quantum communication is used instead of classical communication no Bell violations
+occur.
 
 ### Errors
 A `DomainError` is thrown if `X`, `Y`, or `d` is less than 1.
@@ -67,10 +70,18 @@ end
         Y :: Int64
     ) <: Scenario
 
-A non-signaling Bell scenario using two devices.
+A bipartite non-signaling scenario where each device receives an input and produces
+an output.
+Let Alice be the device with `A` outputs and `X` inputs while Bob is the device
+with `B` outputs and `Y` inputs.
 
 ![Bipartite Non-Signaling Scenario](../assets/scenario_images/bipartite_non_signaling_scenario.png)
 
+Shared randomness is held between Alice and Bob.
+When Alice and Bob share quantum entanglement, Bell violations are known to occur.
+
+### Errors
+A `DomainError` is thrown if `A`, `B`, `X`, or `Y` is less than 1.
 """
 struct BipartiteNonSignaling <: Scenario
     A :: Int64
@@ -88,26 +99,25 @@ struct BipartiteNonSignaling <: Scenario
 end
 
 """
-    Bipartite(
+    BipartiteSignaling(
         A :: Tuple{Int64, Int64},
         B :: Tuple{Int64, Int64};
-        dits :: Int = 1,
+        dits :: Int64 = 1,
         bidirectional :: Bool = false
     ) <: Scenario
 
-A black-box scenario with two devices and possible communication between the
-devices. The keyword parameter `dits` describes the number of dits used for
-communication and `bidirectional` describes whether communication is simultaneous
-between each party.
+A bipartite signaling scenario where each device can send a message to the other.
+
+![Bipartite Signaling Scenario](../assets/scenario_images/bipartite_signaling_scenario.png)
 """
-struct Bipartite <: Scenario
+struct BipartiteSignaling <: Scenario
     A :: BlackBox
     B :: BlackBox
-    dits :: Int
+    dits :: Int64
     bidirectional :: Bool
-    Bipartite(
-        A::Tuple{Int,Int}, B::Tuple{Int,Int};
-        dits::Int=1, bidirectional::Bool=false
+    BipartiteSignaling(
+        A::Tuple{Int64,Int64}, B::Tuple{Int64,Int64};
+        dits::Int64=1, bidirectional::Bool=false
     ) = (dits >= 1) ? new(BlackBox(A...), BlackBox(B...), dits, bidirectional) : throw(
             DomainError(dits, "communication `dits` must be ≥ 1.")
         )

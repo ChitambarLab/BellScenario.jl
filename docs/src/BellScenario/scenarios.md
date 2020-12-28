@@ -8,5 +8,5 @@ Scenario
 BlackBox
 LocalSignaling
 BipartiteNonSignaling
-Bipartite
+BipartiteSignaling
 ```

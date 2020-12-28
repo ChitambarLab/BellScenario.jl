@@ -35,6 +35,12 @@ Two (or more) black-boxes may coordinate using a limited amount of communication
 * **Quantum Communication** - A quantum state is sent from one black-box to another.
 
 Communication resources are used during a Bell test.
+Classical communication resources are measured in *dits* which describes the
+number of distinct messages that can be sent.
+Quantum communication resources are measured in *qudits* which describes the
+Hilbert space dimension of the quantum state used to communicate.
+Quantum communication can simulate classical communication by encoding the classical
+messages as an orthogonal basis on the qudit Hilbert space.
 
 ### Correlation Resources:
 

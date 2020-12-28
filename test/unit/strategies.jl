@@ -50,12 +50,12 @@ end
         @test S_prod2 isa Strategy
         @test S_prod2.scenario == BlackBox(2,2)
 
-        scenario = Bipartite((3,1),(1,3))
+        scenario = BipartiteSignaling((3,1),(1,3))
         S_prod = *(S1, S2, scenario)
 
         @test S_prod == [1 0 1;0 1 0;0 0 0]
         @test S_prod isa Strategy
-        @test S_prod.scenario == Bipartite((3,1),(1,3))
+        @test S_prod.scenario == BipartiteSignaling((3,1),(1,3))
 
         @test_throws DomainError (*(S2, S1, scenario))
     end
@@ -75,12 +75,12 @@ end
         @test S_prod2 isa DeterministicStrategy
         @test S_prod2.scenario == BlackBox(2,2)
 
-        scenario = Bipartite((3,1),(1,3))
+        scenario = BipartiteSignaling((3,1),(1,3))
         S_prod = *(S1, S2, scenario)
 
         @test S_prod == [1 0 1;0 1 0;0 0 0]
         @test S_prod isa DeterministicStrategy
-        @test S_prod.scenario == Bipartite((3,1),(1,3))
+        @test S_prod.scenario == BipartiteSignaling((3,1),(1,3))
 
         @test_throws DomainError (*(S2, S1, scenario))
     end
@@ -100,12 +100,12 @@ end
         @test S_prod2 isa Strategy
         @test S_prod2.scenario == BlackBox(2,2)
 
-        scenario = Bipartite((3,1),(1,3))
+        scenario = BipartiteSignaling((3,1),(1,3))
         S_prod = *(S1, S2, scenario)
 
         @test S_prod == [1 0 1;0 1 0;0 0 0]
         @test S_prod isa Strategy
-        @test S_prod.scenario == Bipartite((3,1),(1,3))
+        @test S_prod.scenario == BipartiteSignaling((3,1),(1,3))
 
         @test_throws DomainError (*(S2, S1, scenario))
     end
@@ -140,8 +140,8 @@ end
     end
 
     @testset "bipartite scenario" begin
-        @test strategy_dims(Bipartite((3,1),(1,4))) == (3,4)
-        @test strategy_dims(Bipartite((2,2),(2,2))) == (4,4)
+        @test strategy_dims(BipartiteSignaling((3,1),(1,4))) == (3,4)
+        @test strategy_dims(BipartiteSignaling((2,2),(2,2))) == (4,4)
     end
 end
 
