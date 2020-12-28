@@ -27,19 +27,18 @@ export LocalPolytope, Nonlocality
 # Legacy modules
 export ConvexPolytope, Degeneracy, Behavior, QuantumBehavior, QuantumOpt
 
-# black-box scenarios
+# Scenarios
 include("./scenarios.jl")
 
-# fundamental data structures
+# Strategies
 include("./strategies.jl")
-include("./strategy_utilities.jl")
 include("./deterministic_strategies.jl")
+include("./strategy_conversions.jl")
+include("./quantum_strategies.jl")
 
+# Games
 include("./games.jl")
 include("./game_conversions.jl")
-
-# quantum scenarios
-include("./quantum_strategies.jl")
 
 # read/write and printing
 include("./file_io.jl")

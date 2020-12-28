@@ -64,65 +64,6 @@ end
 ) = DeterministicStrategy(S1.conditionals*S2.conditionals, scenario)
 
 """
-Deterministic strategies correspond to vertices of the local polytope.
-A vertex is simply represented by a `Vector{Int64}` where the `rep` argument specifies
-the subspace of the vertex e.g. `"normalized"` or `"generalized"` representation.
-
-Vertex (`Vector{Int64}`) -> `DeterministicStrategy`
-
-    convert(
-        ::Type{DeterministicStrategy},
-        vertex  :: Vector{Int64},
-        scenario :: Scenario;
-        rep = "normalized" :: String
-    )
-"""
-function convert(::Type{DeterministicStrategy}, vertex::Vector{Int64}, scenario::Union{LocalSignaling,BlackBox}; rep="normalized" :: String)
-    if !(rep in ("normalized", "generalized"))
-        throw(DomainError(rep, "Argument `rep` must be either 'normalized' or 'generalized'"))
-    end
-
-    s_dims = strategy_dims(scenario)
-
-    strategy_matrix = (rep == "normalized") ? cat(
-        reshape(vertex, (s_dims[1]-1, s_dims[2])),
-        zeros(Int64, (1,s_dims[2])),
-        dims = 1
-    ) : reshape(vertex, s_dims)
-
-    # for vertices in the normalized representation, if a column does not contain
-    # a one, add it to the last row.
-    if rep == "normalized"
-        for col_id in 1:s_dims[2]
-            if sum(strategy_matrix[:,col_id]) == 0
-                strategy_matrix[s_dims[1], col_id] = 1
-            end
-        end
-    end
-
-    DeterministicStrategy(strategy_matrix, scenario)
-end
-
-"""
-`DeterministicStrategy` -> Vertex (`Vector{Int64}`)
-
-    convert(
-        ::Type{Vector{Int64}},
-        strategy :: DeterministicStrategy;
-        rep = "normalized" :: String
-    )
-"""
-function convert(::Type{Vector{Int64}}, strategy::DeterministicStrategy; rep = "normalized"::String)
-    if !(rep in ("normalized", "generalized"))
-        throw(DomainError(rep, "Argument `rep` must be either 'normalized' or 'generalized'"))
-    end
-
-    max_row = (rep == "normalized") ? size(strategy,1) - 1 : size(strategy,1)
-
-    strategy[1:max_row,:][:]
-end
-
-"""
     is_deterministic( strategy :: AbstractMatrix  ) :: Bool
 
 Returns `true` if all elements of `strategy` are either `0` or `1` and the matrix
