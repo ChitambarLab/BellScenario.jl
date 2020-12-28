@@ -99,10 +99,10 @@ function strategy_dims(scenario::BlackBox) :: Tuple{Int64, Int64}
 end
 
 function strategy_dims(scenario::LocalSignaling) :: Tuple{Int64, Int64}
-    (scenario.B, scenario.X)
+    (scenario.Y, scenario.X)
 end
 
-function strategy_dims(scenario::BipartiteNoSignaling) :: Tuple{Int64,Int64}
+function strategy_dims(scenario::BipartiteNonSignaling) :: Tuple{Int64,Int64}
     (scenario.A * scenario.B, scenario.X * scenario.Y)
 end
 

@@ -37,26 +37,26 @@ Facet (`Vector{Int64}`) -> `BellGame`
     convert(
         ::Type{BellGame},
         facet::Vector{Int64},
-        scenario::BipartiteNoSignaling;
-        rep = "no-signaling"::String
+        scenario::BipartiteNonSignaling;
+        rep = "non-signaling"::String
     )
 
 Transforms LocalPolytope facets into `BellGame`  types.
 """
 function convert(::Type{BellGame},
     facet::Vector{Int64},
-    scenario::BipartiteNoSignaling;
-    rep = "no-signaling"::String
+    scenario::BipartiteNonSignaling;
+    rep = "non-signaling"::String
 )
-    if !(rep in ["no-signaling","normalized","generalized"])
-        throw(DomainError(rep, "input `rep` must be in [\"no-signaling\",\"normalized\",\"generalized\"]"))
+    if !(rep in ["non-signaling","normalized","generalized"])
+        throw(DomainError(rep, "input `rep` must be in [\"non-signaling\",\"normalized\",\"generalized\"]"))
     end
 
     game_dims = strategy_dims(scenario)
     game = (rep == "generalized") ? reshape(facet[1:end-1], game_dims) : zeros(Int64, game_dims)
     bound = facet[end]
 
-    if rep == "no-signaling"
+    if rep == "non-signaling"
         α_dim = (scenario.A-1)*scenario.X
         β_dim = (scenario.B-1)*scenario.Y
 
@@ -65,7 +65,7 @@ function convert(::Type{BellGame},
         αβ_game = reshape(facet[α_dim+β_dim+1:end-1], ((scenario.A-1)*(scenario.B-1), scenario.X*scenario.Y))
         αβ_col_sum = sum.(eachcol(αβ_game))
 
-        # using no-signaling constraints to remove g_a,x
+        # using non-signaling constraints to remove g_a,x
         for a in 1:scenario.A-1
             game[(a-1)*scenario.B+1:(a-1)*scenario.B + scenario.B-1,:] = αβ_game[(a-1)*(scenario.B-1)+1:a*(scenario.B-1),:]
 
@@ -82,7 +82,7 @@ function convert(::Type{BellGame},
             end
         end
 
-        # using no-signaling constraints to remove g_b,y
+        # using non-signaling constraints to remove g_b,y
         for b in 1:scenario.B-1
             game_row_ids = b:scenario.B:scenario.A*scenario.B-1
 
@@ -155,19 +155,19 @@ BellGame -> Vector{Int64}
 
     convert(::Type{Vector{Int64}},
         BG::BellGame,
-        scenario::BipartiteNoSignaling;
-        rep = "no-signaling" :: String
+        scenario::BipartiteNonSignaling;
+        rep = "non-signaling" :: String
     )
 
-Transforms a `BellGame` for a `BipartiteNoSignaling` scenario into a facet vector.
+Transforms a `BellGame` for a `BipartiteNonSignaling` scenario into a facet vector.
 """
 function convert(::Type{Vector{Int64}},
     BG::BellGame,
-    scenario::BipartiteNoSignaling;
-    rep = "no-signaling" :: String
+    scenario::BipartiteNonSignaling;
+    rep = "non-signaling" :: String
 )
-    if !(rep in ["no-signaling","normalized","generalized"])
-        throw(DomainError(rep, "input `rep` must be in [\"no-signaling\",\"normalized\",\"generalized\"]"))
+    if !(rep in ["non-signaling","normalized","generalized"])
+        throw(DomainError(rep, "input `rep` must be in [\"non-signaling\",\"normalized\",\"generalized\"]"))
     end
 
     game_dims = size(BG)
@@ -179,15 +179,15 @@ function convert(::Type{Vector{Int64}},
         (game_matrix, bound) = _apply_game_normalization(BG[:,:], BG.β)
 
         facet = vcat(game_matrix[1:game_dims[1]-1,:][:], bound)
-    elseif rep == "no-signaling"
+    elseif rep == "non-signaling"
         (game_matrix, bound) = _apply_game_normalization!(BG[:,:], BG.β)
 
         # construct G(a|x) and G(b|y)
-        # in each column, subtract off from each Alice/Bob column the values excluded from the no-signaling
+        # in each column, subtract off from each Alice/Bob column the values excluded from the non-signaling
         α_game = zeros(Int64, (scenario.A-1, scenario.X))
         β_game = zeros(Int64, (scenario.B-1, scenario.Y))
 
-        # removing greatest output for Alice using no-signaling constraint
+        # removing greatest output for Alice using non-signaling constraint
         for a in 1:scenario.A-1
             target_row = a * scenario.B
             subtract_vals = game_matrix[target_row,:]
@@ -205,7 +205,7 @@ function convert(::Type{Vector{Int64}},
             α_game[a,:] = α_game_rows
         end
 
-        # removing greatest outputs for Bob using no-signaling constraint
+        # removing greatest outputs for Bob using non-signaling constraint
         for b in 1:scenario.B-1
 
             target_row = (scenario.A-1) * (scenario.B) + b

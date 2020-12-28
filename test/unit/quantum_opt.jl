@@ -62,9 +62,9 @@ using BellScenario
     end
 end
 
-@testset "Nonlocality.optimize_measurement(::BipartiteNoSignaling)" begin
+@testset "Nonlocality.optimize_measurement(::BipartiteNonSignaling)" begin
     @testset "CHSH inequality" begin
-        scenario = BipartiteNoSignaling(2,2,2,2)
+        scenario = BipartiteNonSignaling(2,2,2,2)
         game = BellGame([0 1 1 0;0 0 0 1;0 0 0 1;1 0 0 1],2)
         ρ_AB = States.bell_states[1]
         POVMs = [
@@ -115,9 +115,9 @@ end
     end
 
     @testset "Domain Errors" begin
-        scenario = BipartiteNoSignaling(2,2,2,2)
-        scenarioA = BipartiteNoSignaling(3,2,3,2)
-        scenarioB = BipartiteNoSignaling(2,3,2,3)
+        scenario = BipartiteNonSignaling(2,2,2,2)
+        scenarioA = BipartiteNonSignaling(3,2,3,2)
+        scenarioB = BipartiteNonSignaling(2,3,2,3)
         game = BellGame([0 1 1 0;0 0 0 1;0 0 0 1;1 0 0 1],2)
         ρ_AB = States.bell_states[1]
         POVMs = [

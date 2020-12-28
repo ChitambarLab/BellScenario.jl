@@ -19,7 +19,7 @@ using QBase: QMath
 # Inputs:
 #     outcome: Tuple, (a,b,x,y) values
 #     (α/β)_expt: Tuple, experiment parameters
-#     rep: String, behavior representation (generalized,normalized,fixed-direction,no-signaling)
+#     rep: String, behavior representation (generalized,normalized,fixed-direction,non-signaling)
 #
 # Output:
 #     index: Integer, id that indexes into the specified behavior vector
@@ -38,9 +38,9 @@ function index(outcome, α_expt, β_expt, rep="generalized")
         else
             index += (a-1)*(b_out)*x_in*y_in + (b-1)*x_in*y_in + (x-1)*y_in + y
         end
-    elseif rep == "no-signaling"
+    elseif rep == "non-signaling"
         if a == a_out || b == b_out
-            throw(ArgumentError("outcome coordinate 'a' or 'b' is not in no-signaling representation"))
+            throw(ArgumentError("outcome coordinate 'a' or 'b' is not in non-signaling representation"))
         elseif (b == 0 && y == 0) && (in(a,1:(a_out-1)) && in(x,1:(x_in)))
             index += (a-1)*x_in + x
         elseif (a == 0 && x == 0) && (in(b,1:(b_out-1)) && in(y,1:(y_in)))
@@ -48,7 +48,7 @@ function index(outcome, α_expt, β_expt, rep="generalized")
         elseif (in(a,1:(a_out-1)) && in(x,1:(x_in))) && (in(b,1:(b_out-1)) && in(y,1:(y_in)))
             index += x_in*(a_out - 1) + y_in*(b_out - 1) + (a-1)*(b_out-1)*x_in*y_in + (b-1)*x_in*y_in + (x-1)*y_in + y
         else
-            throw(ArgumentError("outcome coordinate ($a,$b,$x,$y) is not valid in no-signaling representation"))
+            throw(ArgumentError("outcome coordinate ($a,$b,$x,$y) is not valid in non-signaling representation"))
         end
     elseif rep == "fixed-direction"
         if b == b_out
@@ -68,7 +68,7 @@ end
 # """
 # dimension(α_expt,β_expt,rep)
 #     Returns the dimension of a behavior vector in the specified representation
-#     ("generalized", "normalized", "fixed-direction", "no-signaling").
+#     ("generalized", "normalized", "fixed-direction", "non-signaling").
 #
 # Inputs:
 #     (α/β)_expt: Tuple, bell-test parameters
@@ -89,7 +89,7 @@ function dimension(α_expt,β_expt,rep)
         dim += num_in * (num_out - 1)
     elseif rep == "fixed-direction"
         dim += x_num * (a_num - 1) + num_in * a_num * (b_num - 1)
-    elseif rep == "no-signaling"
+    elseif rep == "non-signaling"
         dim += x_num * (a_num - 1) + y_num * (b_num - 1) + num_in * (a_num - 1) * (b_num - 1)
     end
 
@@ -153,12 +153,12 @@ function is_valid( behavior, α_expt, β_expt, rep="generalized")
         if !(all(valid_checks))
             false_count += 1
         end
-    elseif rep == "no-signaling"
+    elseif rep == "non-signaling"
         #verify normalizability
         for x in 1:x_in
             a_norm = 0
             for a in 1:(a_out-1)
-                id = index((a,0,x,0),α_expt,β_expt,"no-signaling")
+                id = index((a,0,x,0),α_expt,β_expt,"non-signaling")
                 a_norm += behavior[id]
             end
             if (1 < a_norm) && !(1 ≈ a_norm)
@@ -169,7 +169,7 @@ function is_valid( behavior, α_expt, β_expt, rep="generalized")
         for y in 1:y_in
             b_norm = 0
             for b in 1:(b_out-1)
-                id = index((0,b,0,y),α_expt,β_expt,"no-signaling")
+                id = index((0,b,0,y),α_expt,β_expt,"non-signaling")
                 b_norm += behavior[id]
             end
             if (1 < b_norm) && !(1 ≈ b_norm)
@@ -349,7 +349,7 @@ function gen_to_fd_proj(α_expt, β_expt)
 
     proj[1,1] = 1
 
-    # filling in p(a|x) using no-signaling constraint
+    # filling in p(a|x) using non-signaling constraint
     for x in 1:x_num
         for a in 1:(a_num - 1)
 
@@ -380,14 +380,14 @@ end
 
 # """
 # gen_to_ns_proj:
-#     Returns a projection matrix which maps generalized behaviors to no-signaling
+#     Returns a projection matrix which maps generalized behaviors to non-signaling
 #     behaviors.
 #
 # Inputs
 #     (α/β)_expt: experiment parameters
 #
 # Output:
-#     proj: Matrix which projects generalized to no-signaling representations
+#     proj: Matrix which projects generalized to non-signaling representations
 # """
 function gen_to_ns_proj(α_expt, β_expt)
     (α_num_inputs, α_num_outputs) = α_expt
@@ -407,7 +407,7 @@ function gen_to_ns_proj(α_expt, β_expt)
     for x in 1:α_num_inputs
         for a in 1:(α_num_outputs - 1)
 
-            row = index((a,0,x,0),α_expt,β_expt,"no-signaling")
+            row = index((a,0,x,0),α_expt,β_expt,"non-signaling")
 
             for b in 1:β_num_outputs
                 col = index((a,b,x,1),α_expt,β_expt)
@@ -420,7 +420,7 @@ function gen_to_ns_proj(α_expt, β_expt)
     for y in 1:β_num_inputs
         for b in 1:(β_num_outputs - 1)
 
-            row = index((0,b,0,y),α_expt,β_expt,"no-signaling")
+            row = index((0,b,0,y),α_expt,β_expt,"non-signaling")
 
             for a in 1:(α_num_outputs)
                 col = index((a,b,1,y),α_expt,β_expt)
@@ -434,7 +434,7 @@ function gen_to_ns_proj(α_expt, β_expt)
         for y in 1:β_num_inputs
             for a in 1:(α_num_outputs - 1)
                 for b in 1:(β_num_outputs - 1)
-                    row = index((a,b,x,y),α_expt,β_expt,"no-signaling")
+                    row = index((a,b,x,y),α_expt,β_expt,"non-signaling")
                     col = index((a,b,x,y),α_expt,β_expt)
                     proj[row,col] = 1
                 end
@@ -553,14 +553,14 @@ end
 
 # """
 # ns_to_gen_proj:
-#     Returns a projection matrix which maps vectors from the no-signaling representation
+#     Returns a projection matrix which maps vectors from the non-signaling representation
 #     to the generalized representation.
 #
 # Inputs
 #     (α/β)_expt: experiment parameters
 #
 # Output:
-#     proj: matrix which maps no-signaling to generalized representations
+#     proj: matrix which maps non-signaling to generalized representations
 # """
 function ns_to_gen_proj(α_expt, β_expt)
     (α_num_inputs, α_num_outputs) = α_expt
@@ -579,7 +579,7 @@ function ns_to_gen_proj(α_expt, β_expt)
             for a in 1:(α_num_outputs - 1)
                 for b in 1:(β_num_outputs - 1)
                     row = index((a,b,x,y),α_expt,β_expt)
-                    col = index((a,b,x,y),α_expt,β_expt,"no-signaling")
+                    col = index((a,b,x,y),α_expt,β_expt,"non-signaling")
                     proj[row,col] = 1
                 end
             end
@@ -594,11 +594,11 @@ function ns_to_gen_proj(α_expt, β_expt)
 
                 row = index((a,β_num_outputs,x,y),α_expt,β_expt)
 
-                α_col = index((a,0,x,0),α_expt,β_expt,"no-signaling")
+                α_col = index((a,0,x,0),α_expt,β_expt,"non-signaling")
                 proj[row,α_col] = 1
 
                 for b in 1:(β_num_outputs - 1)
-                    col = index((a,b,x,y),α_expt,β_expt,"no-signaling")
+                    col = index((a,b,x,y),α_expt,β_expt,"non-signaling")
                     proj[row, col] = -1
                 end
             end
@@ -608,11 +608,11 @@ function ns_to_gen_proj(α_expt, β_expt)
 
                 row = index((α_num_outputs,b,x,y),α_expt,β_expt)
 
-                β_col = index((0,b,0,y),α_expt,β_expt,"no-signaling")
+                β_col = index((0,b,0,y),α_expt,β_expt,"non-signaling")
                 proj[row,β_col] = 1
 
                 for a in 1:(α_num_outputs - 1)
-                    col = index((a,b,x,y),α_expt,β_expt,"no-signaling")
+                    col = index((a,b,x,y),α_expt,β_expt,"non-signaling")
                     proj[row, col] = -1
                 end
             end
@@ -625,18 +625,18 @@ function ns_to_gen_proj(α_expt, β_expt)
             proj[row,1] = 1
 
             for α in 1:(α_num_outputs-1)
-                α_col = index((α,0,x,0),α_expt,β_expt,"no-signaling")
+                α_col = index((α,0,x,0),α_expt,β_expt,"non-signaling")
                 proj[row,α_col] = -1
             end
 
             for β in 1:(β_num_outputs-1)
-                β_col = index((0,β,0,y),α_expt,β_expt,"no-signaling")
+                β_col = index((0,β,0,y),α_expt,β_expt,"non-signaling")
                 proj[row,β_col] = -1
             end
 
             for α in 1:(α_num_outputs-1)
                 for β in 1:(β_num_outputs-1)
-                    col = index((α,β,x,y),α_expt,β_expt,"no-signaling")
+                    col = index((α,β,x,y),α_expt,β_expt,"non-signaling")
                     proj[row,col] = 1
                 end
             end
@@ -681,7 +681,7 @@ function conditionals(α_expt, β_expt, behavior; rep="generalized")
         gen_behavior = Behavior.norm_to_gen_proj(α_expt,β_expt)*behavior
     elseif rep == "fixed-direction"
         gen_behavior = Behavior.fd_to_gen_proj(α_expt,β_expt)*behavior
-    elseif rep == "no-signaling"
+    elseif rep == "non-signaling"
         gen_behavior = Behavior.ns_to_gen_proj(α_expt,β_expt)*behavior
     else
         throw(ArgumentError("invalid behavior representation specified"))

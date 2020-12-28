@@ -88,7 +88,7 @@ end
         [-1 0 1 1 0 -1 1 -1 -1],[-1 1 0 0 1 -1 -1 1 -1],[-1 1 0 1 0 -1 -1 -1 1]
     ]
 
-    canonical_groups = Degeneracy.canonical_facets(α_expt, β_expt, facets, "no-signaling")
+    canonical_groups = Degeneracy.canonical_facets(α_expt, β_expt, facets, "non-signaling")
 
     @test issetequal(facets, collect(Iterators.flatten(canonical_groups)))
     @test length(canonical_groups) == 2
@@ -116,7 +116,7 @@ end
             [1;1;1;0;0;0;0;0;0],[1;1;1;0;1;0;1;0;1],[1;1;1;1;0;1;0;1;0],[1;1;1;1;1;1;1;1;1]
         ]
 
-        canonical_vertices = Degeneracy.canonical_vertices(α1, β1, vertices, "no-signaling")
+        canonical_vertices = Degeneracy.canonical_vertices(α1, β1, vertices, "non-signaling")
 
         @test length(canonical_vertices) == 1
         @test length(canonical_vertices[1]) == 16
@@ -151,7 +151,7 @@ end
 
 @testset "bipartite_input_relabels()" begin
 
-    @testset "no-signaling subspace" begin
+    @testset "non-signaling subspace" begin
         id = diagm(0 => fill(1, 9))
         flip_alice_input = [
             1 0 0 0 0 0 0 0 0;
@@ -188,13 +188,13 @@ end
         ]
 
         @test issetequal(
-            Degeneracy.bipartite_input_relabels((2,2), (2,2), "no-signaling"),
+            Degeneracy.bipartite_input_relabels((2,2), (2,2), "non-signaling"),
             [id, flip_alice_input, flip_bob_input, flip_ab_input]
         )
     end
 
     test_cases = [
-        ("no-signaling", 8),
+        ("non-signaling", 8),
         ("fixed-direction", 10),
         ("normalized", 12),
         ("generalized", 16)
@@ -219,8 +219,8 @@ end
 
 @testset "bipartite_output_relabels()" begin
     @testset "dichotomic case" begin
-        @testset "no-signaling" begin
-            (α_relabels, β_relabels) = Degeneracy.bipartite_output_relabels((2,2),(2,2),"no-signaling")
+        @testset "non-signaling" begin
+            (α_relabels, β_relabels) = Degeneracy.bipartite_output_relabels((2,2),(2,2),"non-signaling")
 
             @test size(α_relabels) == (4,)
             @test size(β_relabels) == (4,)
@@ -304,10 +304,10 @@ end
             end
         end
 
-        @testset "no-signaling $(case[1]), $(case[2])" for case in test_cases
-            (α_relabels, β_relabels) = Degeneracy.bipartite_output_relabels(case[1],case[2],"no-signaling")
+        @testset "non-signaling $(case[1]), $(case[2])" for case in test_cases
+            (α_relabels, β_relabels) = Degeneracy.bipartite_output_relabels(case[1],case[2],"non-signaling")
 
-            dim = Behavior.dimension(case[1],case[2],"no-signaling")
+            dim = Behavior.dimension(case[1],case[2],"non-signaling")
             Id = diagm(0 => fill(1,dim))
 
             foreach( relabel_test->begin

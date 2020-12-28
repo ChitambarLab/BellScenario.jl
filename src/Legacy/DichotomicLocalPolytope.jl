@@ -43,7 +43,7 @@ end
 # """
 # deterministic_no_signaling_behaviors(;subspace="p16"):
 #   Computes the deterministic behaviors (vertices) of the local polytope for
-#   a bi-partitie, dichotomic setup for which no-signaling is applied.
+#   a bi-partitie, dichotomic setup for which non-signaling is applied.
 #
 # Input: subspace, string, the behavior subspace for which results are returned
 #        defaults to "p16", the most general and high dimensional bipartite space.
@@ -160,7 +160,7 @@ end
 #   executing a finite set of deterministic strategies for all inputs. In this
 #   computation it is assumed that 1-bit of information is passed either from
 #   Alice to Bob or from Bob to Alice. The case is also considered where there
-#   is no-signaling between Alice and Bob.
+#   is non-signaling between Alice and Bob.
 #
 # Input: subspace, string, the behavior subspace for which results are returned
 #        defaults to "p16", the most general and high dimensional bipartite space.

@@ -10,8 +10,8 @@ function chsh_inequalities()
     # non-trivial CH inequality
     II_ineq = [0 -1 0 -1 0 1 1 1 -1]
 
-    (α_out_relabels, β_out_relabels) = Degeneracy.bipartite_output_relabels((2,2),(2,2),"no-signaling")
-    in_relabels = Degeneracy.bipartite_input_relabels((2,2),(2,2),"no-signaling")
+    (α_out_relabels, β_out_relabels) = Degeneracy.bipartite_output_relabels((2,2),(2,2),"non-signaling")
+    in_relabels = Degeneracy.bipartite_input_relabels((2,2),(2,2),"non-signaling")
 
     ineqs = []
     # TODO: resolve the 3x redundancy in relabeled inequalities

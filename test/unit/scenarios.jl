@@ -17,10 +17,10 @@ using BellScenario
     @test_throws DomainError BlackBox(0,-1)
 end
 
-@testset "BipartiteNoSignaling()" begin
-    scenario = BipartiteNoSignaling(1,2,3,4)
+@testset "BipartiteNonSignaling()" begin
+    scenario = BipartiteNonSignaling(1,2,3,4)
     @test scenario isa Scenario
-    @test scenario isa BipartiteNoSignaling
+    @test scenario isa BipartiteNonSignaling
 
     @test scenario.A == 1
     @test scenario.B == 2
@@ -28,10 +28,10 @@ end
     @test scenario.Y == 4
 
     @testset "DomainErrors" begin
-        @test_throws DomainError BipartiteNoSignaling(0,2,2,2)
-        @test_throws DomainError BipartiteNoSignaling(2,0,2,2)
-        @test_throws DomainError BipartiteNoSignaling(2,2,0,2)
-        @test_throws DomainError BipartiteNoSignaling(2,2,2,0)
+        @test_throws DomainError BipartiteNonSignaling(0,2,2,2)
+        @test_throws DomainError BipartiteNonSignaling(2,0,2,2)
+        @test_throws DomainError BipartiteNonSignaling(2,2,0,2)
+        @test_throws DomainError BipartiteNonSignaling(2,2,2,0)
     end
 end
 
@@ -72,7 +72,7 @@ end
 
 
         @test scenario.X == 3
-        @test scenario.B == 4
+        @test scenario.Y == 4
         @test scenario.d ==  2
     end
 

@@ -21,7 +21,7 @@ using BellScenario
         @test bell_game2 == [2 0 0;1 1 1;0 2 0;0 0 2]
         @test bell_game2.β == 4
 
-        @test_throws DomainError convert(BellGame, norm_facet, scenario, rep="no-signaling")
+        @test_throws DomainError convert(BellGame, norm_facet, scenario, rep="non-signaling")
     end
 
     @testset "IEQ -> BellGames, BlackBox" begin
@@ -44,8 +44,8 @@ using BellScenario
         @test bell_games2 == BellGame.([[1 0;1 0;0 1],[1 0;1 0;0 0]],[2,1])
     end
 
-    @testset "Vector{Int64} -> BellGame, BipartiteNoSignaling" begin
-        scenario = BipartiteNoSignaling(2,2,2,2)
+    @testset "Vector{Int64} -> BellGame, BipartiteNonSignaling" begin
+        scenario = BipartiteNonSignaling(2,2,2,2)
 
         ns_facet = [1, 0, 1, 0, -1, -1, -1, 1, 1]
         bell_game = convert(BellGame, ns_facet, scenario)
@@ -78,7 +78,7 @@ end
         @test norm_facet isa Vector{Int64}
         @test norm_facet == [2,1,0,0,1,2,-2,-1,-2,2]
 
-        @test_throws DomainError convert(Vector{Int64}, BG, rep="no-signaling")
+        @test_throws DomainError convert(Vector{Int64}, BG, rep="non-signaling")
     end
 
     @testset "BellGames -> IEQ" begin
@@ -99,15 +99,15 @@ end
         @test norm_ieq2.inequalities == [1 -1 1;1 0 1]
     end
 
-    @testset "BellGame -> Facet BipartiteNoSignaling" begin
+    @testset "BellGame -> Facet BipartiteNonSignaling" begin
         @testset "chsh spot check" begin
             BG = BellGame([1 0 0 1;1 1 1 0;1 1 1 0;0 1 1 0], 3)
-            scenario = BipartiteNoSignaling(2,2,2,2)
+            scenario = BipartiteNonSignaling(2,2,2,2)
 
             facet = convert(Vector{Int64}, BG, scenario)
 
             @test facet isa Vector{Int64}
-            @test length(facet) == LocalPolytope.vertex_dims(scenario, "no-signaling") + 1
+            @test length(facet) == LocalPolytope.vertex_dims(scenario, "non-signaling") + 1
             @test facet == [1,0,1,0,-1,-1,-1,1,1]
         end
     end
@@ -124,13 +124,13 @@ end
         @test converted_bell_games == bell_games
     end
 
-    @testset "BipartiteNoSignaling facet -> BellGame -> facet" begin
+    @testset "BipartiteNonSignaling facet -> BellGame -> facet" begin
         @testset "simple scenarios full check" for scenario_params in [
             (2,2,2,2),(3,2,2,2),(2,3,2,2),(2,2,3,2),(2,2,2,3),
             (3,3,2,2),(3,2,3,2),(3,2,2,3),(2,3,3,2),(2,3,2,3),
             (2,2,3,3)
         ]
-            scenario = BipartiteNoSignaling(scenario_params...)
+            scenario = BipartiteNonSignaling(scenario_params...)
 
             vertices = LocalPolytope.vertices(scenario)
             facet_dict = LocalPolytope.facets(vertices)

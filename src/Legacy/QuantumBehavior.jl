@@ -25,7 +25,7 @@ using LinearAlgebra
 #
 # Output:
 #     behavior: Vector, outcome probabilities for all possible events in bell scenario.
-#               by default, the no-signaling representation is used.
+#               by default, the non-signaling representation is used.
 # """
 function bipartite_scenario(α_povms, β_povms, ψ)
 

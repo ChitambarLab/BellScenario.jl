@@ -12,9 +12,7 @@ makedocs(;
             "Overview" => "BellScenario/overview.md",
             "Scenarios" => "BellScenario/scenarios.md",
             "Strategies" => "BellScenario/strategies.md",
-            "Quantum Strategies" => "BellScenario/quantum_strategies.md",
             "Games" => "BellScenario/games.md",
-            "File I/O" => "BellScenario/file_io.md",
         ],
         "LocalPolytope.jl" => [
             "Overview" => "LocalPolytope/overview.md",

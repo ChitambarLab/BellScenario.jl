@@ -139,7 +139,7 @@ end
 end
 
 @testset "vertices()" begin
-    @testset "trivial no-signaling cases" begin
+    @testset "trivial non-signaling cases" begin
         @test LocalPolytope.vertices((1,1),(1,1)) == [fill(1,(1,1))]
 
         @test LocalPolytope.vertices((2,1),(1,1)) == [[1 1]']
@@ -256,7 +256,7 @@ end
         ])
     end
 
-    @testset "verify (22)(22) no-signaling setup" begin
+    @testset "verify (22)(22) non-signaling setup" begin
         vertices = LocalPolytope.vertices((2,2), (2,2))
         @test size(vertices) == (16,)
 
@@ -328,7 +328,7 @@ end
         @test vbits == vdits
     end
 
-    @testset "one dit is the same as no-signaling" for case in test_cases
+    @testset "one dit is the same as non-signaling" for case in test_cases
         vdits = LocalPolytope.vertices(case[1],case[2],dits=1)
         vns = LocalPolytope.vertices(case[1],case[2],rep="fixed-direction")
 

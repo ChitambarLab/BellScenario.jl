@@ -196,7 +196,7 @@ function bipartite_input_relabels(α_expt, β_expt, rep="generalized")
         proj = []
         proj_inv = []
 
-        if rep == "no-signaling"
+        if rep == "non-signaling"
             proj = Behavior.gen_to_ns_proj(α_expt,β_expt)
             proj_inv = Behavior.ns_to_gen_proj(α_expt,β_expt)
         elseif rep == "fixed-direction"
@@ -281,7 +281,7 @@ function bipartite_output_relabels(α_expt, β_expt, rep="normalized")
         proj = []
         proj_inv = []
 
-        if rep == "no-signaling"
+        if rep == "non-signaling"
             proj = Behavior.gen_to_ns_proj(α_expt,β_expt)
             proj_inv = Behavior.ns_to_gen_proj(α_expt,β_expt)
         elseif rep == "fixed-direction"

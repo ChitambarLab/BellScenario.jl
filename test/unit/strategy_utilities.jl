@@ -5,8 +5,8 @@ using Test
 using BellScenario
 
 @testset "convert(DeterministicStrategy, ...)" begin
-    @testset "chsh vertices no-signaling" begin
-        scenario = BipartiteNoSignaling(2,2,2,2)
+    @testset "chsh vertices non-signaling" begin
+        scenario = BipartiteNonSignaling(2,2,2,2)
         vertex = [1,0,1,0,1,0,0,0]
 
         det_strat = convert(DeterministicStrategy, vertex, scenario)
@@ -21,7 +21,7 @@ using BellScenario
     end
 
     @testset "chsh vertices normalized" begin
-        scenario = BipartiteNoSignaling(2,2,2,2)
+        scenario = BipartiteNonSignaling(2,2,2,2)
         vertex = [1,0,0,0,1,0,1,0,0,0,1,0]
 
         det_strat = convert(DeterministicStrategy, vertex, scenario, rep="normalized")
@@ -36,7 +36,7 @@ using BellScenario
     end
 
     @testset "chsh vertices generalized" begin
-        scenario = BipartiteNoSignaling(2,2,2,2)
+        scenario = BipartiteNonSignaling(2,2,2,2)
         vertex = [1,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0]
 
         det_strat = convert(DeterministicStrategy, vertex, scenario, rep="generalized")
@@ -51,7 +51,7 @@ using BellScenario
     end
 
     @testset "non-signaling vertices" begin
-        scenario = BipartiteNoSignaling(2,2,2,2)
+        scenario = BipartiteNonSignaling(2,2,2,2)
 
         ns_vertex1 = [1/2,1/2,1/2,1/2,0,0,0,1/2]
         ns_strat1 = convert(Strategy, ns_vertex1, scenario)
@@ -67,16 +67,16 @@ using BellScenario
     end
 
     @testset "DomainError strategy not deterministic" begin
-        scenario = BipartiteNoSignaling(2,2,2,2)
+        scenario = BipartiteNonSignaling(2,2,2,2)
         behavior = [0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1]
 
         @test_throws DomainError convert(DeterministicStrategy, behavior, scenario)
     end
 
     @testset "DomainError not valid rep" begin
-        scenario = BipartiteNoSignaling(2,2,2,2)
+        scenario = BipartiteNonSignaling(2,2,2,2)
         behavior = [0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1]
-        
+
         @test_throws DomainError convert(Strategy, behavior, scenario, rep="fixed-direction")
     end
 end

@@ -272,7 +272,7 @@ end
         @test p16_vertices == p16_match
     end
 
-    @testset "vertices match the no-signaling polytope" begin
+    @testset "vertices match the non-signaling polytope" begin
         vertices = DichotomicLocalPolytope.deterministic_no_signaling_behaviors()
 
         no_signaling_vertices_match = [

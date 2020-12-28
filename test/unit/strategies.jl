@@ -134,9 +134,9 @@ end
         @test strategy_dims(LocalSignaling(3,5,2)) == (5,3)
     end
 
-    @testset "bipartite no-signaling scenario" begin
-        @test strategy_dims(BipartiteNoSignaling(2,2,2,2)) == (4,4)
-        @test strategy_dims(BipartiteNoSignaling(2,3,4,5)) == (6,20)
+    @testset "bipartite non-signaling scenario" begin
+        @test strategy_dims(BipartiteNonSignaling(2,2,2,2)) == (4,4)
+        @test strategy_dims(BipartiteNonSignaling(2,3,4,5)) == (6,20)
     end
 
     @testset "bipartite scenario" begin

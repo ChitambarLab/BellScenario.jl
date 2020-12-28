@@ -1,18 +1,18 @@
 """
     convert(
-        S :: Type{<:AbstractStrategy}, vertex::Vector{<:Real}, scenario::BipartiteNoSignaling;
-        rep="no-signaling" :: String
+        S :: Type{<:AbstractStrategy}, vertex::Vector{<:Real}, scenario::BipartiteNonSignaling;
+        rep="non-signaling" :: String
     )
 
 Transforms a behavior vector or vertex in to either a [`Strategy`](@ref) or [`DeterministicStrategy`](@ref).
 If converting into a `DeterministicStrategy`, the vertex must contain `Int64` values.
-Valid representations are "no-signaling", "normalized", and "generalized".
+Valid representations are "non-signaling", "normalized", and "generalized".
 """
-function convert(S::Type{<:AbstractStrategy}, vertex::Vector{<:Real}, scenario::BipartiteNoSignaling;
-    rep="no-signaling" :: String
+function convert(S::Type{<:AbstractStrategy}, vertex::Vector{<:Real}, scenario::BipartiteNonSignaling;
+    rep="non-signaling" :: String
 )
-    if !(rep in ["no-signaling","normalized","generalized"])
-        throw(DomainError(rep, "input `rep` must be in [\"no-signaling\",\"normalized\",\"generalized\"]"))
+    if !(rep in ["non-signaling","normalized","generalized"])
+        throw(DomainError(rep, "input `rep` must be in [\"non-signaling\",\"normalized\",\"generalized\"]"))
     end
 
     num_type = (S == Strategy) ? Float64 : Int64
@@ -24,8 +24,8 @@ function convert(S::Type{<:AbstractStrategy}, vertex::Vector{<:Real}, scenario::
     gen_strat_dims = strategy_dims(scenario)
     gen_strat = (rep == "generalized") ? reshape(vertex, gen_strat_dims) : zeros(num_type, gen_strat_dims)
 
-    if rep == "no-signaling"
-        # code to get no-signaling to normalized
+    if rep == "non-signaling"
+        # code to get non-signaling to normalized
         α_dim = (scenario.A-1)*scenario.X
         β_dim = (scenario.B-1)*scenario.Y
 
@@ -33,7 +33,7 @@ function convert(S::Type{<:AbstractStrategy}, vertex::Vector{<:Real}, scenario::
         β_strat = reshape(vertex[α_dim+1:α_dim+β_dim], (scenario.B-1, scenario.Y))
         αβ_strat = reshape(vertex[α_dim+β_dim+1:end], ((scenario.A-1)*(scenario.B-1), scenario.X*scenario.Y))
 
-        # reversing no-signaling constraints for Alice
+        # reversing non-signaling constraints for Alice
         for i in 0:scenario.A-2
             gen_strat[i*scenario.B+1:i*scenario.B + scenario.B-1,:] = αβ_strat[i*(scenario.B-1)+1:(i+1)*(scenario.B-1),:]
 
@@ -53,7 +53,7 @@ function convert(S::Type{<:AbstractStrategy}, vertex::Vector{<:Real}, scenario::
     end
 
     # strategy is in "normalized" rep transform it to "generalized" rep
-    if rep in ("normalized", "no-signaling")
+    if rep in ("normalized", "non-signaling")
         gen_strat[end,:] = 1 .- ones(Int64, (1,gen_strat_dims[1]-1)) * gen_strat[1:end-1,:  ]
     end
 

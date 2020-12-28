@@ -1,12 +1,12 @@
 using Test
 
-@testset "(32)(32) no-signaling regression" begin
+@testset "(32)(32) non-signaling regression" begin
 
 using BellScenario: LocalPolytope, ConvexPolytope
 
 # Description:
 #   Parses inequalities published at http://www.itp.tuwien.ac.at/~svozil/publ/3-3.html
-#   from .txt file. Inequalities are represented in the no-signaling subspace for
+#   from .txt file. Inequalities are represented in the non-signaling subspace for
 #   3 inputs and 2 outputs.
 #
 # Input: None.

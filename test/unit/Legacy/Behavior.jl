@@ -97,7 +97,7 @@ end
         αβ_val = round(α_val*β_val, sigdigits = 3)
 
         ns_p = cat([1],fill(α_val,α_dim),fill(β_val,β_dim), fill(αβ_val,α_dim*β_dim),dims =1)
-        @test Behavior.is_valid(ns_p, α_expt, β_expt, "no-signaling")
+        @test Behavior.is_valid(ns_p, α_expt, β_expt, "non-signaling")
 
         gen_p = Behavior.ns_to_gen_proj(α_expt,β_expt)*ns_p
         @test Behavior.is_valid(gen_p,case[1],case[2])
@@ -160,18 +160,18 @@ end
         )
     ]
 
-    @testset "maps to valid no-signaling behavior" for case in test_cases
+    @testset "maps to valid non-signaling behavior" for case in test_cases
         p = case[1]
         α_expt = case[2]
         β_expt = case[3]
         p_match = case[4]
 
         @test Behavior.is_valid(p,α_expt,β_expt)
-        @test Behavior.is_valid(p_match, α_expt, β_expt, "no-signaling")
+        @test Behavior.is_valid(p_match, α_expt, β_expt, "non-signaling")
 
         p_ns = Behavior.gen_to_ns_proj(α_expt,β_expt)*p
 
-        @test Behavior.is_valid(p_ns, α_expt, β_expt, "no-signaling")
+        @test Behavior.is_valid(p_ns, α_expt, β_expt, "non-signaling")
         @test p_ns ==  p_match
     end
 end
@@ -226,19 +226,19 @@ end
         end
     end
 
-    @testset "rep = no-signaling" begin
+    @testset "rep = non-signaling" begin
         α_expt = (2,2)
         β_expt = (2,2)
 
-        @test Behavior.index((1,1,1,1),α_expt,β_expt,"no-signaling") == 6
-        @test Behavior.index((0,1,0,1),α_expt,β_expt,"no-signaling") == 4
-        @test Behavior.index((1,0,1,0),α_expt,β_expt,"no-signaling") == 2
-        @test Behavior.index((2,2,1,1),(2,3),(2,3),"no-signaling") == 22
+        @test Behavior.index((1,1,1,1),α_expt,β_expt,"non-signaling") == 6
+        @test Behavior.index((0,1,0,1),α_expt,β_expt,"non-signaling") == 4
+        @test Behavior.index((1,0,1,0),α_expt,β_expt,"non-signaling") == 2
+        @test Behavior.index((2,2,1,1),(2,3),(2,3),"non-signaling") == 22
 
 
-        @test_throws ArgumentError Behavior.index((2,1,1,0),α_expt,β_expt,"no-signaling")
-        @test_throws ArgumentError Behavior.index((1,0,0,1),α_expt,β_expt,"no-signaling")
-        @test_throws ArgumentError Behavior.index((0,1,1,0),α_expt,β_expt,"no-signaling")
+        @test_throws ArgumentError Behavior.index((2,1,1,0),α_expt,β_expt,"non-signaling")
+        @test_throws ArgumentError Behavior.index((1,0,0,1),α_expt,β_expt,"non-signaling")
+        @test_throws ArgumentError Behavior.index((0,1,1,0),α_expt,β_expt,"non-signaling")
     end
 
     @testset "rep == fixed-direction" begin
@@ -272,8 +272,8 @@ end
 
     ]
 
-    @testset "no-signaling" for case in ns_cases
-        @test Behavior.is_valid(case[1],case[2],case[3],"no-signaling") == case[4]
+    @testset "non-signaling" for case in ns_cases
+        @test Behavior.is_valid(case[1],case[2],case[3],"non-signaling") == case[4]
     end
 
     fd_cases = [
@@ -307,7 +307,7 @@ end
         @test Behavior.dimension(case[1],case[2],"generalized") == case[6]
         @test Behavior.dimension(case[1],case[2],"normalized") == case[5]
         @test Behavior.dimension(case[1],case[2],"fixed-direction") == case[4]
-        @test Behavior.dimension(case[1],case[2],"no-signaling") == case[3]
+        @test Behavior.dimension(case[1],case[2],"non-signaling") == case[3]
     end
 end
 
@@ -377,7 +377,7 @@ end
 @testset "has_constant()" begin
     @test !Behavior.has_constant((2,2),(2,2),[0;0;0;0;0;0;0;0;0;0;0;0])
     @test Behavior.has_constant((2,2),(2,2),[1;0;0;0;0;0;0;0;0;0;0;0;0])
-    @test Behavior.has_constant((2,2),(2,2),[1;0;0;0;0;0;0;0;0], rep="no-signaling")
+    @test Behavior.has_constant((2,2),(2,2),[1;0;0;0;0;0;0;0;0], rep="non-signaling")
 
     @test_throws ArgumentError Behavior.has_constant((2,2),(2,2),[0;0;0;0;0;0;0;0;0;0;0;0], rep="generalized")
 end
@@ -411,7 +411,7 @@ end
     @testset "case: $(case[1]), $(case[2])" for case in test_cases
         ns_proj = Behavior.gen_to_ns_proj(case[1],case[2])
         ns_inv = Behavior.ns_to_gen_proj(case[1],case[2])
-        ns_dim = Behavior.dimension(case[1],case[2],"no-signaling")
+        ns_dim = Behavior.dimension(case[1],case[2],"non-signaling")
         @test ns_proj*ns_inv == diagm(0 => fill(1,ns_dim))
 
         fd_proj = Behavior.gen_to_fd_proj(case[1],case[2])

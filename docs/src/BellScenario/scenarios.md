@@ -1,12 +1,12 @@
 ```@meta
 CurrentModule = BellScenario
 ```
-# Black-box Scenarios
+# BellScenario.jl - Scenarios
 
 ```@docs
 Scenario
 BlackBox
 LocalSignaling
-BipartiteNoSignaling
+BipartiteNonSignaling
 Bipartite
 ```

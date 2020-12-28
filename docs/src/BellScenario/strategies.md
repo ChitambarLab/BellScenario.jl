@@ -1,7 +1,7 @@
 ```@meta
 CurrentModule = BellScenario
 ```
-# Black-box Strategies
+# BellScenario.jl - Strategies
 
 ```@docs
 AbstractStrategy
@@ -11,5 +11,11 @@ is_deterministic
 strategy_dims
 random_strategy
 deterministic_strategies
-convert(::Type{<:AbstractStrategy}, ::Vector{Float64}, ::BipartiteNoSignaling; ::String)
+convert(::Type{<:AbstractStrategy}, ::Vector{Float64}, ::BipartiteNonSignaling; ::String)
+```
+
+# Quantum Strategies
+
+```@docs
+quantum_strategy
 ```

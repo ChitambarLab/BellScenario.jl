@@ -24,7 +24,7 @@ using BellScenario
     end
 
     @testset "CH inequalities" begin
-        scenario = BipartiteNoSignaling(2,2,2,2)
+        scenario = BipartiteNonSignaling(2,2,2,2)
         vertices = LocalPolytope.vertices(scenario)
         facet_dict = LocalPolytope.facets(vertices)
 

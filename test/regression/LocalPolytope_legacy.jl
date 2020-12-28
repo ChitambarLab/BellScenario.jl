@@ -4,9 +4,9 @@ using Test, LinearAlgebra
 
 using BellScenario
 
-@testset "vertices(scenario :: BipartiteNoSignaling)" begin
+@testset "vertices(scenario :: BipartiteNonSignaling)" begin
 
-    @testset "no-signaling rep" begin
+    @testset "non-signaling rep" begin
         nosignaling_reshape_old_vertices(scenario, v_old) = begin
             dim_α = (scenario.A-1)*(scenario.X)
             dim_β = (scenario.B-1)*(scenario.Y)
@@ -24,27 +24,27 @@ using BellScenario
         end
 
         @testset "CHSH case" begin
-            scenario = BipartiteNoSignaling(2,2,2,2)
-            v_new = LocalPolytope.vertices(scenario, "no-signaling")
-            v_old = nosignaling_reshape_old_vertices(scenario, LocalPolytope.vertices((2,2),(2,2),dits=1,rep="no-signaling"))
+            scenario = BipartiteNonSignaling(2,2,2,2)
+            v_new = LocalPolytope.vertices(scenario, "non-signaling")
+            v_old = nosignaling_reshape_old_vertices(scenario, LocalPolytope.vertices((2,2),(2,2),dits=1,rep="non-signaling"))
 
             @test sort(v_new) == sort(v_old)
         end
 
         @testset "(4,3)-(4,3) case" begin
-            scenario = BipartiteNoSignaling(3,3,4,4)
-            v_new = LocalPolytope.vertices(scenario, "no-signaling")
+            scenario = BipartiteNonSignaling(3,3,4,4)
+            v_new = LocalPolytope.vertices(scenario, "non-signaling")
 
-            v_old = nosignaling_reshape_old_vertices(scenario, LocalPolytope.vertices((4,3),(4,3),dits=1,rep="no-signaling"))
+            v_old = nosignaling_reshape_old_vertices(scenario, LocalPolytope.vertices((4,3),(4,3),dits=1,rep="non-signaling"))
 
             @test sort(v_new) == sort(v_old)
         end
 
         @testset "(4,4)-(3,3) case" begin
-            scenario = BipartiteNoSignaling(4,3,4,3)
-            v_new = LocalPolytope.vertices(scenario, "no-signaling")
+            scenario = BipartiteNonSignaling(4,3,4,3)
+            v_new = LocalPolytope.vertices(scenario, "non-signaling")
 
-            v_old = nosignaling_reshape_old_vertices(scenario, LocalPolytope.vertices((4,4),(3,3),dits=1,rep="no-signaling"))
+            v_old = nosignaling_reshape_old_vertices(scenario, LocalPolytope.vertices((4,4),(3,3),dits=1,rep="non-signaling"))
 
             @test sort(v_new) == sort(v_old)
         end
@@ -57,7 +57,7 @@ using BellScenario
         end
 
         @testset "CHSH" begin
-            scenario = BipartiteNoSignaling(2,2,2,2)
+            scenario = BipartiteNonSignaling(2,2,2,2)
             v_new = LocalPolytope.vertices(scenario, "normalized")
             v_old = normalized_reshape_old_vertices(scenario, LocalPolytope.vertices((2,2),(2,2),dits=1,rep="normalized"))
 
@@ -65,7 +65,7 @@ using BellScenario
         end
 
         @testset "(4,3)-(4,3) case" begin
-            scenario = BipartiteNoSignaling(3,3,4,4)
+            scenario = BipartiteNonSignaling(3,3,4,4)
             v_new = LocalPolytope.vertices(scenario, "normalized")
             v_old = normalized_reshape_old_vertices(scenario, LocalPolytope.vertices((4,3),(4,3),dits=1,rep="normalized"))
 
@@ -73,7 +73,7 @@ using BellScenario
         end
 
         @testset "(4,4)-(3,3) case" begin
-            scenario = BipartiteNoSignaling(4,3,4,3)
+            scenario = BipartiteNonSignaling(4,3,4,3)
             v_new = LocalPolytope.vertices(scenario, "normalized")
             v_old = normalized_reshape_old_vertices(scenario, LocalPolytope.vertices((4,4),(3,3),dits=1,rep="normalized"))
 
@@ -87,7 +87,7 @@ using BellScenario
         end
 
         @testset "CHSH case" begin
-            scenario = BipartiteNoSignaling(2,2,2,2)
+            scenario = BipartiteNonSignaling(2,2,2,2)
             v_new = LocalPolytope.vertices(scenario, "generalized")
             v_old = generalized_reshape_old_vertices(scenario, LocalPolytope.vertices((2,2),(2,2),dits=1,rep="generalized"))
 
@@ -95,7 +95,7 @@ using BellScenario
         end
 
         @testset "(4,3)-(4,3) case" begin
-            scenario = BipartiteNoSignaling(3,3,4,4)
+            scenario = BipartiteNonSignaling(3,3,4,4)
             v_new = LocalPolytope.vertices(scenario, "generalized")
             v_old = generalized_reshape_old_vertices(scenario, LocalPolytope.vertices((4,3),(4,3),dits=1,rep="generalized"))
 
@@ -103,7 +103,7 @@ using BellScenario
         end
 
         @testset "(4,4)-(3,3) case" begin
-            scenario = BipartiteNoSignaling(4,3,4,3)
+            scenario = BipartiteNonSignaling(4,3,4,3)
             v_new = LocalPolytope.vertices(scenario, "generalized")
             v_old = generalized_reshape_old_vertices(scenario, LocalPolytope.vertices((4,4),(3,3),dits=1,rep="generalized"))
 
@@ -114,7 +114,7 @@ end
 
 @testset "convert(::Type{<:AbstractStrategy}, ...)" begin
 
-    @testset "convert vertex to strat - no-signaling vertices" begin
+    @testset "convert vertex to strat - non-signaling vertices" begin
         for a in 2:4
             for b in 2:4
                 for x in 2:4
@@ -124,8 +124,8 @@ end
                         α = (x,a)
                         β = (y,b)
 
-                        v_old = LocalPolytope.vertices(α,β,dits=1,rep="no-signaling")
-                        b_old = Behavior.add_constants(α,β, v_old, rep="no-signaling")
+                        v_old = LocalPolytope.vertices(α,β,dits=1,rep="non-signaling")
+                        b_old = Behavior.add_constants(α,β, v_old, rep="non-signaling")
                         proj = Behavior.ns_to_gen_proj(α,β)
 
                         gen_b_old = map(v -> proj * v,  b_old)
@@ -135,7 +135,7 @@ end
                         , gen_b_old)
 
                         # current code
-                        scenario = BipartiteNoSignaling(a,b,x,y)
+                        scenario = BipartiteNonSignaling(a,b,x,y)
                         v_new = LocalPolytope.vertices(scenario)
 
 
@@ -171,7 +171,7 @@ end
                         , gen_b_old)
 
                         # current code
-                        scenario = BipartiteNoSignaling(a,b,x,y)
+                        scenario = BipartiteNonSignaling(a,b,x,y)
                         v_new = LocalPolytope.vertices(scenario, "normalized")
 
 

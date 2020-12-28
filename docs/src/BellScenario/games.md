@@ -1,7 +1,7 @@
 ```@meta
 CurrentModule = BellScenario
 ```
-# Black-Box Games
+# BellScenario.jl - Games
 
 ```@docs
 AbstractGame
@@ -22,9 +22,15 @@ facets. There are two supported types which can be converted to/from BellGames:
 
 ```@docs
 convert(::Type{BellGame},::Vector{Int64},::BlackBox)
-convert(::Type{BellGame},::Vector{Int64},::BipartiteNoSignaling)
+convert(::Type{BellGame},::Vector{Int64},::BipartiteNonSignaling)
 convert(::Type{Vector{Int64}}, ::BellGame)
-convert(::Type{Vector{Int64}},BG::BellGame,scenario::BipartiteNoSignaling)
+convert(::Type{Vector{Int64}},BG::BellGame,scenario::BipartiteNonSignaling)
 convert(::Type{Vector{BellGame}},::IEQ,::BlackBox)
 convert(::Type{IEQ}, bell_games::Vector{BellGame})
+```
+
+# File I/O
+
+```@docs
+pretty_print_txt
 ```

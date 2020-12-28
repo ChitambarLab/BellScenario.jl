@@ -40,7 +40,7 @@ end
         @test gen_v isa Vector{Int64}
         @test gen_v == [1,0,0,1,0,0,1,0,0]
 
-        @test_throws DomainError convert(Vector{Int64}, s1, rep="no-signaling")
+        @test_throws DomainError convert(Vector{Int64}, s1, rep="non-signaling")
     end
 
     @testset "Vector{Int64} -> DeterministicStrategy" begin
@@ -64,7 +64,7 @@ end
         @test norm_s2 == [0 0 0;0 0 0;1 0 0;0 1 1]
         @test gen_s1 == [1 1 1;0 0 0;0 0 0;0 0 0]
 
-        @test_throws DomainError convert(DeterministicStrategy, norm_v1, scenario, rep="no-signaling")
+        @test_throws DomainError convert(DeterministicStrategy, norm_v1, scenario, rep="non-signaling")
     end
 end
 

@@ -35,18 +35,18 @@ function optimize_measurement(
 
     norm_game_vector = convert(Vector{Int64}, game)
     norm_bound = norm_game_vector[end]
-    norm_game = reshape(norm_game_vector[1:(end-1)], (scenario.B-1, scenario.X))
+    norm_game = reshape(norm_game_vector[1:(end-1)], (scenario.Y-1, scenario.X))
 
     # add povm variables and constraints
-    Π_vars = map(i -> HermitianSemidefinite(scenario.d), 1:scenario.B)
-    constraints = (sum(map(Π_b -> real(Π_b), Π_vars)) == Matrix{Float64}(I, scenario.d, scenario.d))
-    constraints += (sum(map(Π_b -> imag(Π_b), Π_vars)) == zeros(Float64, scenario.d, scenario.d))
+    Π_vars = map(i -> HermitianSemidefinite(scenario.d), 1:scenario.Y)
+    constraints = (sum(map(Π_y -> real(Π_y), Π_vars)) == Matrix{Float64}(I, scenario.d, scenario.d))
+    constraints += (sum(map(Π_y -> imag(Π_y), Π_vars)) == zeros(Float64, scenario.d, scenario.d))
 
     # sum up the state contibutions for each row
-    H_b = map(row_id -> sum(norm_game[row_id,:] .* ρ_states), 1:scenario.B-1)
+    H_y = map(row_id -> sum(norm_game[row_id,:] .* ρ_states), 1:scenario.Y-1)
 
     # add the objective
-    objective = maximize(real(tr(sum(Π_vars[1:end-1] .* H_b))), constraints)
+    objective = maximize(real(tr(sum(Π_vars[1:end-1] .* H_y))), constraints)
 
     # optimize model
     solve!(objective, SCS.Optimizer(verbose=0))
@@ -54,7 +54,7 @@ function optimize_measurement(
     # parse/return results
     score = objective.optval
     violation = score - norm_bound
-    Π_opt = _opt_vars_to_povm(map(Π_b -> Π_b.value, Π_vars))
+    Π_opt = _opt_vars_to_povm(map(Π_y -> Π_y.value, Π_vars))
 
     Dict(
         "violation" => violation,
@@ -66,11 +66,11 @@ function optimize_measurement(
 end
 
 @doc raw"""
-[`BipartiteNoSignaling`](@ref) scenario:
+[`BipartiteNonSignaling`](@ref) scenario:
 
     optimize_measurement(
         game :: BellGame,
-        scenario :: BipartiteNoSignaling,
+        scenario :: BipartiteNonSignaling,
         ρ_AB :: States.AbstractDensityMatrix;
         A_POVMs :: Vector{<:Observables.AbstractPOVM},
     ) :: Dict
@@ -88,7 +88,7 @@ The following semi-definite program optimizes the Bob's POVM:
 
     optimize_measurement(
         game :: BellGame,
-        scenario :: BipartiteNoSignaling,
+        scenario :: BipartiteNonSignaling,
         ρ_AB :: States.AbstractDensityMatrix;
         B_POVMs :: Vector{<:Observables.AbstractPOVM},
     ) :: Dict
@@ -105,7 +105,7 @@ The following semi-definite program optimizes the Alice's POVM:
 ```
 """
 function optimize_measurement(
-    scenario::BipartiteNoSignaling,
+    scenario::BipartiteNonSignaling,
     game::BellGame,
     ρ_AB :: States.AbstractDensityMatrix;
     A_POVMs=Vector{Observables.POVM}(undef,0) :: Vector{<:Observables.AbstractPOVM},
@@ -124,7 +124,7 @@ end
 # Helper function for optimizing Bob's POVM
 # """
 function _optimize_measurement_B(
-    scenario::BipartiteNoSignaling,
+    scenario::BipartiteNonSignaling,
     game::BellGame,
     ρ_AB :: States.AbstractDensityMatrix,
     A_POVMs :: Vector{<:Observables.AbstractPOVM}
@@ -132,7 +132,7 @@ function _optimize_measurement_B(
     if !(scenario.X == length(A_POVMs))
         throw( DomainError(
             (scenario.X, " != length(A_POVMs)"),
-            "A distinct POVM is not specified for input `X` of `BipartiteNoSignaling` scenario"
+            "A distinct POVM is not specified for input `X` of `BipartiteNonSignaling` scenario"
         ))
     end
 
@@ -190,7 +190,7 @@ end
 # Helper function for optimizing Alice's POVM
 # """
 function _optimize_measurement_A(
-    scenario::BipartiteNoSignaling,
+    scenario::BipartiteNonSignaling,
     game::BellGame,
     ρ_AB :: States.AbstractDensityMatrix,
     B_POVMs :: Vector{<:Observables.AbstractPOVM}
@@ -198,7 +198,7 @@ function _optimize_measurement_A(
     if !(scenario.Y == length(B_POVMs))
         throw( DomainError(
             (scenario.Y, " != length(B_POVMs)"),
-            "A distinct POVM is not specified for input `Y` of `BipartiteNoSignaling` scenario"
+            "A distinct POVM is not specified for input `Y` of `BipartiteNonSignaling` scenario"
         ))
     end
 
