@@ -1,6 +1,6 @@
 # BellScenario.jl (Alpha Version)
 
-*Compute generic Bell inequalities and their quantum violations.*
+*Compute Bell inequalities and their quantum violations.*
 
 [![Dev](https://img.shields.io/badge/docs-latest-blue.svg)](https://ChitambarLab.github.io/BellScenario.jl/dev)
 [![Build Status](https://travis-ci.com/ChitambarLab/BellScenario.jl.svg?branch=master)](https://travis-ci.com/ChitambarLab/BellScenario.jl)
