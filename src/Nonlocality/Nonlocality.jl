@@ -1,8 +1,10 @@
 """
-The `Nonlocality` submodule provides tools to help find quantum non-locality in
+*Find the optimal parameters for quantum Bell violations.*
+
+The `Nonlocality.jl` module provides tools to optimize quantum non-locality in
 Bell scenarios.
 
-The methods included in this module:
+### Module Exports:
 * [`optimize_measurement`](@ref): Finds the quantum measurement which violates
     a specified Bell inequality maximally.
 """

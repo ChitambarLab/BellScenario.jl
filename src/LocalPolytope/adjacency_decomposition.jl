@@ -89,13 +89,15 @@ end
         vertices :: Vector{Vector{Int64}},
         BG_seed :: BellGame,
         scenario :: LocalSignaling;
-        kwargs
-    )
+        kwargs...
+    ) :: Dict
 
 Given a polytpe represented by `vertices`, returns the complete set of canonical
 facets for prepare and measure scenario `scenario`. The adjacency_decomposition algorithm
 requires a seeded vertex which is supplied with the `BG_seed` argument. Facets
 are returned in the lexicographic normal form.
+
+### Returned Dictionary Format
 
 Returns a dictionary where the keys are canonical `BellGames` and the value is a
 dictionary with keys
@@ -105,7 +107,7 @@ dictionary with keys
 * "num_vertices" => number of vertices.
 * "norm_facet" => facet vector representative (normalized rep) of canonical game
 
-Keyword  arguments `kwargs`
+### Keyword  Arguments: `kwargs...`
 * `skip_games = [] ::  Vector{BellGame}` - List of games to skip.
 * `max_vertices = 100 :: Int64` - The maximum number of vertices to allow in target facets.
 * `dir` = "./" :: String` - Directory in which to create `porta_tmp/` and `.json` files.
@@ -121,7 +123,7 @@ function adjacency_decomposition(
     dir = "./"  :: String,
     log = false :: Bool,
     log_filename = "adjacency_decomposition_$(Dates.now()).json" :: String,
-)
+) :: Dict
     # canonicalize facet
     canonical_BG_seed = LocalPolytope.generator_facet(BG_seed, scenario)
     canonical_skip_BGs = map( BG -> LocalPolytope.generator_facet(BG, scenario), skip_games)

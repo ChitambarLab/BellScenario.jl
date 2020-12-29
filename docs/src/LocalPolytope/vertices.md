@@ -3,14 +3,12 @@ CurrentModule = LocalPolytope
 ```
 # Vertices
 
-
-## Methods
-* [`vertices`](@ref): Enumerates the local polytope vertices for the specified Bell [`Scenario`](@ref).
-* [`num_vertices`](@ref): Counts the number of local polytope vertices for the specified Bell [`Scenario`](@ref).
-* [`vertex_dims`](@ref): Provides the dimension of specified vertex representation.
-
+Vertices are extreme points of the local polytope.
+They correspond to deterministic strategies.
 
 ## Vertex Enumeration
+
+Enumerate the local polytope vertices for the specified Bell [`Scenario`](@ref).
 
 ```@docs
 vertices
@@ -18,11 +16,15 @@ vertices
 
 ## Vertex Counting
 
+Count the number of local polytope vertices for the specified Bell [`Scenario`](@ref).
+
 ```@docs
 num_vertices
 ```
 
 ## Vertex Dimension
+
+Get the dimension of specified vertex representation.
 
 ```@docs
 vertex_dims

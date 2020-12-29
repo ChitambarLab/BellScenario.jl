@@ -4,6 +4,9 @@
 
 This software is a general tool for analyzing quantum non-locality in Bell scenarios.
 
+!!! note "Alpha Version"
+    Breaking changes will be made in future commits.
+
 ## Featured Modules
   1. [`BellScenario`](@ref): Types and constructors for describing Bell scenarios.
   2. [`LocalPolytope`](@ref): Computes the bounds classical Bell Scenarios.

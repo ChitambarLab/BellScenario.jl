@@ -146,7 +146,7 @@ end
 For ``n`` outputs and ``m`` inputs the number of vertices ``|\\mathcal{V}|`` are counted:
 
 ```math
-|\\mathcal{V}| = n^m
+|\\mathbf{V}| = n^m
 ```
 """
 function num_vertices(scenario :: BlackBox) :: Int64
@@ -162,7 +162,7 @@ If `rank_d_only = true`, then only strategies using  `d`-dits are counted. For
 ``X`` inputs and ``Y`` outputs the number of vertices ``|\\mathcal{V}|`` are counted:
 
 ```math
-|\\mathcal{V}| = \\sum_{c=1}^d \\left\\{X \\atop c \\right\\}\\binom{Y}{c}c!
+|\\mathbf{V}| = \\sum_{c=1}^d \\left\\{X \\atop c \\right\\}\\binom{Y}{c}c!
 ```
 """
 function num_vertices(scenario :: LocalSignaling; rank_d_only = false :: Bool) :: Int64
@@ -177,7 +177,7 @@ For two non-signaling black-boxes with ``X`` and ``Y`` inputs and ``A`` and ``B`
 outputs respectively, the number of vertices ``|\\mathcal{V}|`` are counted:
 
 ```math
-|\\mathcal{V}| = A^X B^Y
+|\\mathbf{V}| = A^X B^Y
 ```
 """
 function num_vertices(scenario :: BipartiteNonSignaling) :: Int64

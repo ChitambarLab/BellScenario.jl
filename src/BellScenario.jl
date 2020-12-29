@@ -43,7 +43,7 @@ include("./game_conversions.jl")
 # read/write and printing
 include("./file_io.jl")
 
-include("./LocalPolytope.jl")
+include("./LocalPolytope/LocalPolytope.jl")
 using .LocalPolytope
 
 include("./Nonlocality/Nonlocality.jl")
