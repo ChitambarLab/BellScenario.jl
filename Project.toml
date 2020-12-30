@@ -15,3 +15,8 @@ XPORTA = "8c143463-af6f-456f-8aed-72447cb569d2"
 
 [compat]
 julia = "1.4"
+Convex = "0.23"
+JSON = "0.21"
+QBase = "0.1"
+SCS = "0.7"
+XPORTA = "0.1"
