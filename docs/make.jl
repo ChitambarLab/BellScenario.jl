@@ -35,4 +35,5 @@ makedocs(;
 
 deploydocs(;
     repo="github.com/ChitambarLab/BellScenario.jl",
+    devbranch = "main",
 )
