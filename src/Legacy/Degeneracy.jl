@@ -11,7 +11,7 @@ module Degeneracy
 using ..Behavior
 
 using LinearAlgebra
-using QBase
+using QBase: permutation_matrices
 
 # """
 # symmetry_groups:

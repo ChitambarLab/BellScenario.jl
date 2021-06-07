@@ -1,4 +1,4 @@
-using QBase
+using QBase: base_n_val
 
 # """
 # strategies(num_inputs, num_outputs):

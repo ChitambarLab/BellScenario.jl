@@ -13,6 +13,7 @@ makedocs(;
             "Scenarios" => "BellScenario/scenarios.md",
             "Strategies" => "BellScenario/strategies.md",
             "Games" => "BellScenario/games.md",
+            "Combinatorics" => "BellScenario/combinatorics.md",
         ],
         "LocalPolytope.jl" => [
             "Overview" => "LocalPolytope/overview.md",

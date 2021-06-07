@@ -30,6 +30,9 @@ export ConvexPolytope, Degeneracy, Behavior, QuantumBehavior, QuantumOpt
 # Scenarios
 include("./scenarios.jl")
 
+# combinatorics math utilities
+include("./combinatorics.jl")
+
 # Strategies
 include("./strategies.jl")
 include("./deterministic_strategies.jl")

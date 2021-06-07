@@ -1,4 +1,5 @@
-using Test, LinearAlgebra, QBase
+using Test, LinearAlgebra
+using QBase: permutation_matrices
 
 @testset "/src/Legacy/Degeneracy.jl" begin
 
