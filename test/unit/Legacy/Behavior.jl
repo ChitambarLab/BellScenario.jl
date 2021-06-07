@@ -1,8 +1,8 @@
-using Test, LinearAlgebra
+using Test, LinearAlgebra, QBase
 
 @testset "/src/Legacy/Behavior.jl" begin
 
-using BellScenario: Behavior, QMath
+using BellScenario: Behavior
 
 @testset "gen_to_fd_proj()" begin
     @testset "dichotomic case" begin
@@ -314,11 +314,11 @@ end
 @testset "conditionals()" begin
     conditionals = Behavior.conditionals((3,1),(1,3),[1;0;1;0;1;0],rep="normalized")
     @test conditionals == [1 0 0;0 1 0;1 0 0]'
-    @test conditionals isa QMath.Conditionals
+    @test conditionals isa Conditionals
 
     conditionals = Behavior.conditionals((3,1),(1,3),[1;1;0;1;0;1;0],rep="normalized")
     @test conditionals == [1 0 0;0 1 0;1 0 0]'
-    @test conditionals isa QMath.Conditionals
+    @test conditionals isa Conditionals
 
     @test_throws ArgumentError Behavior.conditionals((3,1),(1,3),[1;1;0;1;1;1;0],rep="normalized")
 end

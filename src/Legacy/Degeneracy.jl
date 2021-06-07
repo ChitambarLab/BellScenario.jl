@@ -9,8 +9,9 @@ module Degeneracy
 # """
 
 using ..Behavior
-using QBase: QMath
+
 using LinearAlgebra
+using QBase
 
 # """
 # symmetry_groups:
@@ -231,8 +232,8 @@ function generalized_input_relabels(α_expt, β_expt, include_constant=false)
     (α_num_inputs, α_num_outputs) = α_expt
     (β_num_inputs, β_num_outputs) = β_expt
 
-    α_maps = QMath.permutation_matrices(α_num_inputs)
-    β_maps = QMath.permutation_matrices(β_num_inputs)
+    α_maps = permutation_matrices(α_num_inputs)
+    β_maps = permutation_matrices(β_num_inputs)
 
     α_id = diagm(0 => fill(1,α_num_outputs))
     β_id = diagm(0 => fill(1,β_num_outputs))
@@ -243,7 +244,7 @@ function generalized_input_relabels(α_expt, β_expt, include_constant=false)
 
             map = kron(α_id, kron(β_id, kron(α_map,β_map)))
             if include_constant
-                map = QMath.block_diagonal([[1][:,:], map])
+                map = cat([[1][:,:], map]..., dims=(1,2))
             end
 
             push!(maps, map)
@@ -322,8 +323,8 @@ function generalized_output_relabels(α_expt,β_expt, include_constant)
     (α_num_inputs, α_num_outputs) = α_expt
     (β_num_inputs, β_num_outputs) = β_expt
 
-    α_perm_maps = QMath.permutation_matrices(α_num_outputs)
-    β_perm_maps = QMath.permutation_matrices(β_num_outputs)
+    α_perm_maps = permutation_matrices(α_num_outputs)
+    β_perm_maps = permutation_matrices(β_num_outputs)
 
     α_in_id = diagm( 0 => fill(1,α_num_inputs))
     β_in_id = diagm( 0 => fill(1,β_num_inputs))
@@ -347,7 +348,7 @@ function generalized_output_relabels(α_expt,β_expt, include_constant)
 
             map = kron(α_perm, kron(β_out_id,kron(x_m,β_in_id))) + kron(α_out_id, kron(β_out_id,kron(x_rest,β_in_id)))
             if include_constant
-                map = QMath.block_diagonal([[1][:,:], map])
+                map = cat([[1][:,:], map]..., dims=(1,2))
             end
 
             push!(αx_maps, map)
@@ -384,7 +385,7 @@ function generalized_output_relabels(α_expt,β_expt, include_constant)
 
             map = kron(α_out_id, kron(β_perm,kron(α_in_id,y_m))) + kron(α_out_id, kron(β_out_id,kron(α_in_id,y_rest)))
             if include_constant
-                map = QMath.block_diagonal([[1][:,:], map])
+                map = cat([[1][:,:], map]..., dims=(1,2))
             end
 
             push!(βy_maps, map)

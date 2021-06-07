@@ -59,9 +59,9 @@ function vertices(scenario :: LocalSignaling;
     vertices = Vector{Vector{Int64}}(undef, num_vertices(scenario, rank_d_only = rank_d_only))
     vertex_id = 1
     for dits in lower_dits_bound:scenario.d
-        d_perms = QMath.permutations(1:dits)
-        X_partitions = QMath.stirling2_partitions(scenario.X, dits)
-        Y_combinations = QMath.combinations(1:scenario.Y, dits)
+        d_perms = permutations(1:dits)
+        X_partitions = stirling2_partitions(scenario.X, dits)
+        Y_combinations = combinations(1:scenario.Y, dits)
 
         for Y in Y_combinations
             for d in d_perms
@@ -167,7 +167,7 @@ If `rank_d_only = true`, then only strategies using  `d`-dits are counted. For
 """
 function num_vertices(scenario :: LocalSignaling; rank_d_only = false :: Bool) :: Int64
     lower_dits_bound = rank_d_only ? scenario.d : 1
-    sum(map(i -> QMath.stirling2(scenario.X, i)*binomial(scenario.Y, i)*factorial(i), lower_dits_bound:scenario.d))
+    sum(map(i -> stirling2(scenario.X, i)*binomial(scenario.Y, i)*factorial(i), lower_dits_bound:scenario.d))
 end
 
 """

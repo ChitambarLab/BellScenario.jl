@@ -17,7 +17,7 @@ in regards to a particular task.
 """
 module BellScenario
 
-using QBase, LinearAlgebra
+using QBase, LinearAlgebra, Combinatorics
 
 import Base: *, convert
 

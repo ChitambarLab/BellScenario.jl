@@ -8,7 +8,7 @@ using BellScenario
     @testset "trine states" begin
         scenario = LocalSignaling(3,3,2)
         game = BellGame([1 0 0;0 1 0;0 0 1], 2)
-        ρ_states = States.trine_qubits
+        ρ_states = trine_qubit_states()
 
         dict = Nonlocality.optimize_measurement(scenario, game, ρ_states)
 
@@ -25,7 +25,7 @@ using BellScenario
     @testset "bb84 states" begin
         scenario = LocalSignaling(4,4,2)
         game = BellGame([1 0 0 0;0 1 0 0;0 0 1 0;0 0 0 1], 2)
-        ρ_states = States.bb84_qubits
+        ρ_states = bb84_qubit_states()
 
         dict = Nonlocality.optimize_measurement(scenario, game, ρ_states)
 
@@ -39,7 +39,7 @@ using BellScenario
     @testset "sic qubit states" begin
         scenario = LocalSignaling(4,4,2)
         game = BellGame([1 0 0 0;0 1 0 0;0 0 1 0;0 0 0 1], 2)
-        ρ_states = States.sic_qubits
+        ρ_states = sic_qubit_states()
 
         dict = Nonlocality.optimize_measurement(scenario, game, ρ_states)
 
@@ -52,7 +52,7 @@ using BellScenario
 
     @testset "Errors" begin
         scenario = LocalSignaling(3,3,2)
-        states = States.bb84_qubits
+        states = bb84_qubit_states()
         game = BellGame([1 0 0 0;0 1 0 0;0 0 1 0;0 0 0 1], 2)
 
         @test_throws DomainError Nonlocality.optimize_measurement(scenario, game, states)
@@ -66,10 +66,10 @@ end
     @testset "CHSH inequality" begin
         scenario = BipartiteNonSignaling(2,2,2,2)
         game = BellGame([0 1 1 0;0 0 0 1;0 0 0 1;1 0 0 1],2)
-        ρ_AB = States.bell_states[1]
+        ρ_AB = bell_states()[1]
         POVMs = [
-            Observables.POVM([[1 0;0 0],[0 0;0 1]]),
-            Observables.POVM([[0.5 0.5;0.5 0.5],[0.5 -0.5;-0.5 0.5]])
+            POVM([[1 0;0 0],[0 0;0 1]]),
+            POVM([[0.5 0.5;0.5 0.5],[0.5 -0.5;-0.5 0.5]])
         ]
 
         @test game.β == 2
@@ -88,12 +88,11 @@ end
         @test isapprox(
             opt_dictA["B_POVMs"],
             [
-                [States.bloch_qubit(π/4,0), States.bloch_qubit(5π/4,0)],
-                [States.bloch_qubit(7π/4,0), States.bloch_qubit(3π/4,0)]
+                [bloch_qubit_state(π/4,0), bloch_qubit_state(5π/4,0)],
+                [bloch_qubit_state(7π/4,0), bloch_qubit_state(3π/4,0)]
             ],
             atol=1e-5
         )
-        @test opt_dictA["B_POVMs"] isa Vector{Observables.POVM}
 
         @test length(keys(opt_dictB)) == 7
         @test opt_dictB["scenario"] == scenario
@@ -106,12 +105,11 @@ end
         @test isapprox(
             opt_dictB["A_POVMs"],
             [
-                [States.bloch_qubit(π/4,0), States.bloch_qubit(5π/4,0)],
-                [States.bloch_qubit(7π/4,0),States.bloch_qubit(3π/4,0)]
+                [bloch_qubit_state(π/4,0), bloch_qubit_state(5π/4,0)],
+                [bloch_qubit_state(7π/4,0),bloch_qubit_state(3π/4,0)]
             ],
             atol=1e-5
         )
-        @test opt_dictB["A_POVMs"] isa Vector{Observables.POVM}
     end
 
     @testset "Domain Errors" begin
@@ -119,10 +117,10 @@ end
         scenarioA = BipartiteNonSignaling(3,2,3,2)
         scenarioB = BipartiteNonSignaling(2,3,2,3)
         game = BellGame([0 1 1 0;0 0 0 1;0 0 0 1;1 0 0 1],2)
-        ρ_AB = States.bell_states[1]
+        ρ_AB = bell_states()[1]
         POVMs = [
-            Observables.POVM([[1 0;0 0],[0 0;0 1]]),
-            Observables.POVM([[0.5 0.5;0.5 0.5],[0.5 -0.5;-0.5 0.5]])
+            POVM([[1 0;0 0],[0 0;0 1]]),
+            POVM([[0.5 0.5;0.5 0.5],[0.5 -0.5;-0.5 0.5]])
         ]
 
         @test_throws DomainError Nonlocality.optimize_measurement(scenario, game, ρ_AB)

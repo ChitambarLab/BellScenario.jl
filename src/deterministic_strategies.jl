@@ -70,7 +70,7 @@ Returns `true` if all elements of `strategy` are either `0` or `1` and the matri
 is a valid conditional probability distribution.
 """
 function is_deterministic(S :: AbstractMatrix) :: Bool
-    is_conditionals = QMath.is_conditional_distribution(S)
+    is_conditionals = is_conditional_distribution(S)
     is_01 = all(i -> (S[i] == 0) || (S[i] == 1), 1:length(S))
 
     (is_conditionals && is_01)

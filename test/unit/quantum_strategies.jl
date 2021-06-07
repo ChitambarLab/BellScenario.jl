@@ -6,8 +6,8 @@ using BellScenario
 
 @testset "quantum_strategy()" begin
     q_strat = quantum_strategy(
-        Observables.POVM([[1 0 0;0 0 0;0 0 0],[0 0 0;0 1 0;0 0 0],[0 0 0;0 0 0;0 0 1]]),
-        States.DensityMatrix.([[1 0 0;0 0 0;0 0 0],[0 0 0;0 1 0;0 0 0],[0 0 0;0 0 0;0 0 1]])
+        POVM([[1 0 0;0 0 0;0 0 0],[0 0 0;0 1 0;0 0 0],[0 0 0;0 0 0;0 0 1]]),
+        State.([[1 0 0;0 0 0;0 0 0],[0 0 0;0 1 0;0 0 0],[0 0 0;0 0 0;0 0 1]])
     )
 
     @test q_strat isa Strategy
@@ -18,8 +18,8 @@ end
 @testset "quantum_strategy(LocalSignaling)" begin
     scenario = LocalSignaling(3,3,2)
     q_strat = quantum_strategy(
-        Observables.mirror_symmetric_qubit_3povm(π/3),
-        States.trine_qubits,
+        mirror_symmetric_qubit_3povm(π/3),
+        trine_qubit_states(),
         scenario
     )
 
@@ -28,8 +28,8 @@ end
     @test q_strat.scenario isa LocalSignaling
 
     @test_throws DomainError quantum_strategy(
-        Observables.POVM([[1 0 0;0 0 0;0 0 0],[0 0 0;0 1 0;0 0 0],[0 0 0;0 0 0;0 0 1]]),
-        States.DensityMatrix.([[1 0 0;0 0 0;0 0 0],[0 0 0;0 1 0;0 0 0],[0 0 0;0 0 0;0 0 1]]),
+        POVM([[1 0 0;0 0 0;0 0 0],[0 0 0;0 1 0;0 0 0],[0 0 0;0 0 0;0 0 1]]),
+        State.([[1 0 0;0 0 0;0 0 0],[0 0 0;0 1 0;0 0 0],[0 0 0;0 0 0;0 0 1]]),
         scenario
     )
 end

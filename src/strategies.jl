@@ -49,10 +49,10 @@ Base.setindex!(S::AbstractStrategy, v, I::Vararg{Int,2}) = (S.conditionals[I...]
 """
     Strategy(conditionals :: Matrix{<:Real}) <: AbstractMatrix{Float64}
 
-    Strategy(conditionals :: QMath.Conditionals) <: AbstractMatrix{Float64}
+    Strategy(conditionals :: Conditionals) <: AbstractMatrix{Float64}
 
 The `conditionals` parameter is a column stochastic matrix which can be provided
-in a raw `Matrix{<:Real}` format or as a `QMath.Conditionals` type from the QBase.jl
+in a raw `Matrix{<:Real}` format or as a `Conditionals` type from the QBase.jl
 package.
 By default, the constructor creates a strategy for a 'BlackBox' scenario. However,
 a `Scenario` can be passed to the `Strategy` constructor.
@@ -66,10 +66,10 @@ A `DomainError` is thrown if:
 * The `conditionals` matrix is not a valid stochastic matrix, e.g. non-negative and normalized.
 """
 struct Strategy <: AbstractStrategy{Float64}
-    conditionals ::  QMath.Conditionals
+    conditionals ::  Conditionals
     scenario :: Scenario
     Strategy(
-        conditionals :: QMath.Conditionals,
+        conditionals :: Conditionals,
         scenario :: Scenario
     ) =  size(conditionals) == strategy_dims(scenario) ? new(conditionals, scenario) : throw(
         DomainError(conditionals, "conditionals are not the correct dimension for the specified bell scenario.")
@@ -77,9 +77,9 @@ struct Strategy <: AbstractStrategy{Float64}
     Strategy(
         conditionals :: Matrix{<:Real},
         scenario :: Scenario
-    ) = Strategy(QMath.Conditionals(conditionals), scenario)
+    ) = Strategy(Conditionals(conditionals), scenario)
     Strategy( conditionals :: Matrix{<:Real} ) = new(
-        QMath.Conditionals(conditionals),
+        Conditionals(conditionals),
         BlackBox(size(conditionals)...)
     )
 end
@@ -108,7 +108,7 @@ end
 """
     strategy_dims( scenario :: Scenario ) :: Tuple{Int64, Int64}
 
-Returns the dimensions of the `QMath.Conditionals` matrix describing a `Strategy` for
+Returns the dimensions of the `Conditionals` matrix describing a `Strategy` for
 the `Scenario` at hand. Each `Scenario`, can place unique constraints on the matrix
 dimensions, therfore, separate methods are called for each concrete `Scenario`.
 """

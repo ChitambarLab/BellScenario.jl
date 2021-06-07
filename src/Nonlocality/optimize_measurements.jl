@@ -6,7 +6,7 @@ export optimize_measurement
     optimize_measurement(
         scenario :: LocalSignaling,
         game :: BellGame,
-        ρ_states :: Vector{<:States.AbstractDensityMatrix}
+        ρ_states :: Vector{<:State}
     )
 
 Finds the measurement that optimizes the score of the [`BellGame`](@ref) against
@@ -23,7 +23,7 @@ The optimization is performed with the following semi-definite program:
 function optimize_measurement(
     scenario::LocalSignaling,
     game::BellGame,
-    ρ_states::Vector{<:States.AbstractDensityMatrix},
+    ρ_states::Vector{<:State},
 ) :: Dict
     if scenario.X != length(ρ_states)
         throw(DomainError(scenario, "expected length of `ρ_states` is $(scenario.X)), but got $(length(ρ_states)) instead"))
@@ -71,8 +71,8 @@ end
     optimize_measurement(
         game :: BellGame,
         scenario :: BipartiteNonSignaling,
-        ρ_AB :: States.AbstractDensityMatrix;
-        A_POVMs :: Vector{<:Observables.AbstractPOVM},
+        ρ_AB :: State;
+        A_POVMs :: Vector{<:POVM},
     ) :: Dict
 
 Find Bob's measurement which optimizes a `BellGame`'s score for the shared quantum
@@ -89,8 +89,8 @@ The following semi-definite program optimizes the Bob's POVM:
     optimize_measurement(
         game :: BellGame,
         scenario :: BipartiteNonSignaling,
-        ρ_AB :: States.AbstractDensityMatrix;
-        B_POVMs :: Vector{<:Observables.AbstractPOVM},
+        ρ_AB :: State;
+        B_POVMs :: Vector{<:POVM},
     ) :: Dict
 
 Find Alice's measurement which optimizes a `BellGame`'s score for the shared quantum
@@ -107,9 +107,9 @@ The following semi-definite program optimizes the Alice's POVM:
 function optimize_measurement(
     scenario::BipartiteNonSignaling,
     game::BellGame,
-    ρ_AB :: States.AbstractDensityMatrix;
-    A_POVMs=Vector{Observables.POVM}(undef,0) :: Vector{<:Observables.AbstractPOVM},
-    B_POVMs=Vector{Observables.POVM}(undef,0) :: Vector{<:Observables.AbstractPOVM}
+    ρ_AB :: State;
+    A_POVMs=Vector{POVM}(undef,0) :: Vector{<:POVM},
+    B_POVMs=Vector{POVM}(undef,0) :: Vector{<:POVM}
 ) :: Dict
     if length(A_POVMs) > 0
         return _optimize_measurement_B(scenario, game, ρ_AB, A_POVMs)
@@ -126,8 +126,8 @@ end
 function _optimize_measurement_B(
     scenario::BipartiteNonSignaling,
     game::BellGame,
-    ρ_AB :: States.AbstractDensityMatrix,
-    A_POVMs :: Vector{<:Observables.AbstractPOVM}
+    ρ_AB :: State,
+    A_POVMs :: Vector{<:POVM}
 ) :: Dict
     if !(scenario.X == length(A_POVMs))
         throw( DomainError(
@@ -156,7 +156,7 @@ function _optimize_measurement_B(
     # Objective function
     problem = maximize(real(
         sum(x -> sum(y -> sum(a -> sum(b ->
-            game[(a-1)*scenario.B+b,(x-1)*scenario.Y+y]*tr(kron(A_POVMs[x][a],B_POVMs[y][b])*ρ_AB),
+            game[(a-1)*scenario.B+b,(x-1)*scenario.Y+y]*tr(kron(A_POVMs[x][a],B_POVMs[y][b])*ρ_AB.M),
         1:scenario.B), 1:scenario.A), 1:scenario.Y), 1:scenario.X)
     ))
 
@@ -192,8 +192,8 @@ end
 function _optimize_measurement_A(
     scenario::BipartiteNonSignaling,
     game::BellGame,
-    ρ_AB :: States.AbstractDensityMatrix,
-    B_POVMs :: Vector{<:Observables.AbstractPOVM}
+    ρ_AB :: State,
+    B_POVMs :: Vector{<:POVM}
 ) :: Dict
     if !(scenario.Y == length(B_POVMs))
         throw( DomainError(
@@ -222,7 +222,7 @@ function _optimize_measurement_A(
     # objective function
     problem = maximize(real(
         sum(x -> sum(y -> sum(a -> sum(b ->
-            game[(a-1)*scenario.B+b,(x-1)*scenario.Y+y]*tr(kron(A_POVMs[x][a],B_POVMs[y][b])*ρ_AB),
+            game[(a-1)*scenario.B+b,(x-1)*scenario.Y+y]*tr(kron(A_POVMs[x][a],B_POVMs[y][b])*ρ_AB.M),
         1:scenario.B), 1:scenario.A), 1:scenario.Y), 1:scenario.X)
     ))
 
@@ -255,8 +255,8 @@ end
 # """
 # Helper function for converting POVM optimization variables to a POVM
 # """
-function _opt_vars_to_povm(povm::Vector{Matrix{Complex{Float64}}}) :: Observables.POVM
-    Π = Observables.is_povm(povm) ? Observables.POVM(povm) : throw(DomainError(povm, "not a povm"))
+function _opt_vars_to_povm(povm::Vector{Matrix{Complex{Float64}}}; atol=1) :: POVM
+    Π = is_povm(povm,atol=atol) ? POVM(povm,atol=atol) : throw(DomainError(povm, "not a povm"))
 
     Π
 end

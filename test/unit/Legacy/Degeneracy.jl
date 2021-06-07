@@ -1,4 +1,4 @@
-using Test, LinearAlgebra
+using Test, LinearAlgebra, QBase
 
 @testset "/src/Legacy/Degeneracy.jl" begin
 
@@ -20,7 +20,7 @@ using BellScenario: Degeneracy
     end
 
     @testset "3x3 permutation group" begin
-        transforms = QMath.permutation_matrices(3)
+        transforms = permutation_matrices(3)
         elements = [
             [0 0 0],[0 0 1],[0 1 0],[0 1 1],
             [1 0 0],[1 0 1],[1 1 0],[1 1 1]
@@ -38,7 +38,7 @@ using BellScenario: Degeneracy
     end
 
     @testset "4x4 permutation group" begin
-        transforms = QMath.permutation_matrices(4)
+        transforms = permutation_matrices(4)
         elements = [
             [0 0 0 0],[0 0 0 1],[0 0 1 0],[0 0 1 1],
             [0 1 0 0],[0 1 0 1],[0 1 1 0],[0 1 1 1],

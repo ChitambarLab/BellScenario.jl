@@ -51,7 +51,7 @@ function bipartite_scenario(α_povms, β_povms, ψ)
 
                     index = Behavior.index((ac,bc,xc,yc),α_expt,β_expt,"generalized")
 
-                    gen_behavior[index] = p_abxy
+                    gen_behavior[index] = p_abxy[1]
                 end
                 bc = 0
             end

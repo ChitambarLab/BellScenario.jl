@@ -54,8 +54,7 @@ resources were used than anticipated.
 """
 module LocalPolytope
 
-using QBase: QMath
-using LinearAlgebra
+using LinearAlgebra, Combinatorics
 using XPORTA
 
 using ..BellScenario
