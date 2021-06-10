@@ -159,6 +159,8 @@ function adjacency_decomposition(
 
     # loop until all facet are considered
     while !all(d -> d["considered"], collect(values(facet_dict)))
+        println("starting loop")
+
         # select the first uncosidered facet with fewest vertices
         target_BG = sort(
                 filter(d -> facet_dict[d]["considered"] == false, collect(keys(facet_dict))),
@@ -168,13 +170,15 @@ function adjacency_decomposition(
         # get target facet vector in normalized representation
         norm_facet = facet_dict[target_BG]["norm_facet"]
 
-        println("looping ad decomp")
+        println("about to enter try block")
 
         # compute adjacent facets
         adj_facets = try
             adjacent_facets(vertices, norm_facet, dir=porta_tmp_dir, cleanup=false)
+            println("try block success")
         # if an unexpected error occurs with XPORTA, mark facet as such and move on.
         catch error
+            println("try block error")
             facet_dict[target_BG]["considered"] = true
 
             push!(facet_dict[target_BG],"error" => true)
@@ -183,7 +187,10 @@ function adjacency_decomposition(
             continue
         end
 
+        println("exited try block")
+
         for adj_facet in adj_facets
+            println("sorting adjacent facets iteratively")
             adj_game = convert(BellGame, adj_facet, scenario, rep="normalized")
             canonical_game = LocalPolytope.generator_facet(adj_game, scenario)
 
@@ -211,14 +218,20 @@ function adjacency_decomposition(
             end
         end
 
+        println("done sorting ")
+
         # set current bell game "considered" to true
         facet_dict[target_BG]["considered"] = true
 
+        println("log remains")
         if log
+            println("loggin")
             open(dir*log_filename, "w") do io
                 JSON.print(io, facet_dict)
             end
         end
+
+        println("done with loop iterations")
     end
 
     # cleanup porta_tmp directory after completion
