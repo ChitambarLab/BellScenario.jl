@@ -55,7 +55,11 @@ function adjacent_facets(
 
 
     # find the subfacets of facet F, these subfacets are labeled G
-    G_ieq = traf(POI(vertices = hcat(F_vertices...)'[:,:]), dir=dir, cleanup=cleanup)
+    vertices = hcat(F_vertices...)'[:,:]
+    println("after hcat conversion")
+    G_ieq = traf(POI(vertices = vertices), dir=dir, cleanup=cleanup)
+
+    println("before conversion")
     G_ineqs = convert.(Int64, G_ieq.inequalities)
 
     println("after traf")
