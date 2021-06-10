@@ -110,7 +110,7 @@ end
     @testset "json logging" begin
         filename = "JSON_logging_test.json"
         if isfile(test_dir*filename)
-            rm(test_dir*filename)
+            rm(test_dir*filename, force=true)
         end
 
         scenario = LocalSignaling(3,3,2)
@@ -142,7 +142,7 @@ end
             )
         )
 
-        rm(test_dir*filename)
+        rm(test_dir*filename, force=true)
     end
 end
 
