@@ -52,7 +52,8 @@ function adjacent_facets(
     F_vertices = filter(v -> F[1:(end-1)]' * v == F[end], vertices)
 
     # find the subfacets of facet F, these subfacets are labeled G
-    G_ieq = traf(POI(vertices = hcat(F_vertices...)'[:,:]), dir=dir, cleanup=cleanup)
+    poi_vertices = hcat(F_vertices...)'[:,:]
+    G_ieq = traf(POI(vertices = poi_vertices), dir=dir, cleanup=cleanup)
     G_ineqs = convert.(Int64, G_ieq.inequalities)
 
     # polytope vertices not in F index 1 is farthest from F

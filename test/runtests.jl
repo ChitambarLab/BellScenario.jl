@@ -1,4 +1,6 @@
-using Test
+using Test, SafeTestsets
+
+const is_WINDOWS = Sys.iswindows()
 
 println("importing BellScenario.jl")
 @time using BellScenario
@@ -15,15 +17,24 @@ function _test_runner()
                 end
             end
         end
-        @testset "integration tests:" begin
+        @time @testset "integration tests:" begin
             println("running integration tests.")
-            for test in readdir("./test/integration/")
-                # run only julia files in test directory
-                if occursin(r"^.*\.jl$", test)
-                    println("./integration/$test")
-                    @time include("./integration/$test")
-                end
+
+            println("./test/integration/file_io.jl")
+            @time @safetestset "./test/integration/file_io.jl" begin include("integration/file_io.jl") end
+
+            if !is_WINDOWS
+                println("./test/integration/LocalPolytope/adjacency_decomposition.jl")
+                @time @safetestset "./test/integration/LocalPolytope/adjacency_decomposition.jl" begin include("integration/LocalPolytope/adjacency_decomposition.jl") end
             end
+
+            # for test in readdir("./test/integration/")
+            #     # run only julia files in test directory
+            #     if occursin(r"^.*\.jl$", test)
+            #         println("./integration/$test")
+            #         @time include("./integration/$test")
+            #     end
+            # end
         end
         @testset "regression tests:" begin
             println("running regression tests.")
