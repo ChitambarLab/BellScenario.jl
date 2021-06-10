@@ -168,6 +168,8 @@ function adjacency_decomposition(
         # get target facet vector in normalized representation
         norm_facet = facet_dict[target_BG]["norm_facet"]
 
+        println("looping ad decomp")
+
         # compute adjacent facets
         adj_facets = try
             adjacent_facets(vertices, norm_facet, dir=porta_tmp_dir, cleanup=false)
