@@ -174,6 +174,7 @@ function adjacency_decomposition(
 
         # compute adjacent facets
         adj_facets = try
+            println("inside try")
             adjacent_facets(vertices, norm_facet, dir=porta_tmp_dir, cleanup=false)
         # if an unexpected error occurs with XPORTA, mark facet as such and move on.
         catch error
