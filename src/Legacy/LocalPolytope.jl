@@ -1,3 +1,5 @@
+using QBase: base_n_val
+
 # """
 # strategies(num_inputs, num_outputs):
 #   Constructs the set of unique strategies which maps M unique inputs to K
@@ -62,7 +64,7 @@ function communication_protocols(num_inputs,num_outputs)
         inputs = Matrix(1I, (num_inputs, num_inputs))
 
         min_n_array = collect(0:(num_inputs-1))
-        min_num = QMath.base_n_val(min_n_array, num_base)
+        min_num = base_n_val(min_n_array, num_base)
 
         base_n_array = reverse(digits(min_num, base = num_base, pad = num_inputs))
         id_array = base_n_array .+ 1
@@ -76,14 +78,14 @@ function communication_protocols(num_inputs,num_outputs)
             fill(num_outputs-1,(num_inputs - num_outputs)),
             dims=1
         )
-        max_num = QMath.base_n_val(max_n_array, num_base)
+        max_num = base_n_val(max_n_array, num_base)
 
         min_n_array = cat(
             fill(0, (num_inputs - num_outputs)),
             0:(num_outputs - 1),
             dims = 1
         )
-        min_num = QMath.base_n_val(min_n_array, num_base)
+        min_num = base_n_val(min_n_array, num_base)
 
         partitions = []
         for i in min_num:max_num

@@ -8,8 +8,7 @@ module Behavior
 #   A behavior can be represented in different subspaces depending on system
 #   constraints.
 
-using LinearAlgebra
-using QBase: QMath
+using LinearAlgebra, QBase
 
 # """
 # Description:
@@ -687,7 +686,7 @@ function conditionals(α_expt, β_expt, behavior; rep="generalized")
         throw(ArgumentError("invalid behavior representation specified"))
     end
 
-    QMath.Conditionals(Matrix(reshape(gen_behavior[2:end], (num_out,num_in))'))
+    Conditionals(Matrix(reshape(gen_behavior[2:end], (num_out,num_in))'))
 end
 
 # """

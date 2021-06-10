@@ -17,7 +17,7 @@ in regards to a particular task.
 """
 module BellScenario
 
-using QBase, LinearAlgebra
+using QBase, LinearAlgebra, Combinatorics
 
 import Base: *, convert
 
@@ -29,6 +29,9 @@ export ConvexPolytope, Degeneracy, Behavior, QuantumBehavior, QuantumOpt
 
 # Scenarios
 include("./scenarios.jl")
+
+# combinatorics math utilities
+include("./combinatorics.jl")
 
 # Strategies
 include("./strategies.jl")

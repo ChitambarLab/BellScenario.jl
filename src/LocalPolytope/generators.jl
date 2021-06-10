@@ -95,7 +95,7 @@ function _perm_increase_lexico_score(
         game_row_tuples)
 
 
-    col_scores = map(col -> QMath.base_n_val(sort(col, rev=true), base), eachcol(game[target_row:end,:]))
+    col_scores = map(col -> base_n_val(sort(col, rev=true), base), eachcol(game[target_row:end,:]))
 
     # pre-sorting the game rows with mutation sort by allowed_col_perms
     for col_id in num_cols:-1:1
@@ -106,7 +106,7 @@ function _perm_increase_lexico_score(
     max_game_row = sort(
             sort(sorted_game_row_tuples, by=tuple->length(tuple[2]), rev=true),
             rev = true,
-            by = row_tuple -> QMath.base_n_val(map(tuple -> tuple[1], row_tuple[1]), base)
+            by = row_tuple -> base_n_val(map(tuple -> tuple[1], row_tuple[1]), base)
         )[1]
 
     # getting the row id to use for the target row
@@ -168,5 +168,5 @@ function lexico_score(BG :: BellGame) :: Vector{Int64}
 
     base = length(unique_vals)
 
-    map(row -> QMath.base_n_val(row, base), eachrow(game_copy))
+    map(row -> base_n_val(row, base), eachrow(game_copy))
 end
