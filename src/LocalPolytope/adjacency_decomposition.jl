@@ -51,9 +51,14 @@ function adjacent_facets(
     # vertices of facet F
     F_vertices = filter(v -> F[1:(end-1)]' * v == F[end], vertices)
 
+    println("befor traf")
+
+
     # find the subfacets of facet F, these subfacets are labeled G
     G_ieq = traf(POI(vertices = hcat(F_vertices...)'[:,:]), dir=dir, cleanup=cleanup)
     G_ineqs = convert.(Int64, G_ieq.inequalities)
+
+    println("after traf")
 
     # polytope vertices not in F index 1 is farthest from F
     xbar_vertices = sort(
@@ -178,7 +183,6 @@ function adjacency_decomposition(
             adjacent_facets(vertices, norm_facet, dir=porta_tmp_dir, cleanup=false)
         # if an unexpected error occurs with XPORTA, mark facet as such and move on.
         catch error
-            println("try block error")
             facet_dict[target_BG]["considered"] = true
 
             push!(facet_dict[target_BG],"error" => true)
@@ -187,10 +191,7 @@ function adjacency_decomposition(
             continue
         end
 
-        println("exited try block")
-
         for adj_facet in adj_facets
-            println("sorting adjacent facets iteratively")
             adj_game = convert(BellGame, adj_facet, scenario, rep="normalized")
             canonical_game = LocalPolytope.generator_facet(adj_game, scenario)
 
@@ -218,20 +219,14 @@ function adjacency_decomposition(
             end
         end
 
-        println("done sorting ")
-
         # set current bell game "considered" to true
         facet_dict[target_BG]["considered"] = true
 
-        println("log remains")
         if log
-            println("loggin")
             open(dir*log_filename, "w") do io
                 JSON.print(io, facet_dict)
             end
         end
-
-        println("done with loop iterations")
     end
 
     # cleanup porta_tmp directory after completion
