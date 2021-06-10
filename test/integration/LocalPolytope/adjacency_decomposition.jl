@@ -83,7 +83,7 @@ end
 
         dict = LocalPolytope.adjacency_decomposition(vertices, BG, scenario, dir=test_dir)
 
-        @test collect(keys(dict)) == [
+        @test issetequal( collect(keys(dict)), [
             [1 0 0 0;1 0 0 0;0 1 0 0;0 0 1 0],
             [1 0 0 0;0 1 0 0;0 0 1 0;0 0 0 1],
             [1 0 0 0;1 0 0 0;1 0 0 0;0 0 0 0],
@@ -91,7 +91,7 @@ end
             [2 0 0 0;1 1 1 0;0 2 0 0;0 0 2 0],
             [1 1 0 0;1 0 1 0;0 1 1 0;0 0 0 1],
             [1 1 1 1;0 0 0 0;0 0 0 0;0 0 0 0],
-        ]
+        ])
     end
 
     @testset "31-2-13 polytope skip by  max_vertices" begin
