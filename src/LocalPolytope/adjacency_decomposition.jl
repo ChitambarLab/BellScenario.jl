@@ -51,18 +51,10 @@ function adjacent_facets(
     # vertices of facet F
     F_vertices = filter(v -> F[1:(end-1)]' * v == F[end], vertices)
 
-    println("befor traf")
-
-
     # find the subfacets of facet F, these subfacets are labeled G
     poi_vertices = hcat(F_vertices...)'[:,:]
-    println("after hcat conversion")
     G_ieq = traf(POI(vertices = poi_vertices), dir=dir, cleanup=cleanup)
-
-    println("before conversion")
     G_ineqs = convert.(Int64, G_ieq.inequalities)
-
-    println("after traf")
 
     # polytope vertices not in F index 1 is farthest from F
     xbar_vertices = sort(
@@ -168,8 +160,6 @@ function adjacency_decomposition(
 
     # loop until all facet are considered
     while !all(d -> d["considered"], collect(values(facet_dict)))
-        println("starting loop")
-
         # select the first uncosidered facet with fewest vertices
         target_BG = sort(
                 filter(d -> facet_dict[d]["considered"] == false, collect(keys(facet_dict))),
@@ -179,11 +169,8 @@ function adjacency_decomposition(
         # get target facet vector in normalized representation
         norm_facet = facet_dict[target_BG]["norm_facet"]
 
-        println("about to enter try block")
-
         # compute adjacent facets
         adj_facets = try
-            println("inside try")
             adjacent_facets(vertices, norm_facet, dir=porta_tmp_dir, cleanup=false)
         # if an unexpected error occurs with XPORTA, mark facet as such and move on.
         catch error
