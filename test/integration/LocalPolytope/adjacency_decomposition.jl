@@ -112,20 +112,17 @@ end
         if isfile(test_dir*filename)
             rm(test_dir*filename, force=true)
         end
-        println("past file check")
 
         scenario = LocalSignaling(3,3,2)
         vertices = LocalPolytope.vertices(scenario)
 
         BG  = BellGame([1 0 0;1 0 0;0 0 0], 1)
 
-        println("logging")
         dict = LocalPolytope.adjacency_decomposition(
             vertices, BG, scenario,
             dir=test_dir, log=true, log_filename = filename
         )
 
-        println("about to parse")
         log_json = JSON.parsefile(test_dir*filename)
 
         @test log_json == Dict{String,Any}(
@@ -145,7 +142,6 @@ end
             )
         )
 
-        println("about to delet file")
         rm(test_dir*filename, force=true)
     end
 end
