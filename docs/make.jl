@@ -1,5 +1,7 @@
 using Documenter, BellScenario
 
+DocMeta.setdocmeta!(BellScenario, :DocTestSetup, :(using BellScenario); recursive=true)
+
 makedocs(;
     modules=[BellScenario],
     format=Documenter.HTML(
