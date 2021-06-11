@@ -15,7 +15,7 @@ SCS = "c946c3f1-0d1f-5ce8-9dea-7daa1f7e2d13"
 XPORTA = "8c143463-af6f-456f-8aed-72447cb569d2"
 
 [compat]
-Convex = "0.13"
+Convex = "0.13, 0.14"
 JSON = "0.21"
 QBase = "0.2"
 SCS = "0.7"
