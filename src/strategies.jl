@@ -47,17 +47,19 @@ Base.setindex!(S::AbstractStrategy, v, I::Vararg{Int,2}) = (S.conditionals[I...]
 ) = Strategy(S1.conditionals*S2.conditionals, scenario)
 
 """
-    Strategy(conditionals :: Matrix{<:Real}) <: AbstractMatrix{Float64}
+    Strategy(conditionals :: Matrix{<:Real}; atol::Float64 = 1e-7) <: AbstractMatrix{Float64}
 
-    Strategy(conditionals :: Conditionals) <: AbstractMatrix{Float64}
+    Strategy(conditionals :: Conditionals; atol::Float64 = 1e-7) <: AbstractMatrix{Float64}
 
-The `conditionals` parameter is a column stochastic matrix which can be provided
-in a raw `Matrix{<:Real}` format or as a `Conditionals` type from the QBase.jl
-package.
+The `conditionals` parameter is a column stochastic matrix. The `conditionals`
+can either be accepted in a raw `Matrix{<:Real}` format or as a
+`Conditionals` type from QBase.jl.
+The `atol` parameter expresses the absolute tolerance for numerical error in the
+constraints of conditional probablities.
 By default, the constructor creates a strategy for a 'BlackBox' scenario. However,
 a `Scenario` can be passed to the `Strategy` constructor.
 
-    Strategy(conditionals :: Matrix{<:Real}, scenario :: Scenario)
+    Strategy(conditionals :: Matrix{<:Real}, scenario :: Scenario, atol::Float64=1e-7)
 
 ### Errors:
 
@@ -76,10 +78,11 @@ struct Strategy <: AbstractStrategy{Float64}
     )
     Strategy(
         conditionals :: Matrix{<:Real},
-        scenario :: Scenario
-    ) = Strategy(Conditionals(conditionals), scenario)
-    Strategy( conditionals :: Matrix{<:Real} ) = new(
-        Conditionals(conditionals),
+        scenario :: Scenario;
+        atol :: Float64 = 1e-7
+    ) = Strategy(Conditionals(conditionals, atol=atol), scenario)
+    Strategy( conditionals :: Matrix{<:Real}; atol :: Float64 = 1e-7 ) = new(
+        Conditionals(conditionals, atol=atol),
         BlackBox(size(conditionals)...)
     )
 end
