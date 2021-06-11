@@ -16,7 +16,7 @@ XPORTA = "8c143463-af6f-456f-8aed-72447cb569d2"
 
 [compat]
 Combinatorics = "1"
-Convex = "0.13"
+Convex = "0.14"
 JSON = "0.21"
 QBase = "0.2"
 SCS = "0.7"

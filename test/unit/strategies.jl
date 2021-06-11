@@ -32,6 +32,15 @@ using BellScenario
         @test_throws DomainError Strategy([1 0;0 1], scenario_error)
         @test_throws DomainError Strategy([0.5 0.5;1 0.5])
     end
+
+    @testset "absolute tolerance" begin
+        @test_throws DomainError Strategy([1/2 1/2; 1/2 1/3])
+        @test Strategy([1/2 1/2; 1/2 1/3], atol=0.2) == [1/2 1/2;1/2 1/3]
+
+        scenario = BlackBox(2,3)
+        @test_throws DomainError Strategy([1 0 0;0 0 0], scenario)
+        @test Strategy([1 0 0;0 0 0], scenario, atol=1.1) == [1 0 0;0 0 0]
+    end
 end
 
 @testset "Strategy multiplication" begin
