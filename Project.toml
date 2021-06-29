@@ -1,7 +1,7 @@
 name = "BellScenario"
 uuid = "4e58fcc1-4405-48af-b0f2-42df636d9190"
 authors = ["Brian Doolittle"]
-version = "0.1.1"
+version = "0.1.2"
 
 [deps]
 Combinatorics = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
