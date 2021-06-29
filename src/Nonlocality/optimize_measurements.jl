@@ -1,6 +1,6 @@
 export optimize_measurement
 
-@doc raw"""
+"""
 [`LocalSignaling`](@ref) scenario:
 
     optimize_measurement(
@@ -14,10 +14,10 @@ the set of quantum states `ρ_states`.
 The optimization is performed with the following semi-definite program:
 
 ```math
-\begin{aligned}
-&\max_{\{\Pi_y\}} \sum_{x,y} G_{x,y} \text{Tr}[\Pi_y \rho_x] \\
-&s.t. \quad \sum_y \Pi_y = \mathbb{I}, \quad \Pi_y \geq 0
-\end{aligned}
+\\begin{aligned}
+&\\max_{\\{\\Pi_y\\}} \\sum_{x,y} G_{x,y} \\text{Tr}[\\Pi_y \\rho_x] \\\\
+&s.t. \\quad \\sum_y \\Pi_y = \\mathbb{I}, \\quad \\Pi_y \\geq 0
+\\end{aligned}
 ```
 """
 function optimize_measurement(
@@ -65,7 +65,7 @@ function optimize_measurement(
     )
 end
 
-@doc raw"""
+"""
 [`BipartiteNonSignaling`](@ref) scenario:
 
     optimize_measurement(
@@ -80,10 +80,10 @@ state `ρ_AB` and POVM measurement applied by Alice.
 The following semi-definite program optimizes the Bob's POVM:
 
 ```math
-\begin{aligned}
-    &\max_{\{\Pi_b^y\}} \sum_{a,b,x,y} G_{a,b,x,y}\text{Tr}[(\Pi_a^x \otimes \Pi_b^y)\rho_AB] \\
-    &s.t. \quad \sum_b \Pi_b^y = \mathbb{I},\quad \Pi_b^y \geq 0 \quad \forall\; y
-\end{aligned}
+\\begin{aligned}
+    &\\max_{\\{\\Pi_b^y\\}} \\sum_{a,b,x,y} G_{a,b,x,y}\\text{Tr}[(\\Pi_a^x \\otimes \\Pi_b^y)\\rho_{AB}] \\\\
+    &s.t. \\quad \\sum_b \\Pi_b^y = \\mathbb{I},\\quad \\Pi_b^y \\geq 0 \\quad \\forall\\; y
+\\end{aligned}
 ```
 
     optimize_measurement(
@@ -98,10 +98,10 @@ state `ρ_{AB}` and POVM measurement applied by Bob.
 The following semi-definite program optimizes the Alice's POVM:
 
 ```math
-\begin{aligned}
-&\max_{\{\Pi_a^x\}} \sum_{a,b,x,y} G_{a,b,x,y}\text{Tr}[(\Pi_a^x \otimes \Pi_b^y)\rho_{AB}] \\
-&s.t. \quad \sum_a \Pi_a^x = \mathbb{I},\quad \Pi_a^x \geq 0 \quad \forall \;x
-\end{aligned}
+\\begin{aligned}
+&\\max_{\\{\\Pi_a^x\\}} \\sum_{a,b,x,y} G_{a,b,x,y}\\text{Tr}[(\\Pi_a^x \\otimes \\Pi_b^y)\\rho_{AB}] \\\\
+&s.t. \\quad \\sum_a \\Pi_a^x = \\mathbb{I},\\quad \\Pi_a^x \\geq 0 \\quad \\forall \\;x
+\\end{aligned}
 ```
 """
 function optimize_measurement(

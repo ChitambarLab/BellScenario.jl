@@ -95,7 +95,6 @@ struct BipartiteNonSignaling <: Scenario
         ) ? new(A, B, X, Y) : throw(
             DomainError((A, B, X, Y), "inputs must be ≥ 1")
         )
-
 end
 
 """
