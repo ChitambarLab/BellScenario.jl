@@ -6,7 +6,7 @@ export optimize_measurement
     optimize_measurement(
         scenario :: LocalSignaling,
         game :: BellGame,
-        ρ_states :: Vector{<:State}
+        ρ_states :: Vector{<:AbstractMatrix}
     )
 
 Finds the measurement that optimizes the score of the [`BellGame`](@ref) against
@@ -23,15 +23,16 @@ The optimization is performed with the following semi-definite program:
 function optimize_measurement(
     scenario::LocalSignaling,
     game::BellGame,
-    ρ_states::Vector{<:State},
+    ρ_states::Vector{<:AbstractMatrix};
+    atol=1e-7::Float64
 ) :: Dict
     if scenario.X != length(ρ_states)
         throw(DomainError(scenario, "expected length of `ρ_states` is $(scenario.X)), but got $(length(ρ_states)) instead"))
-    end
-
-    if size(ρ_states[1]) != (scenario.d,scenario.d)
+    elseif size(ρ_states[1]) != (scenario.d,scenario.d)
         throw(DomainError(ρ_states, "dimension of `ρ_states` is not $(scenario.d)"))
     end
+
+    states = map(ρ -> ρ isa State ? ρ : State(ρ, atol=atol), ρ_states)
 
     norm_game_vector = convert(Vector{Int64}, game)
     norm_bound = norm_game_vector[end]
@@ -43,7 +44,7 @@ function optimize_measurement(
     constraints += (sum(map(Π_y -> imag(Π_y), Π_vars)) == zeros(Float64, scenario.d, scenario.d))
 
     # sum up the state contibutions for each row
-    H_y = map(row_id -> sum(norm_game[row_id,:] .* ρ_states), 1:scenario.Y-1)
+    H_y = map(row_id -> sum(norm_game[row_id,:] .* states), 1:scenario.Y-1)
 
     # add the objective
     objective = maximize(real(tr(sum(Π_vars[1:end-1] .* H_y))), constraints)
@@ -61,7 +62,7 @@ function optimize_measurement(
         "povm" => Π_opt,
         "game" => game,
         "scenario" => scenario,
-        "states" => ρ_states
+        "states" => states
     )
 end
 
@@ -71,8 +72,8 @@ end
     optimize_measurement(
         game :: BellGame,
         scenario :: BipartiteNonSignaling,
-        ρ_AB :: State;
-        A_POVMs :: Vector{<:POVM},
+        ρ_AB :: AbstractMatrix;
+        A_POVMs :: Vector{<:AbstractVector{<:AbstractMatrix}},
     ) :: Dict
 
 Find Bob's measurement which optimizes a `BellGame`'s score for the shared quantum
@@ -89,8 +90,8 @@ The following semi-definite program optimizes the Bob's POVM:
     optimize_measurement(
         game :: BellGame,
         scenario :: BipartiteNonSignaling,
-        ρ_AB :: State;
-        B_POVMs :: Vector{<:POVM},
+        ρ_AB :: AbstractMatrix;
+        B_POVMs :: Vector{<:AbstractVector{<:AbstractMatrix}},
     ) :: Dict
 
 Find Alice's measurement which optimizes a `BellGame`'s score for the shared quantum
@@ -107,14 +108,17 @@ The following semi-definite program optimizes the Alice's POVM:
 function optimize_measurement(
     scenario::BipartiteNonSignaling,
     game::BellGame,
-    ρ_AB :: State;
-    A_POVMs=Vector{POVM}(undef,0) :: Vector{<:POVM},
-    B_POVMs=Vector{POVM}(undef,0) :: Vector{<:POVM}
+    ρ_AB :: AbstractMatrix;
+    A_POVMs=Vector{POVM}(undef,0) :: Vector{<:AbstractVector{<:AbstractMatrix}},
+    B_POVMs=Vector{POVM}(undef,0) :: Vector{<:AbstractVector{<:AbstractMatrix}},
+    atol=1e-7::Float64
 ) :: Dict
+    ρ = ρ_AB isa State ? ρ_AB : State(ρ_AB, atol=atol)
+
     if length(A_POVMs) > 0
-        return _optimize_measurement_B(scenario, game, ρ_AB, A_POVMs)
+        return _optimize_measurement_B(scenario, game, ρ, A_POVMs, atol=atol)
     elseif length(B_POVMs) > 0
-        return _optimize_measurement_A(scenario, game, ρ_AB, B_POVMs)
+        return _optimize_measurement_A(scenario, game, ρ, B_POVMs, atol=atol)
     else
         throw(DomainError((A_POVMs,B_POVMs), "either `A_POVMs` or `B_POVMs` must be specified."))
     end
@@ -126,21 +130,22 @@ end
 function _optimize_measurement_B(
     scenario::BipartiteNonSignaling,
     game::BellGame,
-    ρ_AB :: State,
-    A_POVMs :: Vector{<:POVM}
+    ρ_AB :: AbstractMatrix,
+    A_POVMs :: Vector{<:AbstractVector{<:AbstractMatrix}};
+    atol=1e-7::Float64
 ) :: Dict
     if !(scenario.X == length(A_POVMs))
         throw( DomainError(
             (scenario.X, " != length(A_POVMs)"),
             "A distinct POVM is not specified for input `X` of `BipartiteNonSignaling` scenario"
         ))
-    end
-
-    if !(all(i -> scenario.A == length(A_POVMs[i]), 1:scenario.X ))
+    elseif !(all(i -> scenario.A == length(A_POVMs[i]), 1:scenario.X ))
         throw( DomainError(
             A_POVMs, "Each POVM must have $(scenario.A) outputs."
         ))
     end
+
+    Π_Ax = map(Π -> Π isa POVM ? Π : POVM(Π, atol=atol), A_POVMs)
 
     ρ_dim = size(ρ_AB,1)
     Π_A_dim = size(A_POVMs[1][1],1)
@@ -156,7 +161,7 @@ function _optimize_measurement_B(
     # Objective function
     problem = maximize(real(
         sum(x -> sum(y -> sum(a -> sum(b ->
-            game[(a-1)*scenario.B+b,(x-1)*scenario.Y+y]*tr(kron(A_POVMs[x][a],B_POVMs[y][b])*ρ_AB.M),
+            game[(a-1)*scenario.B+b,(x-1)*scenario.Y+y]*tr(kron(Π_Ax[x][a],B_POVMs[y][b])*ρ_AB.M),
         1:scenario.B), 1:scenario.A), 1:scenario.Y), 1:scenario.X)
     ))
 
@@ -181,7 +186,7 @@ function _optimize_measurement_B(
         "game" => game,
         "scenario" => scenario,
         "state" => ρ_AB,
-        "A_POVMs" => A_POVMs,
+        "A_POVMs" => Π_Ax,
         "B_POVMs" => Π_B_opt
     )
 end
@@ -192,21 +197,22 @@ end
 function _optimize_measurement_A(
     scenario::BipartiteNonSignaling,
     game::BellGame,
-    ρ_AB :: State,
-    B_POVMs :: Vector{<:POVM}
+    ρ_AB :: AbstractMatrix,
+    B_POVMs :: Vector{<:AbstractVector{<:AbstractMatrix}};
+    atol=1e-7::Float64
 ) :: Dict
     if !(scenario.Y == length(B_POVMs))
         throw( DomainError(
             (scenario.Y, " != length(B_POVMs)"),
             "A distinct POVM is not specified for input `Y` of `BipartiteNonSignaling` scenario"
         ))
-    end
-
-    if !(all(i -> scenario.B == length(B_POVMs[i]), 1:scenario.Y ))
+    elseif !(all(i -> scenario.B == length(B_POVMs[i]), 1:scenario.Y ))
         throw( DomainError(
             B_POVMs, "Each POVM must have $(scenario.B) outputs."
         ))
     end
+
+    Π_By = map(Π -> Π isa POVM ? Π : POVM(Π, atol=atol), B_POVMs)
 
     ρ_dim = size(ρ_AB,1)
     Π_B_dim = size(B_POVMs[1][1],1)
@@ -222,7 +228,7 @@ function _optimize_measurement_A(
     # objective function
     problem = maximize(real(
         sum(x -> sum(y -> sum(a -> sum(b ->
-            game[(a-1)*scenario.B+b,(x-1)*scenario.Y+y]*tr(kron(A_POVMs[x][a],B_POVMs[y][b])*ρ_AB.M),
+            game[(a-1)*scenario.B+b,(x-1)*scenario.Y+y]*tr(kron(A_POVMs[x][a],Π_By[y][b])*ρ_AB.M),
         1:scenario.B), 1:scenario.A), 1:scenario.Y), 1:scenario.X)
     ))
 
@@ -248,14 +254,14 @@ function _optimize_measurement_A(
         "scenario" => scenario,
         "state" => ρ_AB,
         "A_POVMs" => Π_A_opt,
-        "B_POVMs" => B_POVMs
+        "B_POVMs" => Π_By
     )
 end
 
 # """
 # Helper function for converting POVM optimization variables to a POVM
 # """
-function _opt_vars_to_povm(povm::Vector{Matrix{Complex{Float64}}}; atol=1) :: POVM
+function _opt_vars_to_povm(povm::Vector{<:AbstractMatrix}; atol=1) :: POVM
     Π = is_povm(povm,atol=atol) ? POVM(povm,atol=atol) : throw(DomainError(povm, "not a povm"))
 
     Π

@@ -7,8 +7,9 @@ scenarios include:
 [`BlackBox`](@ref) scenarios:
 
     quantum_strategy(
-        Π :: POVM,
+        Π :: AbstractVector{<:AbstractMatrix},
         ρ_states :: Vector{<:State};
+        atol=1e-7::Float64
     ) :: Strategy
 
 For a quantum system the conditional proabilities are constructed as
@@ -18,21 +19,25 @@ For a quantum system the conditional proabilities are constructed as
 ```
 """
 function quantum_strategy(
-    Π :: POVM,
-    ρ_states :: Vector{<:State}
+    Π :: AbstractVector{<:AbstractMatrix},
+    ρ_states :: Vector{<:AbstractMatrix};
+    atol=1e-7::Float64
 ) :: Strategy
-    conditionals = measure(Π, ρ_states)
-    scenario = BlackBox(length(ρ_states), length(Π))
-    Strategy(conditionals, scenario)
+    povm = Π isa POVM ? Π : POVM(Π, atol=atol)
+    states = map(ρ -> ρ isa State ? ρ : State(ρ, atol=atol), ρ_states)
+
+    conditionals = measure(povm, states)
+    Strategy(conditionals.distribution, atol=atol)
 end
 
 """
 [`LocalSignaling`](@ref) scenarios:
 
     quantum_strategy(
-        Π :: POVM,
-        ρ_states :: Vector{<:State},
-        scenario :: LocalSignaling
+        Π :: AbstractVector{<:AbstractMatrix},
+        ρ_states :: Vector{<:AbstractMatrix},
+        scenario :: LocalSignaling;
+        atol=1e-7::Float64
     ) :: Strategy
 
 For quantum systems the conditional probabilities are construct as
@@ -45,24 +50,29 @@ A `DomainError` is thrown if the provided states and measurements are not compat
 with the specified scenario.
 """
 function quantum_strategy(
-    Π :: POVM,
-    ρ_states :: Vector{<:State},
-    scenario :: LocalSignaling
+    Π :: AbstractVector{<:AbstractMatrix},
+    ρ_states :: Vector{<:AbstractMatrix},
+    scenario :: LocalSignaling;
+    atol=1e-7::Float64
 ) :: Strategy
     if (size(Π[1]) != (scenario.d, scenario.d)) || (size(ρ_states[1]) != (scenario.d, scenario.d))
         throw(DomainError((Π, ρ_states), "POVM or States are not dimension `d=$(scenario.d)`."))
     end
-    conditionals = measure(Π, ρ_states)
-    Strategy(conditionals, scenario)
+
+    povm = Π isa POVM ? Π : POVM(Π, atol=atol)
+    states = map(ρ -> ρ isa State ? ρ : State(ρ, atol=atol), ρ_states)
+
+    conditionals = measure(povm, states)
+    Strategy(conditionals.distribution, scenario, atol=atol)
 end
 
 """
 [`BipartiteNonSignaling`](@ref) scenarios:
 
     quantum_strategy(
-            ρ_AB :: State,
-            Π_Ax :: Vector{<:POVM},
-            Π_By :: Vector{<:POVM},
+            ρ_AB :: AbstractMatrix,
+            Π_Ax :: Vector{<:AbstractVector{<:AbstractMatrix}},
+            Π_By :: Vector{<:AbstractVector{<:AbstractMatrix}},
             scenario :: BipartiteNonSignaling;
             atol::Float64 = 1e-7
     )
@@ -79,9 +89,9 @@ A `DomainError` is thrown if
 * The number of each party's POVMS doesn't match the the number of inputs.
 """
 function quantum_strategy(
-        ρ_AB :: State,
-        Π_Ax :: Vector{<:POVM},
-        Π_By :: Vector{<:POVM},
+        ρ_AB :: AbstractMatrix,
+        Π_Ax :: Vector{<:AbstractVector{<:AbstractMatrix}},
+        Π_By :: Vector{<:AbstractVector{<:AbstractMatrix}},
         scenario :: BipartiteNonSignaling;
         atol::Float64 = 1e-7
 ) :: Strategy
@@ -95,10 +105,14 @@ function quantum_strategy(
         throw(DomainError(Π_By, "Each POVM in Π_By must have $(scenario.B) elements"))
     end
 
+    povm_Ax = map(Π -> Π isa POVM ? Π : POVM(Π, atol=atol), Π_Ax)
+    povm_By = map(Π -> Π isa POVM ? Π : POVM(Π, atol=atol), Π_By)
+    state = ρ_AB isa State ? ρ_AB : State(ρ_AB, atol=atol)
+
     strat_mat = zeros(Float64, (scenario.A,scenario.B,scenario.X,scenario.Y))
     for a in 1:scenario.A, b in 1:scenario.B, x in 1:scenario.X, y in 1:scenario.Y
-        Π_AB = kron(Π_Ax[x][a].M, Π_By[y][b].M)
-        strat_mat[b,a,y,x] = tr(Π_AB * ρ_AB)
+        Π_AB = kron(povm_Ax[x][a].M, povm_By[y][b].M)
+        strat_mat[b,a,y,x] = tr(Π_AB * state)
     end
 
     Strategy(reshape(strat_mat, strategy_dims(scenario)), scenario, atol=atol)

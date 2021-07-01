@@ -5,37 +5,69 @@ using Test, QBase
 using BellScenario
 
 @testset "quantum_strategy()" begin
-    q_strat = quantum_strategy(
-        POVM([[1 0 0;0 0 0;0 0 0],[0 0 0;0 1 0;0 0 0],[0 0 0;0 0 0;0 0 1]]),
-        State.([[1 0 0;0 0 0;0 0 0],[0 0 0;0 1 0;0 0 0],[0 0 0;0 0 0;0 0 1]])
-    )
+    @testset "QBase types" begin
+        q_strat = quantum_strategy(
+            POVM([[1 0 0;0 0 0;0 0 0],[0 0 0;0 1 0;0 0 0],[0 0 0;0 0 0;0 0 1]]),
+            State.([[1 0 0;0 0 0;0 0 0],[0 0 0;0 1 0;0 0 0],[0 0 0;0 0 0;0 0 1]])
+        )
 
-    @test q_strat isa Strategy
-    @test q_strat.scenario == BlackBox(3,3)
-    @test q_strat == [1 0 0;0 1 0;0 0 1]
+        @test q_strat isa Strategy
+        @test q_strat.scenario == BlackBox(3,3)
+        @test q_strat == [1 0 0;0 1 0;0 0 1]
+    end
+
+    @testset "matrix types" begin
+        q_strat = quantum_strategy(
+            [[1 0;0 0],[0 0;0 1]],
+            [[1 0;0 0],[0 0;0 1]]
+        )
+
+        @test q_strat isa Strategy
+        @test q_strat.scenario == BlackBox(2,2)
+        @test q_strat == [1 0;0 1]
+    end
 end
 
 @testset "quantum_strategy(LocalSignaling)" begin
-    scenario = LocalSignaling(3,3,2)
-    q_strat = quantum_strategy(
-        mirror_symmetric_qubit_3povm(π/3),
-        trine_qubit_states(),
-        scenario
-    )
+    @testset "QBase types" begin
+        scenario = LocalSignaling(3,3,2)
+        q_strat = quantum_strategy(
+            mirror_symmetric_qubit_3povm(π/3),
+            trine_qubit_states(),
+            scenario
+        )
 
-    @test q_strat isa Strategy
-    @test q_strat ≈ [2/3 1/6 1/6;1/6 2/3 1/6;1/6 1/6 2/3]
-    @test q_strat.scenario isa LocalSignaling
+        @test q_strat isa Strategy
+        @test q_strat ≈ [2/3 1/6 1/6;1/6 2/3 1/6;1/6 1/6 2/3]
+        @test q_strat.scenario isa LocalSignaling
+    end
 
-    @test_throws DomainError quantum_strategy(
-        POVM([[1 0 0;0 0 0;0 0 0],[0 0 0;0 1 0;0 0 0],[0 0 0;0 0 0;0 0 1]]),
-        State.([[1 0 0;0 0 0;0 0 0],[0 0 0;0 1 0;0 0 0],[0 0 0;0 0 0;0 0 1]]),
-        scenario
-    )
+    @testset "Matrix types" begin
+        scenario = LocalSignaling(2,2,2)
+
+        q_strat = quantum_strategy(
+            [[1 0;0 0],[0 0;0 1]],
+            [[1 0;0 0],[0 0;0 1]],
+            scenario
+        )
+
+        @test q_strat isa Strategy
+        @test q_strat.scenario == LocalSignaling(2,2,2)
+        @test q_strat == [1 0;0 1]
+    end
+
+    @testset "DomainErrors" begin
+        scenario = LocalSignaling(3,3,2)
+        @test_throws DomainError quantum_strategy(
+            POVM([[1 0 0;0 0 0;0 0 0],[0 0 0;0 1 0;0 0 0],[0 0 0;0 0 0;0 0 1]]),
+            State.([[1 0 0;0 0 0;0 0 0],[0 0 0;0 1 0;0 0 0],[0 0 0;0 0 0;0 0 1]]),
+            scenario
+        )
+    end
 end
 
 @testset "quantum_strategy(BipartiteNonSignaling)" begin
-    @testset "ch violation" begin
+    @testset "QBase types ch violation" begin
         scenario = BipartiteNonSignaling(2,2,2,2)
         ρ_AB = State([1 0 0 1;0 0 0 0;0 0 0 0;1 0 0 1]/2)
         Π_Ax = [
@@ -56,16 +88,16 @@ end
         @test sum(g .* q_strat) ≈ 3.207 atol=2e-4
     end
 
-    @testset "classical states" begin
+    @testset "matrix types classical states" begin
         scenario = BipartiteNonSignaling(2,2,2,2)
-        ρ_AB = State(kron([1 0;0 0],[0 0;0 1]))
+        ρ_AB = kron([1 0;0 0],[0 0;0 1])
         Π_Ax = [
-            POVM([[1 0;0 0],[0 0;0 1]]),
-            POVM([[0 0;0 1],[1 0;0 0]])
+            [[1 0;0 0],[0 0;0 1]],
+            [[0 0;0 1],[1 0;0 0]]
         ]
         Π_By = [
-            POVM([[1 0;0 0],[0 0;0 1]]),
-            POVM([[0 0;0 1],[1 0;0 0]])
+            [[1 0;0 0],[0 0;0 1]],
+            [[0 0;0 1],[1 0;0 0]]
         ]
 
         q_strat = quantum_strategy(ρ_AB, Π_Ax, Π_By, scenario)
