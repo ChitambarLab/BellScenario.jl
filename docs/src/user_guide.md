@@ -38,17 +38,17 @@ Bell inequalities.
 
 The BellScenario.jl package provides the [`LocalPolytope`](@ref) module to compute
 Bell inequalities.
-The first step is to enumerate the vertices for the CHSH scenario.
+The first step is to commpute the vertex representation for the CHSH scenario.
 
 ```@example tutorial
-chsh_vertices = LocalPolytope.vertices(chsh_scenario)
+chsh_polytope = LocalPolytope.vrep(chsh_scenario)
 ```
 
 Then, the Bell inequalities can computed using the [`LocalPolytope.facets`](@ref)
 function.
 
 ```@example tutorial
-chsh_facets = LocalPolytope.facets(chsh_vertices)["facets"]
+chsh_facets = LocalPolytope.facets(chsh_polytope)
 ```
 
 We'll take ``15^{th}`` facet as it represents the CH inequality
@@ -67,20 +67,17 @@ ch_inequality = chsh_facets[15]
 
 Now that we have computed a Bell inequality, we can find a quantum violation using
 the [`Nonlocality`](@ref) module.
-This will require the use of the [QBase.jl](https://github.com/ChitambarLab/QBase.jl) package.
 In this example, we will fix Alice's measurement and the quantum state shared
 between Alice and Bob.
 
 ```@example tutorial
-using QBase
-
 # maximally entangled state
-ρ_AB = State([1 0 0 1;0 0 0 0;0 0 0 0;1 0 0 1]/2)
+ρ_AB = [1 0 0 1;0 0 0 0;0 0 0 0;1 0 0 1]/2
 
-# Alice's measurement
-A_POVMs = [
-    POVM([ [1 0;0 0], [0 0;0 1] ]),
-    POVM([ [1 1;1 1]/2, [1 -1;-1 1]/2 ])
+# Alice's measurement bases
+Π_ax = [
+    [[1 0;0 0], [0 0;0 1]],      # Pauli Z basis
+    [[1 1;1 1]/2, [1 -1;-1 1]/2] # Pauli X basis
 ]
 ```
 
@@ -94,7 +91,7 @@ Finally, we optimize Bob's measurement with respect to the fixed state and measu
 
 ```@example tutorial
 opt_dict = Nonlocality.optimize_measurement(
-    chsh_scenario, ch_game, ρ_AB, A_POVMs=A_POVMs
+    chsh_scenario, ch_game, ρ_AB, A_POVMs=Π_ax
 )
 ```
 

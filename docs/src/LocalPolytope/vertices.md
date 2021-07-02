@@ -5,10 +5,17 @@ CurrentModule = LocalPolytope
 
 Vertices are extreme points of the local polytope.
 They correspond to deterministic strategies.
+The vertex representation of a convex polytope can be computed via the
+[Polyhedra.jl](https://github.com/JuliaPolyhedra/Polyhedra.jl) interface.
+
+```@docs
+vrep
+```
 
 ## Vertex Enumeration
 
-Enumerate the local polytope vertices for the specified Bell [`Scenario`](@ref).
+The vertices of each local polytope can be enumerated for the specified
+Bell [`Scenario`](@ref).
 
 ```@docs
 vertices
