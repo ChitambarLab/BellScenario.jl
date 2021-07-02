@@ -55,3 +55,15 @@ function facets(
         "equalities" => map(row_id -> equalities[row_id,:], 1:size(equalities,1))
     )
 end
+
+"""
+    facets(poly::Polyhedron) :: Vector{Vector{Int64}}
+
+Returns the facets of the local polytope `poly`. If the facets have not already
+been computed, then they are transformed into the half-space representation from
+the vertex representation.
+"""
+function facets(poly::Polyhedron) :: Vector{Vector{Int64}}
+    inequalities = convert.(Int64, hrep(poly).inequalities)
+    map(row_id -> inequalities[row_id,:] , 1:size(inequalities,1))
+end

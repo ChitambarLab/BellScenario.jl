@@ -5,6 +5,17 @@ using Test, QBase
 using BellScenario
 
 @testset "Nonlocality.optimize_measurement(LocalSignaling)" begin
+    @testset "non State types" begin
+        scenario = LocalSignaling(3,3,2)
+        game = BellGame([1 0 0;0 1 0;0 0 1], 2)
+        ρ_states = [[1 0;0 0],[0 0;0 1],[0 0;0 1]]
+
+        dict = Nonlocality.optimize_measurement(scenario, game, ρ_states)
+
+        @test isapprox(dict["violation"], 0.0, atol=1e-6)
+        @test dict["povm"] ≈ [[1 0;0 0],[0 0;0 0.5],[0 0;0 0.5]]
+    end
+
     @testset "trine states" begin
         scenario = LocalSignaling(3,3,2)
         game = BellGame([1 0 0;0 1 0;0 0 1], 2)
@@ -59,10 +70,38 @@ using BellScenario
 
         scenario = LocalSignaling(4,4,3)
         @test_throws DomainError  Nonlocality.optimize_measurement(scenario, game, states)
+
+        scenario = LocalSignaling(3,3,2)
+        game = BellGame([1 0 0;0 1 0;0 0 1],2)
+        states = [[1 0;0 1],[0 0;0 1],[0.5 0;0 0.5]]
+        @test_throws DomainError Nonlocality.optimize_measurement(scenario, game, states)
     end
 end
 
 @testset "Nonlocality.optimize_measurement(::BipartiteNonSignaling)" begin
+    @testset "matrix states and povms" begin
+        scenario = BipartiteNonSignaling(2,2,2,2)
+        game = BellGame([0 1 1 0;0 0 0 1;0 0 0 1;1 0 0 1],2)
+        ρ_AB = [1 0 0 1;0 0 0 0;0 0 0 0;1 0 0 1]/2
+        POVMs = [
+            [[1 0;0 0],[0 0;0 1]],
+            [[0.5 0.5;0.5 0.5],[0.5 -0.5;-0.5 0.5]]
+        ]
+
+        opt_dictA = Nonlocality.optimize_measurement(scenario, game, ρ_AB, A_POVMs=POVMs)
+        opt_dictB = Nonlocality.optimize_measurement(scenario, game, ρ_AB, B_POVMs=POVMs)
+
+        @test opt_dictA["score"] ≈ 2.20710279
+        @test opt_dictA["violation"] ≈ 0.207102796
+        @test opt_dictA["A_POVMs"] isa Vector{<:POVM}
+        @test opt_dictA["state"] isa State
+
+        @test opt_dictB["score"] ≈ 2.20710279
+        @test opt_dictB["violation"] ≈ 0.207102796
+        @test opt_dictB["B_POVMs"] isa Vector{<:POVM}
+        @test opt_dictB["state"] isa State
+    end
+
     @testset "CHSH inequality" begin
         scenario = BipartiteNonSignaling(2,2,2,2)
         game = BellGame([0 1 1 0;0 0 0 1;0 0 0 1;1 0 0 1],2)
@@ -127,6 +166,16 @@ end
 
         @test_throws DomainError Nonlocality.optimize_measurement(scenarioA, game, ρ_AB, A_POVMs=POVMs)
         @test_throws DomainError Nonlocality.optimize_measurement(scenarioB, game, ρ_AB, B_POVMs=POVMs)
+
+        @test_throws DomainError Nonlocality.optimize_measurement(
+            scenario, game, [1 0 0 1;0 0 0 0;0 0 0 0;1 0 0 1],A_POVMs=POVMs
+        )
+        @test_throws DomainError Nonlocality.optimize_measurement(
+            scenario, game, ρ_AB, A_POVMs = [[[1 0;0 1],[1 0;0 1]],[[1 0;0 0],[1 0;0 0]]]
+        )
+        @test_throws DomainError Nonlocality.optimize_measurement(
+            scenario, game, ρ_AB, B_POVMs = [[[1 0;0 1],[1 0;0 1]],[[1 0;0 0],[1 0;0 0]]]
+        )
     end
 end
 

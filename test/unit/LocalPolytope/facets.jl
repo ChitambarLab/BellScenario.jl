@@ -1,4 +1,4 @@
-using Test
+using Test, Polyhedra
 
 @testset "./src/LocalPolytope/facets.jl" begin
 
@@ -45,6 +45,23 @@ using BellScenario
         ]
         @test length(keys(facet_dict)) == 2
     end
+end
+
+@testset "facets(::Polyhedron)" begin
+    scenario = LocalSignaling(3,3,2)
+    local_poly = LocalPolytope.vrep(scenario)
+
+    @test !hrepiscomputed(local_poly)
+
+    facets = LocalPolytope.facets(local_poly)
+    @test length(facets) == 15
+
+    @test hrepiscomputed(local_poly)
+
+    match_vertices = LocalPolytope.vertices(scenario)
+    match_facets = LocalPolytope.facets(match_vertices)["facets"]
+
+    @test facets == match_facets
 end
 
 end

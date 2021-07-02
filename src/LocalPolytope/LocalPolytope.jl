@@ -45,21 +45,45 @@ however, it is important to note that a Bell violation can simply mean that more
 resources were used than anticipated.
 
 ### Module Exports:
-* [`vertices`](@ref) - Compute the set of extreme-points for the Local Polytope.
-* [`facets`](@ref) - Compute the linear inequalities which bound the Local Polytope.
+* [`vertices`](@ref) - Compute the set of extreme-points for the local polytope.
+* [`num_vertices`](@ref) - The number of vertices for the local polytope.
+* [`vrep`](@ref) - Construct a [`Polyhedron`](https://juliapolyhedra.github.io/Polyhedra.jl/stable/polyhedron/)
+    in the vertex representation.
+* [`facets`](@ref) - Compute the linear inequalities which bound the local polytope.
 * [`generator_vertex`](@ref) - Provide a canonical form for a vertex.
 * [`generator_facet`](@ref) - Provide a canonical form for a facet.
-* [`adjacency_decomposition`](@ref) - Efficiently compute the generating facets for the Local
-    Polytope using the adjacency decomposition technique.
+* [`adjacency_decomposition`](@ref) - Efficiently compute the generator facets for the local
+    polytope using the adjacency decomposition technique.
 """
 module LocalPolytope
 
 using LinearAlgebra, Combinatorics
-using XPORTA
+using XPORTA, Polyhedra
+
+import Polyhedra: vrep
 
 using ..BellScenario
 
 include("./vertices.jl")
+
+"""
+    vrep(scenario::Scenario; vertices_kwargs...) :: XPORTA.Polyhedron
+
+Constructs a `Polyhedron` using the vertex representation.
+See [Polyhedra.jl](https://github.com/JuliaPolyhedra/Polyhedra.jl)
+for more details.
+The `vertices_kwargs` keyword arguments are passed through to the `vertices`
+function for each `Scenario`.
+
+!!! note "Return Type"
+    This function differs from the Polyhedra.jl implementation in that it returns
+    a `Polyhedron` type rather than a `V-Representation`.
+    This is done to reduce the number of steps required to construct a polyhedron.
+"""
+function vrep(scenario::Scenario; vertices_kwargs...) :: XPORTA.Polyhedron
+    polyhedron(vrep(vertices(scenario; vertices_kwargs...)), XPORTA.Library())
+end
+
 include("./facets.jl")
 include("./generators.jl")
 include("./adjacency_decomposition.jl")
