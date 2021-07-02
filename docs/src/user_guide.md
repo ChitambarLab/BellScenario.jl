@@ -15,7 +15,7 @@ using BellScenario
 The CHSH scenario is a [`BipartiteNonSignaling`](@ref) scenario where Alice and Bob
 each have a black-box with binary inputs and outputs.
 
-![Classical CHSH Scenario](../assets/scenario_images/classical_chsh_scenario.png)
+![Classical CHSH Scenario](assets/scenario_images/classical_chsh_scenario.png)
 
 This scenario is significant because it is the simplest Bell scenario in which
 quantum nonlocality can be observed.
