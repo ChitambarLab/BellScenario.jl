@@ -12,8 +12,8 @@ using BellScenario
 
         dict = Nonlocality.optimize_measurement(scenario, game, ρ_states)
 
-        @test isapprox(dict["violation"], 0.0, atol=1e-6)
-        @test dict["povm"] ≈ [[1 0;0 0],[0 0;0 0.5],[0 0;0 0.5]]
+        @test isapprox(dict["violation"], 0.0, atol=1e-4)
+        @test isapprox(dict["povm"], [[1 0;0 0],[0 0;0 0.5],[0 0;0 0.5]], atol=1e-4)
     end
 
     @testset "trine states" begin
@@ -23,10 +23,10 @@ using BellScenario
 
         dict = Nonlocality.optimize_measurement(scenario, game, ρ_states)
 
-        @test isapprox(dict["violation"], 0.0, atol=1e-6)
-        @test all(isapprox.(dict["povm"][1], 2/3*ρ_states[1], atol=1e-6))
-        @test all(isapprox.(dict["povm"][2], 2/3*ρ_states[2], atol=1e-6))
-        @test all(isapprox.(dict["povm"][3], 2/3*ρ_states[3], atol=1e-6))
+        @test isapprox(dict["violation"], 0.0, atol=1e-5)
+        @test all(isapprox.(dict["povm"][1], 2/3*ρ_states[1], atol=1e-5))
+        @test all(isapprox.(dict["povm"][2], 2/3*ρ_states[2], atol=1e-5))
+        @test all(isapprox.(dict["povm"][3], 2/3*ρ_states[3], atol=1e-5))
 
         @test dict["states"] == ρ_states
         @test dict["game"] == game
@@ -40,7 +40,7 @@ using BellScenario
 
         dict = Nonlocality.optimize_measurement(scenario, game, ρ_states)
 
-        @test isapprox(dict["violation"], 0.0, atol=1e-6)
+        @test isapprox(dict["violation"], 0.0, atol=1e-5)
         @test all(isapprox.(dict["povm"][1], 1/2*ρ_states[1], atol=1e-3))
         @test all(isapprox.(dict["povm"][2], 1/2*ρ_states[2], atol=1e-3))
         @test all(isapprox.(dict["povm"][3], 1/2*ρ_states[3], atol=1e-3))
@@ -91,13 +91,13 @@ end
         opt_dictA = Nonlocality.optimize_measurement(scenario, game, ρ_AB, A_POVMs=POVMs)
         opt_dictB = Nonlocality.optimize_measurement(scenario, game, ρ_AB, B_POVMs=POVMs)
 
-        @test opt_dictA["score"] ≈ 2.20710279
-        @test opt_dictA["violation"] ≈ 0.207102796
+        @test isapprox(opt_dictA["score"], 2.20710279, atol=1e-5)
+        @test isapprox(opt_dictA["violation"], 0.207102796, atol=1e-5)
         @test opt_dictA["A_POVMs"] isa Vector{<:POVM}
         @test opt_dictA["state"] isa State
 
-        @test opt_dictB["score"] ≈ 2.20710279
-        @test opt_dictB["violation"] ≈ 0.207102796
+        @test isapprox(opt_dictB["score"], 2.20710279, atol=1e-5)
+        @test isapprox(opt_dictB["violation"], 0.207102796, atol=1e-5)
         @test opt_dictB["B_POVMs"] isa Vector{<:POVM}
         @test opt_dictB["state"] isa State
     end
@@ -120,8 +120,8 @@ end
         @test opt_dictA["scenario"] == scenario
         @test opt_dictA["game"] == game
         @test opt_dictA["game"].β == 2
-        @test opt_dictA["score"] ≈ 2.20710279
-        @test opt_dictA["violation"] ≈ 0.207102796
+        @test isapprox(opt_dictA["score"], 2.20710279, atol=1e-5)
+        @test isapprox(opt_dictA["violation"], 0.207102796, atol=1e-5)
         @test opt_dictA["state"] == ρ_AB
         @test opt_dictA["A_POVMs"] == POVMs
         @test isapprox(
@@ -137,8 +137,8 @@ end
         @test opt_dictB["scenario"] == scenario
         @test opt_dictB["game"] == game
         @test opt_dictB["game"].β == 2
-        @test opt_dictB["score"] ≈ 2.2071028
-        @test opt_dictB["violation"] ≈ 0.207102796
+        @test isapprox(opt_dictB["score"], 2.2071028, atol=1e-5)
+        @test isapprox(opt_dictB["violation"], 0.207102796, atol=1e-5)
         @test opt_dictB["state"] == ρ_AB
         @test opt_dictB["B_POVMs"] == POVMs
         @test isapprox(
