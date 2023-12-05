@@ -27,6 +27,11 @@ technique the output linear inequality witnesses the nonclassicality of the `tes
 The optimized facet inequality ``(\\mathbf{G}^\\star, \\beta^\\star)`` is returned as a vector ``(G^\\star_{0,0}, \\dots, G^\\star_{Y,X}, -\\beta^\\star)``
 where ``G^\\star_{y,x}`` are the elements of ``\\mathbf{G}^\\star``.
 
+!!! note "Supporting Software"
+    The linear programming is performed using [HiGHS](https://highs.dev/)
+    solver via the [`JuMP`](https://jump.dev/JuMP.jl/stable/)
+    interface. Please refer to the source code for more details.
+
 !!! note "Converting Output into Bell Game"
     The linear programming software outputs numerical values that have numerical error. Moreover, the linear inequality is
     scaled such that the classical bound is zero and the `test_behavior` score is one. In order to convert the output
