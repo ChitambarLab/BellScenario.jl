@@ -6,3 +6,9 @@ CurrentModule = LocalPolytope
 ```@docs
 facets
 ```
+
+## Obtaining Nonclassicality Witnesses through Linear Programming
+
+```@docs
+linear_nonclassicality_witness
+```

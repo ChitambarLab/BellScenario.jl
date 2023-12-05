@@ -31,8 +31,8 @@ Each partition is a vector containing a  set of `k` vectors designating each gro
 E.g.
 
 ```jldoctest
-julia> stirling2_partitions( 4, 2 )
-7-element Array{Array{Array{Int64,1},1},1}:
+julia> stirling2_partitions(4, 2)
+7-element Vector{Vector{Vector{Int64}}}:
  [[1, 2, 3], [4]]
  [[3], [1, 2, 4]]
  [[1, 2], [3, 4]]
@@ -96,8 +96,8 @@ that the column id is grouped into the corresponding row.
 E.g.
 
 ```jldoctest
-julia> stirling2_matrices( 4, 2 )
-7-element Array{Array{Bool,2},1}:
+julia> stirling2_matrices(4, 2)
+7-element Vector{Matrix{Bool}}:
  [1 1 1 0; 0 0 0 1]
  [0 0 1 0; 1 1 0 1]
  [1 1 0 0; 0 0 1 1]
@@ -135,8 +135,8 @@ Generates the set of square permutation matrices of dimension `dim`.
 E.g.
 
 ```jldoctest
-julia> permutation_matrices( 3 )
-6-element Array{Array{Bool,2},1}:
+julia> permutation_matrices(3)
+6-element Vector{Matrix{Bool}}:
  [1 0 0; 0 1 0; 0 0 1]
  [1 0 0; 0 0 1; 0 1 0]
  [0 1 0; 1 0 0; 0 0 1]
@@ -160,7 +160,7 @@ E.g.
 
 ```jldoctest
 julia> n_choose_k_matrices( 4, 2 )
-6-element Array{Array{Bool,2},1}:
+6-element Vector{Matrix{Bool}}:
  [1 0; 0 1; 0 0; 0 0]
  [1 0; 0 0; 0 1; 0 0]
  [1 0; 0 0; 0 0; 0 1]

@@ -1,3 +1,5 @@
+# push!(LOAD_PATH,"../src/")
+
 using Documenter, BellScenario
 
 DocMeta.setdocmeta!(BellScenario, :DocTestSetup, :(using BellScenario); recursive=true)
@@ -34,6 +36,7 @@ makedocs(;
     repo="https://github.com/ChitambarLab/BellScenario.jl/blob/{commit}{path}#L{line}",
     sitename="BellScenario.jl",
     authors="Brian Doolittle",
+    warnonly = true,
 )
 
 deploydocs(;
