@@ -39,15 +39,15 @@ end
         skip = [BellGame([1 0 0 0;1 0 0 0;1 0 0 0;0 0 0 0],1)]
         dict = LocalPolytope.adjacency_decomposition(vertices, BG, scenario, skip_games=skip, dir=test_dir)
 
-        # positvity included, but is skipped in computation
-        @test collect(keys(dict)) == [
+        # non-negativity included, but is skipped in computation
+        @test issetequal(collect((keys(dict))), [
             [1 0 0 0;1 0 0 0;0 1 0 0;0 0 1 0],
             [1 0 0 0;0 1 0 0;0 0 1 0;0 0 0 1],
             [1 0 0 0;1 0 0 0;1 0 0 0;0 0 0 0],
             [2 0 0 0;1 1 1 0;0 2 0 0;0 0 1 1],
             [2 0 0 0;1 1 1 0;0 2 0 0;0 0 2 0],
             [1 1 0 0;1 0 1 0;0 1 1 0;0 0 0 1],
-        ]
+        ])
 
         @test dict[[1 0 0 0;1 0 0 0;1 0 0 0;0 0 0 0]]["skipped"]
 
@@ -63,14 +63,14 @@ end
 
         dict = LocalPolytope.adjacency_decomposition(vertices, BG, scenario, dir=test_dir)
 
-        @test collect(keys(dict)) == [
+        @test issetequal(collect(keys(dict)), [
             [1 0 0 0;1 0 0 0;0 1 0 0;0 0 1 0],
             [1 0 0 0;0 1 0 0;0 0 1 0;0 0 0 1],
             [1 0 0 0;1 0 0 0;1 0 0 0;0 0 0 0],
             [2 0 0 0;1 1 1 0;0 2 0 0;0 0 1 1],
             [2 0 0 0;1 1 1 0;0 2 0 0;0 0 2 0],
             [1 1 0 0;1 0 1 0;0 1 1 0;0 0 0 1]
-        ]
+        ])
 
         @test dict[[1 0 0 0;1 0 0 0;1 0 0 0;0 0 0 0]]["skipped"] == false
     end
