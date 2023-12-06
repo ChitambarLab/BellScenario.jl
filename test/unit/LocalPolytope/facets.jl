@@ -1,4 +1,4 @@
-using Test, Polyhedra
+using Test, XPORTA
 
 @testset "./src/LocalPolytope/facets.jl" begin
 

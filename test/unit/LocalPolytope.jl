@@ -9,7 +9,7 @@ using BellScenario
     @testset "LocalPolytope.vrep()" begin
         @testset "no arguments" begin
             scenario = LocalSignaling(3,3,2)
-            local_poly = vrep(scenario)
+            local_poly = LocalPolytope.vrep(scenario)
 
             @test local_poly isa XPORTA.Polyhedron
             @test npoints(local_poly) == 21
@@ -20,7 +20,7 @@ using BellScenario
 
         @testset "passing arguments" begin
             scenario = LocalSignaling(3,3,2)
-            local_poly = vrep(scenario, rank_d_only=true)
+            local_poly = LocalPolytope.vrep(scenario, rank_d_only=true)
 
             @test local_poly isa XPORTA.Polyhedron
             @test npoints(local_poly) == 18

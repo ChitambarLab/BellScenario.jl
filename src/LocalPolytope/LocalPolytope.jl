@@ -58,7 +58,8 @@ resources were used than anticipated.
 module LocalPolytope
 
 using LinearAlgebra, Combinatorics
-using XPORTA, Polyhedra
+using JuMP, HiGHS  # Linear Programming
+using XPORTA, Polyhedra  # Convex Polytope
 
 import Polyhedra: vrep
 
@@ -88,6 +89,7 @@ include("./facets.jl")
 include("./generators.jl")
 include("./adjacency_decomposition.jl")
 include("./utils.jl")
+include("./linear_nonclassicality_witnesses.jl")
 
 # legacy code
 include("../Legacy/LocalPolytope.jl")

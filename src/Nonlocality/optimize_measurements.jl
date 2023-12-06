@@ -49,8 +49,7 @@ function optimize_measurement(
     # add the objective
     objective = maximize(real(tr(sum(Π_vars[1:end-1] .* H_y))), constraints)
 
-    # optimize model
-    solve!(objective, SCS.Optimizer(verbose=0))
+    solve!(objective, SCS.Optimizer())
 
     # parse/return results
     score = objective.optval
@@ -172,7 +171,7 @@ function _optimize_measurement_B(
     end
 
     # optimize model
-    solve!(problem, SCS.Optimizer(verbose=0))
+    solve!(problem, SCS.Optimizer())
 
     # parse/return results
     score = problem.optval
@@ -239,7 +238,7 @@ function _optimize_measurement_A(
     end
 
     # optimize model
-    solve!(problem, SCS.Optimizer(verbose=0))
+    solve!(problem, SCS.Optimizer())
 
     # parse/return results
     score = problem.optval
