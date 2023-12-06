@@ -15,7 +15,7 @@ This task is achieved using the  linear program described by Brunner et al. in E
 \\begin{align}
     \\min_{(\\mathbf{G}, \\beta)} \\quad & \\langle \\mathbf{G},\\mathbf{P}\\rangle - \\beta & \\notag\\\\
     \\text{s.t.} \\quad  & \\langle \\mathbf{G}, \\mathbf{V} \\rangle - \\beta \\leq 0 & \\quad \\forall \\;\\; \\mathbf{V} \\in \\mathcal{V}  \\notag\\\\
-    & \\langle \\mathbf{G}, \\mathbf{P} \\rangle \\leq 1 & \\notag\\\\
+    & \\langle \\mathbf{G}, \\mathbf{P} \\rangle - \\beta \\leq 1 & \\notag\\\\
 \\end{align}
 ```
 
