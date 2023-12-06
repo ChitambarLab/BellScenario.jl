@@ -1,7 +1,7 @@
 
 
 
-log for /home/runner/.julia/artifacts/b0627bab322e166a7ea3c9aa777f00551e7c4fdd/bin/xporta -T ./porta_tmp/traf_tmp.poi 
+log for /home/runner/.julia/artifacts/c4069199178afeecd74780d7e158664e253b3eea/bin/xporta -T ./porta_tmp/traf_tmp.poi 
 
 input file ./porta_tmp/traf_tmp.poi o.k.
 dimension              :    8 
