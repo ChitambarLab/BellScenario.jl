@@ -46,7 +46,7 @@ using BellScenario
 
         # -2*PA(0|0) - 2*PB(0|0) + 2*PAB(00|00) + 2*PAB(01|00) + 2*PAB(10|00) - 2*PAB(11|00) <= 0
         @test chsh_facet_vec ≈ [-2, 0, -2, 0, 2, 2, 2, -2, 0]
-        @test local_game_vec ≈ [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        @test local_game_vec ≈ [0, 0, 0, 0, 0, 0, 0, 0, 0]  # zero vector returned as optimal solution
     end
 end
 

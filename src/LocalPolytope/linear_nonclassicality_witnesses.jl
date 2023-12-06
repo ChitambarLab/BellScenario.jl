@@ -39,7 +39,9 @@ where ``G^\\star_{y,x}`` are the elements of ``\\mathbf{G}^\\star``.
 
 !!! note "Classical Test Behavior"
     If the `test_behavior` ``\\mathbf{P}`` is classical, meaning it satisfies ``\\mathbf{P}\\in\\text{Conv}(\\mathcal{V})``,
-    then the optimized linear inequality is the zeros vector.
+    then the zero vector is returned as the optimal solution. Note that if all elements of ``\\mathbf{G}^\\star``
+    satisfy ``G^\\star_{y,x}=0``, then all behaviors ``\\mathbf{P} \\in \\text{Conv}(\\mathcal{V})`` are trivially optimal
+    as ``\\langle\\mathbf{G}^{\\star}, \\mathbf{P} \\rangle - \\beta^\\star \\leq 0``.
 """
 function linear_nonclassicality_witness(
     vertices :: Vector{Vector{T}} where T <: Real,
